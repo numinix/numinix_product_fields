@@ -88,7 +88,7 @@ if (!function_exists('npf_field_value')) {
     }
 }
 
-function add_custom_field($field_name, $type, $length = '300') {
+function add_custom_field($field_name, $type, $length = 300) {
     global $db,$messageStack;
     $field = str_replace(" ", "_", strtolower($field_name));
     $nice_field_name = ucwords(strtolower(str_replace("_", " ", $field)));
@@ -102,7 +102,7 @@ function add_custom_field($field_name, $type, $length = '300') {
     switch ($type) {
         case "file":
             $sql_type = "varchar(" . (int) $length . ") NULL default NULL";
-            $string_input_field = "zen_draw_file_field(".$field.")if(\$pinfo->" . $field . " != ''){echo \$pinfo->" . $field . ";}";
+            $string_input_field = "zen_draw_file_field('".$field."'); if(\$pinfo->" . $field . " != ''){echo \$pinfo->" . $field . ";}";
             break;
         case "checkbox":
             $string_input_field = "zen_draw_checkbox_field('" . $field . "', 1, (\$pInfo->" . $field . ") ? true : false)";
