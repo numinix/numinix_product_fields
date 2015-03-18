@@ -1,3 +1,4 @@
+ALTER TABLE products ADD matching_products varchar(300) NULL default NULL;
 ALTER TABLE products ADD matching_color varchar(300) NULL default NULL;
 ALTER TABLE products ADD matching_fleece varchar(300) NULL default NULL;
 ALTER TABLE products ADD matching_tank varchar(300) NULL default NULL;

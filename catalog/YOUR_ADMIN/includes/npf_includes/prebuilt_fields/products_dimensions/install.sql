@@ -1,3 +1,4 @@
+ALTER TABLE products ADD products_dimensions varchar(32) NULL default NULL;
 ALTER TABLE products ADD products_weight_type ENUM('lbs','kgs') NOT NULL default 'lbs' after products_weight;
 ALTER TABLE products ADD products_dim_type ENUM('in','cm') NOT NULL default 'in' after products_weight_type;
 ALTER TABLE products ADD products_length DECIMAL(6,2) NULL default NULL after products_dim_type;

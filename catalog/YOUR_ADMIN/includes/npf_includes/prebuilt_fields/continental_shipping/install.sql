@@ -1,3 +1,4 @@
+ALTER TABLE products ADD continental_shipping varchar(32) NULL default NULL;
 ALTER TABLE products ADD products_sh_na varchar(32) NULL default NULL;
 ALTER TABLE products ADD products_sh_sa varchar(32) NULL default NULL after products_sh_na;
 ALTER TABLE products ADD products_sh_eu varchar(32) NULL default NULL after products_sh_sa;
