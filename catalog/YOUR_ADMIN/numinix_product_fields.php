@@ -8,11 +8,11 @@
  */
 
 require('includes/application_top.php');
-$add_npf_field = $_POST['add_npf_field'];
-$add_custom_npf_field = $_POST['add_custom_npf_field'];
-$add_custom_npf_field_name = $_POST['add_custom_npf_field_name'];
-$add_custom_npf_field_type = $_POST['add_custom_npf_field_type'];
-$add_custom_npf_field_length = $_POST['add_custom_npf_field_length'];
+$add_npf_field = zen_db_prepare_input($_POST['add_npf_field']);
+$add_custom_npf_field = zen_db_prepare_input($_POST['add_custom_npf_field']);
+$add_custom_npf_field_name = zen_db_prepare_input($_POST['add_custom_npf_field_name']);
+$add_custom_npf_field_type = zen_db_prepare_input($_POST['add_custom_npf_field_type']);
+$add_custom_npf_field_length = zen_db_prepare_input($_POST['add_custom_npf_field_length']);
 $file_posted = basename($_FILES["file_download"]);
 
 if($add_npf_field != ''){
@@ -22,12 +22,15 @@ if($add_npf_field != ''){
     npf_add_prebuilt_fields($field);
     
     //execute SQL Patch
-    $query_string = file_get_contents(DIR_FS_ADMIN.'includes/npf_includes/prebuilt_fields/'.$field.'/install.sql');
+    $query_string = file_get_contents(NPF_INCLUDES_PREBUILT_FOLDER.$field.'/install.sql');
     npf_sql_patch($query_string);
     
     $messageStack->add(ucwords(strtolower(str_replace("_", " ", $field)))." added", 'success');
 }
 if($add_custom_npf_field == "Y"){
+    if($add_custom_npf_field_length  == ''){
+        $add_custom_npf_field_length = '300';
+    }
    add_custom_field($add_custom_npf_field_name, $add_custom_npf_field_type, $add_custom_npf_field_length);
 }
 
@@ -51,14 +54,13 @@ if($add_custom_npf_field == "Y"){
       sort($current_product_fields);
       
       
-      
-$path = 'includes/npf_includes/prebuilt_fields';
-$dirs = scandir($path);
+
+$dirs = scandir(NPF_INCLUDES_PREBUILT_FOLDER);
 
 $prebuilt_fields = array();
 foreach ($dirs as $dir) {
     if ($dir != '.' && $dir != '..') {
-        if (is_dir($path . '/' . $dir) && !in_array($dir, $current_product_fields)) {
+        if (is_dir(NPF_INCLUDES_PREBUILT_FOLDER . '/' . $dir) && !in_array($dir, $current_product_fields)) {
             $prebuilt_fields[] = $dir;
         }
     }
@@ -154,7 +156,7 @@ sort($prebuilt_fields);
                             $pull_down_array[] = array( 'id' => 'file',
                                                         'text' => 'File');
                             echo " Type:".zen_draw_pull_down_menu('add_custom_npf_field_type',$pull_down_array);
-                            echo " Field Length (for type:text):".zen_draw_input_field('add_custom_npf_field_length','300');
+                            //echo zen_draw_input_field('add_custom_npf_field_length','300');
                             echo "  ".zen_draw_input_field('submit', 'Add Field', '', false, 'submit');
                             echo '</form><br/>';
                       ?>

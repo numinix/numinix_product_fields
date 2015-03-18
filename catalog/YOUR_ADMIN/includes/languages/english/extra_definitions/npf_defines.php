@@ -30,6 +30,9 @@
   define('NPF_INCLUDES_SQL_ARRAY_FOLDER', NPF_INCLUDES_FOLDER . 'npf_sql_array/');
   define('NPF_INCLUDES_CUSTOM_EXECUTE_FOLDER', NPF_INCLUDES_FOLDER . 'npf_custom_execute/'); 
   define('NPF_INCLUDES_DESCRIPTION_SQL_ARRAY_FOLDER', NPF_INCLUDES_FOLDER . 'npf_description_sql_array/');  
+  define('NPF_INCLUDES_PREVIEW_FOLDER', NPF_INCLUDES_FOLDER . 'npf_preview/');   
+  define('NPF_INCLUDES_PREVIEW_INFO_FOLDER', NPF_INCLUDES_FOLDER . 'npf_preview_info/'); 
+  define('NPF_INCLUDES_PREBUILT_FOLDER', NPF_INCLUDES_FOLDER . 'prebuilt_fields/'); 
   $dirList = dirList(NPF_DEFINITIONS_FOLDER);
   foreach ($dirList as $file) {
     include(NPF_DEFINITIONS_FOLDER . $file);  

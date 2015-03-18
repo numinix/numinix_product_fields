@@ -49,7 +49,8 @@ function npf_add_prebuilt_fields($field) {
         'npf_includes/npf_sql/' . $field . '.php',
         'npf_includes/npf_sql_array/' . $field . '.php',
         'npf_includes/npf_templates/' . $field . '.php',
-        'functions/extra_functions/' . $field . '.php',
+        'npf_includes/npf_preview/' . $field . '.php',
+        'npf_includes/npf_preview_info/' . $field . '.php',
     );
     foreach ($array_of_files as $possible_file) {
         npf_copy_file($field, $possible_file);
@@ -58,10 +59,10 @@ function npf_add_prebuilt_fields($field) {
 }
 
 function npf_copy_file($field, $folder) {
-    if (file_exists(DIR_FS_ADMIN . 'includes/npf_includes/prebuilt_fields/' . $field . '/YOUR_ADMIN/includes/' . $folder)) {
+    if (file_exists(DIR_FS_ADMIN.NPF_INCLUDES_PREBUILT_FOLDER . $field . '/YOUR_ADMIN/includes/' . $folder)) {
         //echo '!'.$folder.'<br/>';
-        $contents = file_get_contents(DIR_FS_ADMIN . 'includes/npf_includes/prebuilt_fields/' . $field . '/YOUR_ADMIN/includes/' . $folder);
-        file_put_contents(DIR_FS_ADMIN . 'includes/' . $folder, $contents);
+        $contents = file_get_contents(DIR_FS_ADMIN.NPF_INCLUDES_PREBUILT_FOLDER . $field . '/YOUR_ADMIN/includes/' . $folder);
+        file_put_contents(DIR_FS_ADMIN.DIR_WS_INCLUDES . $folder, $contents);
     }
 }
 
@@ -88,7 +89,7 @@ if (!function_exists('npf_field_value')) {
     }
 }
 
-function add_custom_field($field_name, $type, $length = 300) {
+function add_custom_field($field_name, $type, $length = '300') {
     global $db,$messageStack;
     $field = str_replace(" ", "_", strtolower($field_name));
     $nice_field_name = ucwords(strtolower(str_replace("_", " ", $field)));
@@ -101,51 +102,59 @@ function add_custom_field($field_name, $type, $length = 300) {
     $lang_defines = strtoupper($field);
     switch ($type) {
         case "file":
-            $sql_type = "varchar(" . (int) $length . ") NULL default NULL";
+            $sql_type = "varchar(" . $length . ") NULL default NULL";
             $string_input_field = "zen_draw_file_field('".$field."'); if(\$pinfo->" . $field . " != ''){echo \$pinfo->" . $field . ";}";
             break;
         case "checkbox":
-            $string_input_field = "zen_draw_checkbox_field('" . $field . "', 1, (\$pInfo->" . $field . ") ? true : false)";
+            $string_input_field = "zen_draw_checkbox_field('" . $field . "', 1, (\$pInfo->" . $field . ") ? true : false);";
             $sql_type = "tinyint(1) NOT NULL default 0";
             break;
         case "text":
         default:
-            $sql_type = "varchar(" . (int) $length . ") NULL default NULL";
-            $string_input_field = "zen_draw_input_field('" . $field . "',(\$pInfo->" . $field . "),zen_set_field_length(TABLE_PRODUCTS, '" . $field . "'))";
+            $sql_type = "varchar(" . $length . ") NULL default NULL";
+            $string_input_field = "zen_draw_input_field('" . $field . "',(\$pInfo->" . $field . "),zen_set_field_length(TABLE_PRODUCTS, '" . $field . "'));";
             break;
     }
     //files
     $string_npf_lang_file = "<?php
                            define('TEXT_" . $lang_defines . "', '" . $nice_field_name . ": ');
                            // eof";
-    file_put_contents(DIR_FS_ADMIN . 'includes/languages/english/npf_definitions/' . $field . '.php', $string_npf_lang_file);
+    file_put_contents(NPF_DEFINITIONS_FOLDER . $field . '.php', $string_npf_lang_file);
     $string_npf_sql_file = "<?php
                 \$parameters['" . $field . "'] = '';
                 \$npf_fields .= ', p." . $field . "'; 
                 // eof";
-    file_put_contents(DIR_FS_ADMIN . 'includes/npf_includes/npf_sql/' . $field . '.php', $string_npf_sql_file);
+    file_put_contents(NPF_INCLUDES_SQL_FOLDER. $field . '.php', $string_npf_sql_file);
     $string_npf_sql_array_file = "<?php 
                 \$sql_data_array['" . $field . "'] = zen_db_prepare_input(\$_POST['" . $field . "']);";
-    file_put_contents(DIR_FS_ADMIN . 'includes/npf_includes/npf_sql_array/' . $field . '.php', $string_npf_sql_array_file);
+    file_put_contents(NPF_INCLUDES_SQL_ARRAY_FOLDER. $field . '.php', $string_npf_sql_array_file);
     $string_npf_templates_file = "          <tr>
                <td colspan=\"2\"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
              </tr>          
              <tr bgcolor=\"#DDEACC\">
                <td class=\"main\"><?php echo TEXT_" . $lang_defines . "; ?></td>
-               <td class=\"main\"><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;' . " . $string_input_field . "; ?></td>
+               <td class=\"main\"><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;' . " . $string_input_field . " ?></td>
              </tr>
              <tr>
                <td colspan=\"2\"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
              </tr>";
-    file_put_contents(DIR_FS_ADMIN . 'includes/npf_includes/npf_templates/' . $field . '.php', $string_npf_templates_file);
+    file_put_contents(NPF_INCLUDES_TEMPLATES_FOLDER. $field . '.php', $string_npf_templates_file);
     if($type = 'file'){
-        $process_string = "
-          \$upload_" . $field . " = new upload('" . $field . "');
-          \$upload_" . $field . "->set_destination(DIR_FS_CATALOG . '/media/');
-            \$upload_" . $field . " = \$_POST['" . $field . "'] . \$upload_" . $field . "->filename;
-          
+        $process_string = "<?php           
         ";
-        file_put_contents(DIR_FS_ADMIN . 'includes/npf_includes/npf_process/' . $field . '.php', '');
+        file_put_contents(NPF_INCLUDES_PROCESSING_FOLDER . $field . '.php', $process_string);
+        $preview_string = "<?php
+        if (!isset(\$_GET['read']) || \$_GET['read'] == 'only') {
+          \$products_".$field." = new upload('".$field."');
+          \$products_".$field."->set_destination(DIR_FS_CATALOG .'media/');
+          if (\$products_".$field."->parse() && \$products_".$field."->save(\$_POST['overwrite'])) {
+            \$products_".$field."_name = 'media/' . \$products_".$field."->filename;
+          } 
+        }";
+        file_put_contents(NPF_INCLUDES_PREVIEW_FOLDER . $field . '.php', $preview_string);
+        $preview_info_string = '<?php 
+                echo zen_draw_hidden_field(\''.$field.'\', stripslashes($products_"'.$field.'"_name));';
+        file_put_contents(NPF_INCLUDES_PREVIEW_INFO_FOLDER . $field . '.php', $preview_info_string);
     }
     //add the field to the DB
     $db->Execute("ALTER TABLE `" . DB_PREFIX . "products` ADD `" . $field . "` " . $sql_type . ";");
