@@ -155,7 +155,7 @@ if(isset(\$_POST['" . $field . "']) && \$_POST['" . $field . "'] != ''){
                <td colspan=\"2\"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
              </tr>";
     file_put_contents(NPF_INCLUDES_TEMPLATES_FOLDER . $field . '.php', $string_npf_templates_file);
-    if ($type = 'file') {
+    if ($type == 'file') {
         $process_string = "      
         ";
         file_put_contents(NPF_INCLUDES_PROCESSING_FOLDER . $field . '.php', $admin_start_file.$process_string);
