@@ -162,9 +162,9 @@ if(isset(\$_POST['" . $field . "']) && \$_POST['" . $field . "'] != ''){
         $preview_string = "
         if (!isset(\$_GET['read']) || \$_GET['read'] == 'only') {
           \$products_" . $field . " = new upload('" . $field . "');
-          \$products_" . $field . "->set_destination(DIR_FS_CATALOG .'media/');
+          \$products_" . $field . "->set_destination(DIR_FS_CATALOG .'".NPF_UPLOAD_FOLDER."/');
           if (\$products_" . $field . "->parse() && \$products_" . $field . "->save(\$_POST['overwrite'])) {
-            \$products_" . $field . "_name = 'media/' . \$products_" . $field . "->filename;
+            \$products_" . $field . "_name = '".NPF_UPLOAD_FOLDER."/' . \$products_" . $field . "->filename;
           } else {
             \$products_" . $field . "_name = (isset(\$_POST['" . $field . "']) ? \$_POST['" . $field . "'] : '');
           }
