@@ -10,13 +10,13 @@
  */
 
   // Begin Numinix Product Fields
-  if (SHOW_PRODUCT_INFO_DIAMETER == 1) $npf_attributes .= ', p.products_diameter';
-  if (SHOW_PRODUCT_INFO_DIMENSIONS == 1) $npf_attributes .= ', p.products_length, p.products_width, p.products_height, p.products_dim_type';
-  if (SHOW_PRODUCT_INFO_ACTUAL_WEIGHT == 1) $npf_attributes .= ', p.products_actual_weight, p.products_weight_type';
-  if (SHOW_PRODUCT_INFO_CONDITION == 1) $npf_attributes .= ', p.products_condition';
-  if (SHOW_PRODUCT_INFO_UPC == 1 || SHOW_PRODUCT_INFO_ISBN == 1) $npf_attributes .= ', p.products_upc, p.products_isbn';
-  if (SHOW_PRODUCT_INFO_OUT_OF_STOCK == 1) $npf_attributes .= ', p.out_of_stock';
-  if (SHOW_PRODUCT_INFO_SKU == 1) $npf_attributes .= ', p.products_sku'; 
+  if (SHOW_PRODUCT_INFO_DIAMETER == 1) { $npf_attributes .= ', p.products_diameter'; $flag_show_product_info_diameter = 1; }
+  if (SHOW_PRODUCT_INFO_DIMENSIONS == 1) { $npf_attributes .= ', p.products_length, p.products_width, p.products_height, p.products_dim_type'; $flag_show_product_info_dimensions = 1;}
+  if (SHOW_PRODUCT_INFO_ACTUAL_WEIGHT == 1) { $npf_attributes .= ', p.products_actual_weight, p.products_weight_type'; $flag_show_product_info_actual_weight = 1; }
+  if (SHOW_PRODUCT_INFO_CONDITION == 1) { $npf_attributes .= ', p.products_condition'; $flag_show_product_info_condition = 1; }
+  if (SHOW_PRODUCT_INFO_UPC == 1 || SHOW_PRODUCT_INFO_ISBN == 1) { $npf_attributes .= ', p.products_upc, p.products_isbn'; $flag_show_product_info_upc = 1; $flag_show_product_info_isbn = 1; }
+  if (SHOW_PRODUCT_INFO_OUT_OF_STOCK == 1) { $npf_attributes .= ', p.out_of_stock'; $flag_show_product_info_out_of_stock = 1; }
+  if (SHOW_PRODUCT_INFO_SKU == 1) { $npf_attributes .= ', p.products_sku'; $flag_show_product_info_sku = 1; }
   if (SHOW_PRODUCT_INFO_CARE_INSTRUCTIONS == 1) $npf_attributes .= ', pd.care_instructions';
   if (SHOW_PRODUCT_INFO_DESCRIPTION2 == 1) $npf_attributes .= ', pd.products_description2';
   
