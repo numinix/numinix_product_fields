@@ -19,13 +19,15 @@ if($add_npf_field != ''){
     $field = $add_npf_field;
     
     //move files
-    npf_add_prebuilt_fields($field);
-    
-    //execute SQL Patch
-    $query_string = file_get_contents(NPF_INCLUDES_PREBUILT_FOLDER.$field.'/install.sql');
-    npf_sql_patch($query_string);
-    
-    $messageStack->add(ucwords(strtolower(str_replace("_", " ", $field)))." added", 'success');
+    if (!npf_add_prebuilt_fields($field)) {
+      $messageStack->add('The selected field was unable to be installed due to insufficient server permissions, please contact your host.','error');
+    } else {
+      //execute SQL Patch
+      $query_string = file_get_contents(NPF_INCLUDES_PREBUILT_FOLDER.$field.'/install.sql');
+      npf_sql_patch($query_string);
+
+      $messageStack->add(ucwords(strtolower(str_replace("_", " ", $field)))." added", 'success');
+    }
 }
 if($add_custom_npf_field == "Y"){
     if($add_custom_npf_field_length  == ''){

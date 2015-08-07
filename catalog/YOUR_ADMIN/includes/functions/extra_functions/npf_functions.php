@@ -57,17 +57,28 @@ function npf_add_prebuilt_fields($field) {
         'npf_includes/npf_preview/' . $field . '.php',
         'npf_includes/npf_preview_info/' . $field . '.php',
     );
+    $npf_copy_failed_count = 0;
     foreach ($array_of_files as $possible_file) {
-        npf_copy_file($field, $possible_file);
-        // echo $possible_file.'<br/>';
+        if (!npf_copy_file($field, $possible_file)){
+            $npf_copy_failed_count ++;
     }
+    }
+    if( $npf_copy_failed_count == count($array_of_files) ){ // if none of the files gets copied over, something is wrong for sure
+        return false;
+    }
+    return true;
 }
 
 function npf_copy_file($field, $folder) {
     if (file_exists(DIR_FS_ADMIN . NPF_INCLUDES_PREBUILT_FOLDER . $field . '/YOUR_ADMIN/includes/' . $folder)) {
-        //echo '!'.$folder.'<br/>';
         $contents = file_get_contents(DIR_FS_ADMIN . NPF_INCLUDES_PREBUILT_FOLDER . $field . '/YOUR_ADMIN/includes/' . $folder);
-        file_put_contents(DIR_FS_ADMIN . DIR_WS_INCLUDES . $folder, $contents);
+        $copy_file_result = file_put_contents(DIR_FS_ADMIN . DIR_WS_INCLUDES . $folder, $contents);
+        if ($copy_file_result == 0 || $copy_file_result == false) {
+            return false;
+        }
+        return true;
+    } else {
+        return false;
     }
 }
 
