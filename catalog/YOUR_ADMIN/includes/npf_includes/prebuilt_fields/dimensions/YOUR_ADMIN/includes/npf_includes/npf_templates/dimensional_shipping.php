@@ -28,7 +28,7 @@
           </tr>          
           <tr bgcolor="#DDEACC">
             <td class="main"><?php echo TEXT_PRODUCTS_READY_TO_SHIP; ?></td>
-            <td class="main" colspan="2"><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;' . zen_draw_checkbox_field('products_ready_to_ship', '1', $pInfo->products_ready_to_ship) . '&nbsp;' . TEXT_PRODUCTS_READY_TO_SHIP_SELECTION . '&nbsp;' ?></td>
+            <td class="main" colspan="2"><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;' . zen_draw_checkbox_field('products_ready_to_ship', '1', (int)$pInfo->products_ready_to_ship) . '&nbsp;' . TEXT_PRODUCTS_READY_TO_SHIP_SELECTION . '&nbsp;' ?></td>
           </tr>
           <tr>
             <td colspan="2"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
