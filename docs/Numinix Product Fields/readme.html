@@ -63,6 +63,26 @@
             <li>Reload you admin, the module will self install the additional page located at ADMIN > CATALOG > NUMINIX PRODUCT FIELDS</li>
             <li>Add  additional fields using the pre-Built sets in ADMIN > CATALOG > NUMINIX PRODUCT FIELDS</li>
             <li>Either copy the files in the MODIFIED_CORE_FILES or merge the changes of the included files</li>
+            <li>
+              <div class="bodyTxt">
+                For Zen Cart 1.5.5 only (imapplicable for Zen Cart 1.5.5a and above), open /YOUR_ADMIN/includes/init_sanitize.php and find at the end of the file: 
+                <div class="code">
+                  <div class="codeTitle"><span class="select">Select code</span></div>
+<pre class="sh_php"><code>$sanitizer->runSanitizers();
+</code></pre>
+                </div>
+                Add before:
+                <div class="code">
+                  <div class="codeTitle"><span class="select">Select code</span></div>
+<pre class="sh_php"><code>// bof modified by numinix for extra sanitation rules
+if ( file_exists(DIR_WS_INCLUDES . &#x27;init_includes/extra_sanitation_rules.php&#x27;) ) {
+    include(DIR_WS_INCLUDES . &#x27;init_includes/extra_sanitation_rules.php&#x27;);
+}
+// eof modified by numinix for extra sanitation rules
+</code></pre>
+                </div>
+              </div>
+            </li>
             <li>File uploads will be saved to the media directory so make sure that exists, or you can change this in the configuration menu</li>
           </ol>
         </div>
