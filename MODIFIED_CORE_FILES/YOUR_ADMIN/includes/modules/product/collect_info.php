@@ -1,10 +1,10 @@
 <?php
 /**
  * @package admin
- * @copyright Copyright 2003-2011 Zen Cart Development Team
+ * @copyright Copyright 2003-2016 Zen Cart Development Team
  * @copyright Portions Copyright 2003 osCommerce
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
- * @version $Id: collect_info.php 19330 2011-08-07 06:32:56Z drbyte $
+ * @version $Id: Author: DrByte  Sun Oct 18 02:03:48 2015 -0400 Modified in v1.5.5 $
  */
 if (!defined('IS_ADMIN_FLAG')) {
   die('Illegal Access');
@@ -47,12 +47,12 @@ if (!defined('IS_ADMIN_FLAG')) {
     $npf_tables = "";
     foreach ($dirList as $file) {
       include(NPF_INCLUDES_SQL_FOLDER . $file);  
-    }
 
+    }
     $pInfo = new objectInfo($parameters);
 
     if (isset($_GET['pID']) && empty($_POST)) {
-      $product = $db->Execute("SELECT pd.products_name, pd.products_description, pd.products_url,
+      $product = $db->Execute("select pd.products_name, pd.products_description, pd.products_url,
                                       p.products_id, p.products_quantity, p.products_model,
                                       p.products_image, p.products_price, p.products_virtual, p.products_weight,
                                       p.products_date_added, p.products_last_modified,
@@ -70,14 +70,25 @@ if (!defined('IS_ADMIN_FLAG')) {
                               WHERE p.products_id = '" . (int)$_GET['pID'] . "'
                               AND pd.language_id = '" . (int)$_SESSION['languages_id'] . "'");
 
-      $pInfo->objectInfo($product->fields);
+      $pInfo->updateObjectInfo($product->fields);
     } elseif (zen_not_null($_POST)) {
-      $pInfo->objectInfo($_POST);
+      $pInfo->updateObjectInfo($_POST);
       $products_name = $_POST['products_name'];
       $products_description = $_POST['products_description'];
       $products_description2 = $_POST['products_description2'];
       $care_instructions = $_POST['care_instructions'];
       $products_url = $_POST['products_url'];
+    }
+
+    $category_lookup = $db->Execute("select *
+                              from " . TABLE_CATEGORIES . " c, " . TABLE_CATEGORIES_DESCRIPTION . " cd
+                              where c.categories_id ='" . (int)$current_category_id . "'
+                              and c.categories_id = cd.categories_id
+                              and cd.language_id = '" . (int)$_SESSION['languages_id'] . "'");
+    if (!$category_lookup->EOF) {
+      $cInfo = new objectInfo($category_lookup->fields);
+    } else {
+      $cInfo = new objectInfo(array());
     }
 
     $manufacturers_array = array(array('id' => '', 'text' => TEXT_NONE));
@@ -185,8 +196,8 @@ if (!defined('IS_ADMIN_FLAG')) {
   foreach ($dirList as $file) {
     include(NPF_INCLUDES_MODULES_FOLDER . $file);  
   }    
-//NPF end  
 
+//NPF end  
 ?>
 <link rel="stylesheet" type="text/css" href="includes/javascript/spiffyCal/spiffyCal_v2_1.css">
 <script language="JavaScript" src="includes/javascript/spiffyCal/spiffyCal_v2_1.js"></script>
@@ -249,7 +260,7 @@ echo zen_draw_form('new_product', $type_admin_handler , 'cPath=' . $cPath . (iss
         <td><table border="0" width="100%" cellspacing="0" cellpadding="0">
           <tr>
             <td class="pageHeading"><?php echo sprintf(TEXT_NEW_PRODUCT, zen_output_generated_category_path($current_category_id)); ?></td>
-            <td class="pageHeading" align="right"><?php echo zen_draw_separator('pixel_trans.gif', HEADING_IMAGE_WIDTH, HEADING_IMAGE_HEIGHT); ?></td>
+            <td class="pageHeading" align="right"><?php echo zen_info_image($cInfo->categories_image, $cInfo->categories_name, HEADING_IMAGE_WIDTH, HEADING_IMAGE_HEIGHT); ?></td>
           </tr>
         </table></td>
       </tr>
@@ -424,7 +435,7 @@ updateGross();
             <td colspan="2"><table border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td class="main" width="25" valign="top"><?php echo zen_image(DIR_WS_CATALOG_LANGUAGES . $languages[$i]['directory'] . '/images/' . $languages[$i]['image'], $languages[$i]['name']); ?>&nbsp;</td>
-                <td class="main" width="100%"><?php echo zen_draw_textarea_field('products_description[' . $languages[$i]['id'] . ']', 'soft', '100%', '30', htmlspecialchars((isset($products_description[$languages[$i]['id']])) ? stripslashes($products_description[$languages[$i]['id']]) : zen_get_products_description($pInfo->products_id, $languages[$i]['id']), ENT_COMPAT, CHARSET, TRUE)); //,'id="'.'products_description' . $languages[$i]['id'] . '"'); ?></td>
+                <td class="main" width="100%"><?php echo zen_draw_textarea_field('products_description[' . $languages[$i]['id'] . ']', 'soft', '100%', '30', htmlspecialchars((isset($products_description[$languages[$i]['id']])) ? stripslashes($products_description[$languages[$i]['id']]) : zen_get_products_description($pInfo->products_id, $languages[$i]['id']), ENT_COMPAT, CHARSET, TRUE), 'class="editorHook"'); //,'id="'.'products_description' . $languages[$i]['id'] . '"'); ?></td>
               </tr>
             </table></td>
           </tr>
@@ -449,16 +460,7 @@ updateGross();
             <td colspan="2"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
           </tr>
 <?php
-  $dir = @dir(DIR_FS_CATALOG_IMAGES);
-  $dir_info[] = array('id' => '', 'text' => "Main Directory");
-  while ($file = $dir->read()) {
-    if (is_dir(DIR_FS_CATALOG_IMAGES . $file) && strtoupper($file) != 'CVS' && $file != "." && $file != "..") {
-      $dir_info[] = array('id' => $file . '/', 'text' => $file);
-    }
-  }
-  $dir->close();
-  sort($dir_info);
-
+  $dir_info = zen_build_subdirectories_array(DIR_FS_CATALOG_IMAGES);
   $default_directory = substr( $pInfo->products_image, 0,strpos( $pInfo->products_image, '/')+1);
 ?>
 
@@ -531,4 +533,3 @@ updateGross();
         <td class="main" align="right"><?php echo (!$npf_date_added ? zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d'))) : '') . ( (isset($_GET['search']) && !empty($_GET['search'])) ? zen_draw_hidden_field('search', $_GET['search']) : '') . ( (isset($_POST['search']) && !empty($_POST['search']) && empty($_GET['search'])) ? zen_draw_hidden_field('search', $_POST['search']) : '') . zen_image_submit('button_preview.gif', IMAGE_PREVIEW) . '&nbsp;&nbsp;<a href="' . zen_href_link(FILENAME_CATEGORIES, 'cPath=' . $cPath . (isset($_GET['pID']) ? '&pID=' . $_GET['pID'] : '') . (isset($_GET['page']) ? '&page=' . $_GET['page'] : '') . ( (isset($_GET['search']) && !empty($_GET['search'])) ? '&search=' . $_GET['search'] : '') . ( (isset($_POST['search']) && !empty($_POST['search']) && empty($_GET['search'])) ? '&search=' . $_POST['search'] : '')) . '">' . zen_image_button('button_cancel.gif', IMAGE_CANCEL) . '</a>'; ?></td>
       </tr>
     </table></form>
-    

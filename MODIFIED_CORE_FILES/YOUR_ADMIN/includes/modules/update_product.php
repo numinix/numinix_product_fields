@@ -1,10 +1,10 @@
 <?php
 /**
  * @package admin
- * @copyright Copyright 2003-2013 Zen Cart Development Team
+ * @copyright Copyright 2003-2016 Zen Cart Development Team
  * @copyright Portions Copyright 2003 osCommerce
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
- * @version GIT: $Id: Author: DrByte  Tue Feb 12 10:13:44 2013 -0500 Modified in v1.5.3 $
+ * @version $Id: Author: ajeh  Wed Jul 9 21:58:03 2014 -0400 Modified in v1.5.5 $
  */
   if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
@@ -33,9 +33,8 @@
       include(NPF_INCLUDES_PROCESSING_FOLDER . $file);
     }
     //NPF end
-    
     $sql_data_array = array('products_quantity' => $products_quantity,
-                            'products_type' => zen_db_prepare_input((isset($_GET['product_type']) ? $_GET['product_type'] : 1)),
+                            'products_type' => zen_db_prepare_input($_GET['product_type']),
                             'products_model' => zen_db_prepare_input($_POST['products_model']),
                             'products_price' => $products_price,
                             'products_date_available' => $products_date_available,
@@ -44,9 +43,9 @@
                             'products_virtual' => zen_db_prepare_input((int)$_POST['products_virtual']),
                             'products_tax_class_id' => zen_db_prepare_input((int)$_POST['products_tax_class_id']),
                             'manufacturers_id' => $manufacturers_id,
-                            'products_quantity_order_min' => zen_db_prepare_input($_POST['products_quantity_order_min']),
-                            'products_quantity_order_units' => zen_db_prepare_input($_POST['products_quantity_order_units']),
-                            'products_priced_by_attribute' => zen_db_prepare_input($_POST['products_priced_by_attribute']),
+                            'products_quantity_order_min' => zen_db_prepare_input(($_POST['products_quantity_order_min'] == 0 ? 1 : $_POST['products_quantity_order_min'])),
+                            'products_quantity_order_units' => zen_db_prepare_input(($_POST['products_quantity_order_units'] == 0 ? 1 : $_POST['products_quantity_order_units']) ),
+                            'products_priced_by_attribute' => zen_db_prepare_input((int)$_POST['products_priced_by_attribute']),
                             'product_is_free' => zen_db_prepare_input((int)$_POST['product_is_free']),
                             'product_is_call' => zen_db_prepare_input((int)$_POST['product_is_call']),
                             'products_quantity_mixed' => zen_db_prepare_input($_POST['products_quantity_mixed']),
@@ -76,11 +75,6 @@
       $new_image= 'false';
     }
 
-if ($_POST['image_delete'] == 1) {
-      $sql_data_array['products_image'] = '';
-      $new_image= 'false';
-}
-
     if ($action == 'insert_product') {
       $insert_sql_data = array( 'products_date_added' => 'now()',
                                 'master_categories_id' => (int)$current_category_id);
@@ -97,6 +91,8 @@ if ($_POST['image_delete'] == 1) {
                     (products_id, categories_id)
                     values ('" . (int)$products_id . "', '" . (int)$current_category_id . "')");
 
+      zen_record_admin_activity('New product ' . (int)$products_id . ' added via admin console.', 'info');
+
       ///////////////////////////////////////////////////////
       //// INSERT PRODUCT-TYPE-SPECIFIC *INSERTS* HERE //////
 
@@ -110,6 +106,8 @@ if ($_POST['image_delete'] == 1) {
       $sql_data_array = array_merge($sql_data_array, $update_sql_data);
 
       zen_db_perform(TABLE_PRODUCTS, $sql_data_array, 'update', "products_id = '" . (int)$products_id . "'");
+
+      zen_record_admin_activity('Updated product ' . (int)$products_id . ' via admin console.', 'info');
 
       // reset products_price_sorter for searches etc.
       zen_update_products_price_sorter((int)$products_id);
@@ -226,4 +224,3 @@ if ($_POST['image_delete'] == 1) {
     $messageStack->add_session(ERROR_NO_DATA_TO_SAVE, 'error');
     zen_redirect(zen_href_link(FILENAME_CATEGORIES, 'cPath=' . $cPath . '&pID=' . $products_id . (isset($_GET['page']) ? '&page=' . $_GET['page'] : '') . (isset($_POST['search']) ? '&search=' . $_POST['search'] : '') ));
   }
-  
