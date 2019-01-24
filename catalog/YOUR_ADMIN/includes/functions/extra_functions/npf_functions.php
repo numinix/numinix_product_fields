@@ -61,7 +61,7 @@ function npf_add_prebuilt_fields($field) {
     foreach ($array_of_files as $possible_file) {
         if (!npf_copy_file($field, $possible_file)){
             $npf_copy_failed_count ++;
-    }
+        }
     }
     if( $npf_copy_failed_count == count($array_of_files) ){ // if none of the files gets copied over, something is wrong for sure
         return false;
@@ -116,7 +116,7 @@ function add_custom_field($field_name, $type, $length = '300') {
         $messageStack->add('ERROR!! Product field ' . $field . ' already exists', 'caution');
         return;
     }
-
+    $zc156 = (PROJECT_VERSION_MAJOR > 1 || (PROJECT_VERSION_MAJOR == 1 && substr(PROJECT_VERSION_MINOR, 0, 3) >= 5.6));
     $lang_defines = strtoupper($field);
     switch ($type) {
         case "file":
@@ -130,7 +130,11 @@ function add_custom_field($field_name, $type, $length = '300') {
         case "text":
         default:
             $sql_type = "varchar(" . $length . ") NULL default NULL";
-            $string_input_field = "zen_draw_input_field('" . $field . "',(\$pInfo->" . $field . "),zen_set_field_length(TABLE_PRODUCTS, '" . $field . "'));";
+            if($zc156){
+                $string_input_field = "zen_draw_input_field('" . $field . "',(\$pInfo->" . $field . "),'class=\"form-control\"');";
+            } else {
+                $string_input_field = "zen_draw_input_field('" . $field . "',(\$pInfo->" . $field . "),zen_set_field_length(TABLE_PRODUCTS, '" . $field . "'));";
+            }
             break;
     }
     //files
@@ -160,6 +164,14 @@ if(isset(\$_POST['" . $field . "']) && \$_POST['" . $field . "'] != ''){
                 \$sql_data_array['" . $field . "'] = zen_db_prepare_input(\$_POST['" . $field . "']);
 }";
     file_put_contents(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . '.php', $admin_start_file.$string_npf_sql_array_file);
+if($zc156){
+    $string_npf_templates_file = "           <div class=\"form-group\">
+              <?php echo zen_draw_label(TEXT_" . $lang_defines . ", '".$field."', 'class=\"col-sm-3 control-label\"'); ?>
+            <div class=\"col-sm-9 col-md-6\">
+                <?php echo " . $string_input_field . " ?>
+            </div>
+          </div>";
+} else {
     $string_npf_templates_file = "          <tr>
                <td colspan=\"2\"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
              </tr>          
@@ -170,6 +182,7 @@ if(isset(\$_POST['" . $field . "']) && \$_POST['" . $field . "'] != ''){
              <tr>
                <td colspan=\"2\"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
              </tr>";
+}
     file_put_contents(NPF_INCLUDES_TEMPLATES_FOLDER . $field . '.php', $string_npf_templates_file);
     if ($type == 'file') {
         $process_string = "      
