@@ -19,12 +19,12 @@ if (isset($_POST['edit_x']) || isset($_POST['edit_y'])) {
   $products_date_available = zen_db_prepare_input($_POST['products_date_available']);
   $products_date_available = (date('Y-m-d') < $products_date_available) ? $products_date_available : 'null';
 
-    //NPF start
+    // bof - NPF [1 of 4]
     $dirList = dirList(NPF_INCLUDES_PROCESSING_FOLDER);
     foreach($dirList as $file) {
       include(NPF_INCLUDES_PROCESSING_FOLDER . $file);
     }
-    //NPF end
+    // eof - NPF [1 of 4]
   // Data-cleaning to prevent data-type mismatch errors:
   $sql_data_array = array(
     'products_quantity' => convertToFloat($_POST['products_quantity']),
@@ -51,12 +51,12 @@ if (isset($_POST['edit_x']) || isset($_POST['edit_y'])) {
     'products_discount_type_from' => (int)$_POST['products_discount_type_from'],
     'products_price_sorter' => convertToFloat($_POST['products_price_sorter']),
   );
-    //NPF start
+    // bof - NPF [2 of 4]
     $dirList = dirList(NPF_INCLUDES_SQL_ARRAY_FOLDER);
     foreach($dirList as $file) {
       include(NPF_INCLUDES_SQL_ARRAY_FOLDER . $file);
     }
-    //NPF end
+    // eof - NPF [2 of 4]
   $db_filename = zen_limit_image_filename($_POST['products_image'], TABLE_PRODUCTS, 'products_image');
   $sql_data_array['products_image'] = zen_db_prepare_input($db_filename);
   $new_image = 'true';
@@ -114,12 +114,12 @@ if (isset($_POST['edit_x']) || isset($_POST['edit_y'])) {
       'products_name' => zen_db_prepare_input($_POST['products_name'][$language_id]),
       'products_description' => zen_db_prepare_input($_POST['products_description'][$language_id]),
       'products_url' => zen_db_prepare_input($_POST['products_url'][$language_id]));
-      // NPF
+      // bof - NPF [3 of 4]
       $dirList = dirList(NPF_INCLUDES_DESCRIPTION_SQL_ARRAY_FOLDER);
       foreach($dirList as $file) {
         include(NPF_INCLUDES_DESCRIPTION_SQL_ARRAY_FOLDER . $file);
       }
-      // END NPF
+      // eof - NPF [3 of 4]
     if ($action == 'insert_product') {
       $insert_sql_data = array(
         'products_id' => (int)$products_id,
@@ -133,12 +133,12 @@ if (isset($_POST['edit_x']) || isset($_POST['edit_y'])) {
     }
   }
 
-    //NPF start
+    // bof - NPF [4 of 4]
     $dirList = dirList(NPF_INCLUDES_CUSTOM_EXECUTE_FOLDER);
     foreach($dirList as $file) {
       include(NPF_INCLUDES_CUSTOM_EXECUTE_FOLDER . $file);
     }
-    // END NPF
+    // bof - NPF [4 of 4]
 
   zen_redirect(zen_href_link(FILENAME_CATEGORY_PRODUCT_LISTING, 'cPath=' . $cPath . '&pID=' . $products_id . (isset($_GET['page']) ? '&page=' . $_GET['page'] : '') . (isset($_POST['search']) ? '&search=' . $_POST['search'] : '')));
 } else {

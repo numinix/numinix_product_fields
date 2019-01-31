@@ -86,10 +86,12 @@ if (zen_not_null($action)) {
             } else {
                 require(DIR_WS_MODULES . 'new_product_preview.php');
             }
+            // bof - NPF [1 of 1]
             $dirList = dirList(NPF_INCLUDES_PREVIEW_FOLDER);
             foreach ($dirList as $file) {
                 include(NPF_INCLUDES_PREVIEW_FOLDER . $file);
             }
+            // eof - NPF [1 of 1]
             break;
     }
 }

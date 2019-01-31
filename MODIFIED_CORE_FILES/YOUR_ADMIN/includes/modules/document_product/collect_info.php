@@ -40,12 +40,13 @@ if (!defined('IS_ADMIN_FLAG')) {
                        'products_price_sorter' => '0',
                        'master_categories_id' => ''
                        );
-    // NUMINIX PRODUCT FIELDS
+    // bof - NPF [1 of 5]
     $dirList = dirList(NPF_INCLUDES_SQL_FOLDER);
     $npf_fields = "";
     foreach ($dirList as $file) {
       include(NPF_INCLUDES_SQL_FOLDER . $file);  
     }
+    // eof - NPF [1 of 5]
 
     $pInfo = new objectInfo($parameters);
 
@@ -66,14 +67,14 @@ if (!defined('IS_ADMIN_FLAG')) {
                               from " . TABLE_PRODUCTS . " p, " . TABLE_PRODUCTS_DESCRIPTION . " pd
                               where p.products_id = '" . (int)$_GET['pID'] . "'
                               and p.products_id = pd.products_id
-                              and pd.language_id = '" . (int)$_SESSION['languages_id'] . "'");
+                              and pd.language_id = '" . (int)$_SESSION['languages_id'] . "'"); // NPF [2 of 5]
 
       $pInfo->objectInfo($product->fields);
     } elseif (zen_not_null($_POST)) {
       $pInfo->objectInfo($_POST);
       $products_name = $_POST['products_name'];
       $products_description = $_POST['products_description'];
-      $products_description2 = $_POST['products_description2']; // NPF
+      $products_description2 = $_POST['products_description2']; // NPF [3 of 5]
       $products_url = $_POST['products_url'];
     }
 
@@ -168,12 +169,12 @@ if (!defined('IS_ADMIN_FLAG')) {
 // set image delete
   $on_image_delete = false;
   $off_image_delete = true;
-//NPF start
+// bof - NPF [4 of 5]
   $dirList = dirList(NPF_INCLUDES_MODULES_FOLDER);
   foreach ($dirList as $file) {
     include(NPF_INCLUDES_MODULES_FOLDER . $file);  
   }    
-//NPF end
+// eof - NPF [4 of 5]
 ?>
 <link rel="stylesheet" type="text/css" href="includes/javascript/spiffyCal/spiffyCal_v2_1.css">
 <script language="JavaScript" src="includes/javascript/spiffyCal/spiffyCal_v2_1.js"></script>
@@ -494,14 +495,14 @@ updateGross();
             <td class="main"><?php echo TEXT_PRODUCTS_WEIGHT; ?></td>
             <td class="main"><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;' . zen_draw_input_field('products_weight', $pInfo->products_weight); ?></td>
           </tr>
-          <!-- BEGIN NPF MODIFICATIONS -->
+          <!-- bof - NPF [5 of 5] -->
 <?php
   $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
   foreach ($dirList as $file) {
     include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
   }
 ?>
-          <!-- END NPF MODIFICATIONS -->
+          <!-- eof - NPF [5 of 5]-->
           <tr>
             <td colspan="2"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
           </tr>

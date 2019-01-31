@@ -42,12 +42,13 @@ $parameters = array(
   'master_categories_id' => ''
 );
 
-    // NUMINIX PRODUCT FIELDS
+    // bof - NPF [1 of 5]
     $dirList = dirList(NPF_INCLUDES_SQL_FOLDER);
     $npf_fields = "";
     foreach ($dirList as $file) {
       include(NPF_INCLUDES_SQL_FOLDER . $file);  
     }
+    // eof - NPF [1 of 5]
 
 $pInfo = new objectInfo($parameters);
 
@@ -68,14 +69,14 @@ if (isset($_GET['pID']) && empty($_POST)) {
                               from " . TABLE_PRODUCTS . " p, " . TABLE_PRODUCTS_DESCRIPTION . " pd
                            WHERE p.products_id = " . (int)$_GET['pID'] . "
                            AND p.products_id = pd.products_id
-                           AND pd.language_id = " . (int)$_SESSION['languages_id']);
+                           AND pd.language_id = " . (int)$_SESSION['languages_id']); // NPF [2 of 5]
 
   $pInfo->updateObjectInfo($product->fields);
 } elseif (zen_not_null($_POST)) {
   $pInfo->updateObjectInfo($_POST);
   $products_name = isset($_POST['products_name']) ? $_POST['products_name'] : '';
   $products_description = isset($_POST['products_description']) ? $_POST['products_description'] : '';
-  $products_description = isset($_POST['products_description2']) ? $_POST['products_description2'] : '';
+  $products_description = isset($_POST['products_description2']) ? $_POST['products_description2'] : ''; // NPF [3 of 5]
   $products_url = isset($_POST['products_url']) ? $_POST['products_url'] : '';
 }
 
@@ -123,12 +124,12 @@ if (zen_get_categories_status($current_category_id) == 0 && $pInfo->products_sta
   $pInfo->products_status = 0;
 }
 
-//NPF start
+// bof - NPF [4 of 5]
   $dirList = dirList(NPF_INCLUDES_MODULES_FOLDER);
   foreach ($dirList as $file) {
     include(NPF_INCLUDES_MODULES_FOLDER . $file);  
   }    
-//NPF end
+// eof - NPF [4 of 5]
 ?>
 <script>
   var tax_rates = new Array();
@@ -475,14 +476,14 @@ for ($i = 0, $n = sizeof($tax_class_array); $i < $n; $i++) {
         <?php echo zen_draw_input_field('products_weight', $pInfo->products_weight, 'class="form-control"'); ?>
     </div>
   </div>
-          <!-- BEGIN NPF MODIFICATIONS -->
+          <!--BOF NPF [5 of 5] -->
 <?php
   $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
   foreach ($dirList as $file) {
     include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
   }
 ?>
-          <!-- END NPF MODIFICATIONS -->
+          <!--EOF NPF [5 of 5] -->
   <div class="form-group">
       <?php echo zen_draw_label(TEXT_PRODUCTS_SORT_ORDER, 'products_sort_order', 'class="col-sm-3 control-label"'); ?>
     <div class="col-sm-9 col-md-6">

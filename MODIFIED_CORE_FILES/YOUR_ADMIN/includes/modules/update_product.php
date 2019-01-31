@@ -27,12 +27,12 @@
     $tmp_value = zen_db_prepare_input($_POST['manufacturers_id']);
     $manufacturers_id = (!zen_not_null($tmp_value) || $tmp_value=='' || $tmp_value == 0) ? 0 : $tmp_value;
 
-    //NPF start
+    // bof - NPF [1 of 4]
     $dirList = dirList(NPF_INCLUDES_PROCESSING_FOLDER);
     foreach($dirList as $file) {
       include(NPF_INCLUDES_PROCESSING_FOLDER . $file);
     }
-    //NPF end
+    // eof - NPF [1 of 4]
     $sql_data_array = array('products_quantity' => $products_quantity,
                             'products_type' => zen_db_prepare_input($_GET['product_type']),
                             'products_model' => zen_db_prepare_input($_POST['products_model']),
@@ -58,12 +58,12 @@
                             'products_price_sorter' => zen_db_prepare_input($_POST['products_price_sorter'])
                             );
                             
-    //NPF start
+    // bof - NPF [2 of 4]
     $dirList = dirList(NPF_INCLUDES_SQL_ARRAY_FOLDER);
     foreach($dirList as $file) {
       include(NPF_INCLUDES_SQL_ARRAY_FOLDER . $file);
     }
-    //NPF end
+    // eof - NPF [2 of 4]
 
     // when set to none remove from database
     // is out dated for browsers use radio only
@@ -127,12 +127,12 @@
       $sql_data_array = array('products_name' => zen_db_prepare_input($_POST['products_name'][$language_id]),
                               'products_description' => zen_db_prepare_input($_POST['products_description'][$language_id]),
                               'products_url' => zen_db_prepare_input($_POST['products_url'][$language_id]));
-      // NPF
+      // bof - NPF [3 of 4]
       $dirList = dirList(NPF_INCLUDES_DESCRIPTION_SQL_ARRAY_FOLDER);
       foreach($dirList as $file) {
         include(NPF_INCLUDES_DESCRIPTION_SQL_ARRAY_FOLDER . $file);
       }
-      // END NPF
+      // eof - NPF [3 of 4]
       if ($action == 'insert_product') {
         $insert_sql_data = array('products_id' => (int)$products_id,
                                  'language_id' => (int)$language_id);
@@ -145,12 +145,12 @@
       }
     }
     
-    //NPF start
+    // bof - NPF [4 of 4]
     $dirList = dirList(NPF_INCLUDES_CUSTOM_EXECUTE_FOLDER);
     foreach($dirList as $file) {
       include(NPF_INCLUDES_CUSTOM_EXECUTE_FOLDER . $file);
     }
-    // END NPF
+    // eof - NPF [4 of 4]
 
     // add meta tags
     $languages = zen_get_languages();

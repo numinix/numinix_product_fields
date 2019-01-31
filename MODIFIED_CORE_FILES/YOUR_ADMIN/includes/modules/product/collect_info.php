@@ -41,7 +41,7 @@ if (!defined('IS_ADMIN_FLAG')) {
                        'products_price_sorter' => '0',
                        'master_categories_id' => ''
                        );
-    // NUMINIX PRODUCT FIELDS
+    // bof - NPF [1 of 6]
     $dirList = dirList(NPF_INCLUDES_SQL_FOLDER);
     $npf_fields = "";
     $npf_tables = "";
@@ -49,6 +49,7 @@ if (!defined('IS_ADMIN_FLAG')) {
       include(NPF_INCLUDES_SQL_FOLDER . $file);  
 
     }
+    // eof - NPF [1 of 6]
     $pInfo = new objectInfo($parameters);
 
     if (isset($_GET['pID']) && empty($_POST)) {
@@ -68,15 +69,17 @@ if (!defined('IS_ADMIN_FLAG')) {
                               FROM " . TABLE_PRODUCTS . " p
                               LEFT JOIN " . TABLE_PRODUCTS_DESCRIPTION . " pd ON (p.products_id = pd.products_id)" . $npf_tables . "
                               WHERE p.products_id = '" . (int)$_GET['pID'] . "'
-                              AND pd.language_id = '" . (int)$_SESSION['languages_id'] . "'");
+                              AND pd.language_id = '" . (int)$_SESSION['languages_id'] . "'"); // NPF [3 of 6]
 
       $pInfo->updateObjectInfo($product->fields);
     } elseif (zen_not_null($_POST)) {
       $pInfo->updateObjectInfo($_POST);
       $products_name = $_POST['products_name'];
       $products_description = $_POST['products_description'];
+      // bof - NPF [3 of 6]
       $products_description2 = $_POST['products_description2'];
       $care_instructions = $_POST['care_instructions'];
+      // bof - NPF [3 of 6]
       $products_url = $_POST['products_url'];
     }
 
@@ -191,13 +194,13 @@ if (!defined('IS_ADMIN_FLAG')) {
   $on_image_delete = false;
   $off_image_delete = true;
 
-//NPF start
+// bof - NPF [4 of 6]
   $dirList = dirList(NPF_INCLUDES_MODULES_FOLDER);
   foreach ($dirList as $file) {
     include(NPF_INCLUDES_MODULES_FOLDER . $file);  
   }    
 
-//NPF end  
+// eof - NPF [4 of 6]
 ?>
 <link rel="stylesheet" type="text/css" href="includes/javascript/spiffyCal/spiffyCal_v2_1.css">
 <script language="JavaScript" src="includes/javascript/spiffyCal/spiffyCal_v2_1.js"></script>
@@ -509,14 +512,14 @@ updateGross();
             <td class="main"><?php echo TEXT_PRODUCTS_WEIGHT; ?></td>
             <td class="main"><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;' . zen_draw_input_field('products_weight', $pInfo->products_weight); ?></td>
           </tr>
-          <!-- BEGIN NPF MODIFICATIONS -->
+          <!-- bof - NPF [5 of 6] -->
 <?php
   $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
   foreach ($dirList as $file) {
     include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
   }
 ?>
-          <!-- END NPF MODIFICATIONS -->
+          <!-- eof - NPF [5 of 6] -->
           <tr>
             <td colspan="2"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
           </tr>
@@ -530,6 +533,8 @@ updateGross();
         <td><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
       </tr>
       <tr>
+        <!-- bof - NPF [6 of 6] -->
         <td class="main" align="right"><?php echo (!$npf_date_added ? zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d'))) : '') . ( (isset($_GET['search']) && !empty($_GET['search'])) ? zen_draw_hidden_field('search', $_GET['search']) : '') . ( (isset($_POST['search']) && !empty($_POST['search']) && empty($_GET['search'])) ? zen_draw_hidden_field('search', $_POST['search']) : '') . zen_image_submit('button_preview.gif', IMAGE_PREVIEW) . '&nbsp;&nbsp;<a href="' . zen_href_link(FILENAME_CATEGORIES, 'cPath=' . $cPath . (isset($_GET['pID']) ? '&pID=' . $_GET['pID'] : '') . (isset($_GET['page']) ? '&page=' . $_GET['page'] : '') . ( (isset($_GET['search']) && !empty($_GET['search'])) ? '&search=' . $_GET['search'] : '') . ( (isset($_POST['search']) && !empty($_POST['search']) && empty($_GET['search'])) ? '&search=' . $_POST['search'] : '')) . '">' . zen_image_button('button_cancel.gif', IMAGE_CANCEL) . '</a>'; ?></td>
+        <!-- eof - NPF [6 of 6] -->
       </tr>
     </table></form>
