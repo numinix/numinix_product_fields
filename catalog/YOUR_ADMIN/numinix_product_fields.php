@@ -69,6 +69,10 @@ foreach ($dirs as $dir) {
 }
 sort($prebuilt_fields);
 
+$dirList = dirList(NPF_INCLUDES_SQL_ARRAY_FOLDER);
+foreach($dirList as $file) {
+  include(NPF_INCLUDES_SQL_ARRAY_FOLDER . $file);
+}
 ?>
 <!doctype html public "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html <?php echo HTML_PARAMS; ?>>
@@ -132,7 +136,11 @@ sort($prebuilt_fields);
                                     <td align="right">
                                         <?php
                                         foreach($current_product_fields as $current_product_field){
-                                            echo $current_product_field.'<br/>';
+                                            if(array_key_exists($current_product_field, $sql_data_array)) {
+                                              echo $current_product_field.' (added by Numinix Fields)<br/>';
+                                            } else {
+                                              echo $current_product_field.'<br/>';
+                                            }
                                         }
                                         ?>
                                     </td>
