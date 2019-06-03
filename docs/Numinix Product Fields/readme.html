@@ -84,6 +84,31 @@ if ( file_exists(DIR_WS_INCLUDES . &#x27;init_includes/extra_sanitation_rules.ph
               </div>
             </li>
             <li>File uploads will be saved to the media directory so make sure that exists, or you can change this in the configuration menu</li>
+            <li>
+              <div class="bodyTxt">
+                Open <span class="break">includes/modules/YOUR_TEMPLATE/templates/YOUR_TEMPLATES/templates/tpl_product_info_display.php</span> and find:
+                <div class="code">
+                  <div class="codeTitle"> <span class="select">Select code</span></div>
+<pre class="sh_php"><code> &lt;php echo (($flag_show_product_info_manufacturer == 1 and !empty($manufacturers_name)) ? '&lt;li&gt;' . TEXT_PRODUCT_MANUFACTURER . $manufacturers_name . '&lt;/li&gt;' : '') . "\n"; ?&gt;</code></pre>
+                </div>
+                Add the following:
+                <div class="code">
+                  <div class="codeTitle"> <span class="select">Select code</span></div>
+<pre class="sh_php"><code>&lt;!-- BEGIN NPF MODIFICATIONS --&gt;
+&lt;?php
+  if(count($numinix_fields_display ) > 0) { ?&gt;
+&lt;?php foreach ($numinix_fields_display as $field => $value) {
+    $field_name = ucwords(str_replace('_', ' ', $field));
+ ?&gt;
+    &lt;li>&lt;?php echo $field_name . ': ' . $value; ?&gt;&lt;/li&gt;      
+  &lt;?php } ?&gt;
+&lt;?php } ?&gt;
+&lt;!-- END NPF MODIFICATIONS --&gt;
+</code></pre>
+                </div>
+              </div>
+            </li>
+
           </ol>
         </div>
       </div>
