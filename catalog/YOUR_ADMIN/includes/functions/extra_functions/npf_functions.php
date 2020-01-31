@@ -160,7 +160,7 @@ if (!defined('IS_ADMIN_FLAG')) {
                 // eof";
     file_put_contents(NPF_INCLUDES_SQL_FOLDER . $field . '.php', $admin_start_file.$string_npf_sql_file);
     $string_npf_sql_array_file = "
-if(isset(\$_POST['" . $field . "']) && \$_POST['" . $field . "'] != ''){
+if(isset(\$_POST['" . $field . "'])){
                 \$sql_data_array['" . $field . "'] = zen_db_prepare_input(\$_POST['" . $field . "']);
 }";
     file_put_contents(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . '.php', $admin_start_file.$string_npf_sql_array_file);
@@ -185,7 +185,7 @@ if($zc156){
 }
     file_put_contents(NPF_INCLUDES_TEMPLATES_FOLDER . $field . '.php', $string_npf_templates_file);
     if ($type == 'file') {
-        $process_string = "      
+        $process_string = "
         ";
         file_put_contents(NPF_INCLUDES_PROCESSING_FOLDER . $field . '.php', $admin_start_file.$process_string);
         $preview_string = "
