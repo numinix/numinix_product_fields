@@ -124,7 +124,12 @@ function add_custom_field($field_name, $type, $length = '300') {
             $string_input_field = "zen_draw_file_field('" . $field . "'); if(\$pinfo->" . $field . " != ''){echo \$pinfo->" . $field . ";}";
             break;
         case "checkbox":
-            $string_input_field = "zen_draw_checkbox_field('" . $field . "', 1, (\$pInfo->" . $field . ") ? true : false);";
+            /*
+                Checkbox doesn't go into form when its not checked.
+                Hidden fild will fill the form with false value when Checkbox not present (unchecked).
+                Checkbox will overwrite hidden field when its set to true.
+            */
+            $string_input_field = "zen_draw_hidden_field('" . $field . "','0') . zen_draw_checkbox_field('" . $field . "', 1, (\$pInfo->" . $field . ") ? true : false);";
             $sql_type = "tinyint(1) NOT NULL default 0";
             break;
         case "text":
