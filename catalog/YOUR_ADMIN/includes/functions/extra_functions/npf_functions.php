@@ -121,7 +121,31 @@ function add_custom_field($field_name, $type, $length = '300') {
     switch ($type) {
         case "file":
             $sql_type = "varchar(" . $length . ") NULL default NULL";
-            $string_input_field = "zen_draw_file_field('" . $field . "'); if(\$pinfo->" . $field . " != ''){echo \$pinfo->" . $field . ";}";
+            $string_input_field = "<div class=\"col-md-6\"><div class=\"row\"><?php echo zen_draw_file_field('" . $field . "', '', 'class=\"form-control\"'); ?></div>
+            <div class=\"row\">&nbsp;</div>
+            <div class=\"row\">
+            <?php echo zen_draw_label(TEXT_IMAGE_CURRENT, '" . $field . "_previous_image', 'class=\"conrol-label\"') . '&nbsp;' . (\$pInfo->" . $field . " != '' ? \$pInfo->" . $field . " : NONE); ?>
+            <?php echo zen_draw_hidden_field('" . $field . "_previous_image', \$pInfo->" . $field . "); ?>
+            </div>
+            </div>
+            
+            <div class=\"col-md-6\">
+                <div class=\"row\">
+                <?php echo zen_draw_label(TEXT_IMAGES_DELETE, '" . $field . "_image_delete', 'class=\"conrol-label\"'); ?>
+                <label class=\"radio-inline\"><?php echo zen_draw_radio_field('" . $field . "_image_delete', '0', true) . TABLE_HEADING_NO; ?></label>
+                <label class=\"radio-inline\"><?php echo zen_draw_radio_field('" . $field . "_image_delete', '1', false) . TABLE_HEADING_YES; ?></label>
+                </div>
+                <div class=\"row\">&nbsp;</div>
+                <div class=\"row\">
+                    <?php echo zen_draw_label(TEXT_IMAGES_OVERWRITE, '" . $field . "_overwrite', 'class=\"conrol-label\"'); ?>
+                    <label class=\"radio-inline\"><?php echo zen_draw_radio_field('" . $field . "_overwrite', '0', false) . TABLE_HEADING_NO; ?></label>
+                    <label class=\"radio-inline\"><?php echo zen_draw_radio_field('" . $field . "_overwrite', '1', true) . TABLE_HEADING_YES; ?></label>
+                </div>
+                <div class=\"row\">&nbsp;</div>
+                <div class=\"row\">
+                    <?php echo zen_draw_label(TEXT_PRODUCTS_IMAGE_MANUAL, '" . $field . "_image_manual', 'class=\"conrol-label\"') . zen_draw_input_field('" . $field . "_image_manual', '', 'class=\"form-control\"'); ?>
+                </div>
+            </div>";
             break;
         case "checkbox":
             /*
@@ -168,14 +192,22 @@ if (!defined('IS_ADMIN_FLAG')) {
 if(isset(\$_POST['" . $field . "'])){
                 \$sql_data_array['" . $field . "'] = zen_db_prepare_input(\$_POST['" . $field . "']);
 }";
+    $string_npf_sql_array_file .= "
+if(\$_POST['" . $field . "_image_delete'] == 1){
+                \$sql_data_array['" . $field . "'] = '';
+}";
     file_put_contents(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . '.php', $admin_start_file.$string_npf_sql_array_file);
 if($zc156){
     $string_npf_templates_file = "           <div class=\"form-group\">
               <?php echo zen_draw_label(TEXT_" . $lang_defines . ", '".$field."', 'class=\"col-sm-3 control-label\"'); ?>
-            <div class=\"col-sm-9 col-md-6\">
-                <?php echo " . $string_input_field . " ?>
+            <div class=\"col-sm-9 col-md-6\">"; 
+            if ($type == "file") {
+                $string_npf_templates_file .= $string_input_field . "</div></div>";
+            } else {
+                $string_npf_templates_file .= "<?php echo " . $string_input_field . " ?>
             </div>
           </div>";
+            }
 } else {
     $string_npf_templates_file = "          <tr>
                <td colspan=\"2\"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
@@ -197,15 +229,20 @@ if($zc156){
         if (!isset(\$_GET['read']) || \$_GET['read'] == 'only') {
           \$products_" . $field . " = new upload('" . $field . "');
           \$products_" . $field . "->set_destination(DIR_FS_CATALOG .'".NPF_UPLOAD_FOLDER."/');
-          if (\$products_" . $field . "->parse() && \$products_" . $field . "->save(\$_POST['overwrite'])) {
+          if (\$products_" . $field . "->parse() && \$products_" . $field . "->save(isset(\$_POST['" . $field . "_overwrite']) ? \$_POST['" . $field . "_overwrite'] : false)) {
             \$products_" . $field . "_name = '".NPF_UPLOAD_FOLDER."/' . \$products_" . $field . "->filename;
           } else {
-            \$products_" . $field . "_name = (isset(\$_POST['" . $field . "']) ? \$_POST['" . $field . "'] : '');
+            \$products_" . $field . "_name = (isset(\$_POST['" . $field . "_previous_image']) ? \$_POST['" . $field . "_previous_image'] : '');
           }
-        }";
+        }
+        if (\$_POST['" . $field . "_image_manual'] != '') {
+            \$products_" . $field . "_name = '".NPF_UPLOAD_FOLDER."/' . \$_POST['" . $field . "_image_manual'];
+            \$pInfo->" . $field . " = \$products_" . $field . "_name;
+        }
+        \$_POST['" . $field . "'] = \$products_" . $field . "_name;
+        ";
         file_put_contents(NPF_INCLUDES_PREVIEW_FOLDER . $field . '.php', $admin_start_file.$preview_string);
-        $preview_info_string = '
-                echo zen_draw_hidden_field(\'' . $field . '\', stripslashes($products_' . $field . '_name));';
+        $preview_info_string =  '';
         file_put_contents(NPF_INCLUDES_PREVIEW_INFO_FOLDER . $field . '.php', $admin_start_file.$preview_info_string);
     }
     //add the field to the DB
