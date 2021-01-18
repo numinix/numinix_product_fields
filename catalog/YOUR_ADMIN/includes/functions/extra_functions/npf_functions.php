@@ -237,7 +237,6 @@ if($zc156){
         }
         if (\$_POST['" . $field . "_image_manual'] != '') {
             \$products_" . $field . "_name = '".NPF_UPLOAD_FOLDER."/' . \$_POST['" . $field . "_image_manual'];
-            \$pInfo->" . $field . " = \$products_" . $field . "_name;
         }
         \$_POST['" . $field . "'] = \$products_" . $field . "_name;
         ";
