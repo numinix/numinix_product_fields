@@ -248,3 +248,18 @@ if($zc156){
     $db->Execute("ALTER TABLE `" . DB_PREFIX . "products` ADD `" . $field . "` " . $sql_type . ";");
     $messageStack->add($nice_field_name . " added", 'success');
 }
+
+//bof NX-2511: Program delete feature in NPF
+function delete_custom_field($field){
+    global $db, $messageStack;
+    unlink(NPF_DEFINITIONS_FOLDER . $field . ".php");
+    unlink(NPF_INCLUDES_SQL_FOLDER . $field . ".php");
+    unlink(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . ".php");
+    unlink(NPF_INCLUDES_TEMPLATES_FOLDER . $field . ".php");
+    unlink(NPF_INCLUDES_PROCESSING_FOLDER . $field . ".php");
+    unlink(NPF_INCLUDES_PREVIEW_FOLDER . $field . ".php");
+    unlink(NPF_INCLUDES_PREVIEW_INFO_FOLDER . $field . ".php");
+    $db->Execute("ALTER TABLE `" . DB_PREFIX . "products` DROP `" . $field . "`;");
+    $messageStack->add($field . " deleted", 'success');
+}
+//eof NX-2511: Program delete feature in NPF

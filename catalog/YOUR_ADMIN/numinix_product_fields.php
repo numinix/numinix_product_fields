@@ -14,6 +14,10 @@ $add_custom_npf_field_name = zen_db_prepare_input($_POST['add_custom_npf_field_n
 $add_custom_npf_field_type = zen_db_prepare_input($_POST['add_custom_npf_field_type']);
 $add_custom_npf_field_length = zen_db_prepare_input($_POST['add_custom_npf_field_length']);
 $file_posted = basename($_FILES["file_download"]);
+//bof NX-2511: Program delete feature in NPF
+$delete_custom_npf_field = zen_db_prepare_input($_POST['delete_custom_npf_field']);
+$delete_custom_npf_field_name = zen_db_prepare_input($_POST['delete_custom_npf_field_name']);
+//eof NX-2511: Program delete feature in NPF
 
 if($add_npf_field != ''){
     $field = $add_npf_field;
@@ -35,7 +39,11 @@ if($add_custom_npf_field == "Y"){
     }
    add_custom_field($add_custom_npf_field_name, $add_custom_npf_field_type, $add_custom_npf_field_length);
 }
-
+//bof NX-2511: Program delete feature in NPF
+if($delete_custom_npf_field == "Y"){
+  delete_custom_field($delete_custom_npf_field_name);
+}
+//eof NX-2511: Program delete feature in NPF
 
 
       $current_product_fields = array();
@@ -171,6 +179,25 @@ foreach($dirList as $file) {
                             echo '</form><br/>';
                       ?>
                       <hr/>
+                      <h2>Delete a Custom Field</h2>
+                      <br/>
+                      <?php
+                          //bof NX-2511: Program delete feature in NPF
+                          $pull_down_array = array();
+                          $npf_definitions_dir = dirList(NPF_DEFINITIONS_FOLDER);
+                          foreach($npf_definitions_dir as $file) {
+                            if($file != 'common.php'){
+                              $field = str_replace(".php","", $file);
+                              $pull_down_array[] = array('id' => $field, 'text' => $field);
+                            }                           
+                          }
+                          echo zen_draw_form('custom_npf_fields2',NUMINIX_PRODUCT_FIELDS_FILENAME, 'delete');
+                          echo zen_draw_hidden_field('delete_custom_npf_field',"Y");
+                          echo " Field Name:".zen_draw_pull_down_menu('delete_custom_npf_field_name',$pull_down_array);
+                          echo "  ".zen_draw_input_field('delete', 'Delete Field', 'onclick="return confirm(\'Are you sure you want to delete this field?\');"', false, 'submit');
+                          echo '</form><br/>';
+                          //eof NX-2511: Program delete feature in NPF
+                      ?>
                   </td>
                 </tr>
 			</table>
