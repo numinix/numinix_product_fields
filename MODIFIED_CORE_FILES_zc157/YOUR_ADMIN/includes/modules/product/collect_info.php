@@ -459,7 +459,7 @@ foreach ($dirList as $file) {
     </div>
     <?php
     // bof - NPF [6 of 6]
-    echo (!$npf_date_added ? zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d'))) : '');
+    echo (isset($npf_date_added)) ? (!$npf_date_added ? zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d'))) : '') : '';
     // echo zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d')));
     // eof - NPF [6 of 6]
     echo ((isset($_GET['search']) && !empty($_GET['search'])) ? zen_draw_hidden_field('search', $_GET['search']) : '');

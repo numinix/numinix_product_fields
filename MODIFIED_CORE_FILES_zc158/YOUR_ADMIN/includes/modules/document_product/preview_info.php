@@ -58,6 +58,7 @@ $form_action = (isset($_GET['pID'])) ? 'update_product' : 'insert_product';
         $pInfo->products_name = zen_db_prepare_input($products_name[$languages[$i]['id']]);
         $pInfo->products_description = zen_db_prepare_input($products_description[$languages[$i]['id']]);
         $pInfo->products_description2 = zen_db_prepare_input($products_description2[$languages[$i]['id']]); // NPF [2 of 3]
+
         $pInfo->products_url = zen_db_prepare_input($products_url[$languages[$i]['id']]);
       }
 

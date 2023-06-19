@@ -59,7 +59,7 @@ if (isset($_GET['pID']) && empty($_POST)) {
                                 " . TABLE_PRODUCTS_DESCRIPTION . " pd
                            WHERE p.products_id = " . (int)$_GET['pID'] . "
                            AND p.products_id = pd.products_id
-                           AND pd.language_id = " . (int)$_SESSION['languages_id']); // NPF [2 of 5]
+                           AND pd.language_id = " . (int)$_SESSION['languages_id']);
 
   $pInfo->updateObjectInfo($product->fields);
   $pInfo->product_type = $pInfo->products_type;
@@ -73,7 +73,6 @@ if (isset($_GET['pID']) && empty($_POST)) {
   }
   $products_name = $_POST['products_name'] ?? '';
   $products_description = $_POST['products_description'] ?? '';
-  $products_description2 = $_POST['products_description2'] ?? ''; // NPF [3 of 5]
   $products_url = $_POST['products_url'] ?? '';
 }
 
@@ -343,14 +342,6 @@ foreach ($dirList as $file) {
       ?>
     </div>
   </div>
-            <!-- // NPF [5 of 5] -->
-            <?php
-              $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
-              foreach ($dirList as $file) {
-                include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
-              }
-            ?>
-          <!-- // NPF [5 of 5] -->
   <div class="form-group">
       <?php echo zen_draw_label(TEXT_PRODUCTS_SORT_ORDER, 'products_sort_order', 'class="col-sm-3 control-label"'); ?>
     <div class="col-sm-9 col-md-6">

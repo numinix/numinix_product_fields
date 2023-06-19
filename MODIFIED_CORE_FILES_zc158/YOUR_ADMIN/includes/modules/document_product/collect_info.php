@@ -41,13 +41,13 @@ $parameters = [
   'master_categories_id' => '',
 ];
 
-// bof - NPF [1 of 5]
-$dirList = dirList(NPF_INCLUDES_SQL_FOLDER);
-$npf_fields = "";
-foreach ($dirList as $file) {
-  include(NPF_INCLUDES_SQL_FOLDER . $file);  
-}
-// eof - NPF [1 of 5]
+    // bof - NPF [1 of 5]
+    $dirList = dirList(NPF_INCLUDES_SQL_FOLDER);
+    $npf_fields = "";
+    foreach ($dirList as $file) {
+      include(NPF_INCLUDES_SQL_FOLDER . $file);  
+    }
+    // eof - NPF [1 of 5]
 
 $pInfo = new objectInfo($parameters);
 
@@ -73,7 +73,9 @@ if (isset($_GET['pID']) && empty($_POST)) {
   }
   $products_name = $_POST['products_name'] ?? '';
   $products_description = $_POST['products_description'] ?? '';
-  $products_description = $_POST['products_description2'] ?? ''; // NPF [3 of 5]
+  // $products_description = $_POST['products_description2'] ?? ''; // NPF [3 of 5]
+  $products_description2 = $_POST['products_description2'] ?? ''; // NPF [3 of 5]
+
   $products_url = $_POST['products_url'] ?? '';
 }
 
@@ -116,7 +118,6 @@ foreach ($dirList as $file) {
   include(NPF_INCLUDES_MODULES_FOLDER . $file);  
 }    
 // eof - NPF [4 of 5]
-
 ?>
 <div class="container-fluid">
     <?php
@@ -449,12 +450,12 @@ foreach ($dirList as $file) {
   </div>
 
               <!--BOF NPF [5 of 5] -->
-  <?php
-    $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
-    foreach ($dirList as $file) {
-      include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
-    }
-  ?>
+<?php
+  $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
+  foreach ($dirList as $file) {
+    include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
+  }
+?>
           <!--EOF NPF [5 of 5] -->
 
   <div class="form-group">

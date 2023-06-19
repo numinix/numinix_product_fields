@@ -17,13 +17,13 @@ $parameters = [
   'products_model' => '',
   'products_image' => '',
   'products_price' => '0.0000',
-  'products_virtual' => DEFAULT_DOCUMENT_PRODUCT_PRODUCTS_VIRTUAL,
+  'products_virtual' => DEFAULT_PRODUCT_PRODUCTS_VIRTUAL,
   'products_weight' => '0',
   'products_date_added' => '',
   'products_last_modified' => '',
   'products_date_available' => '',
   'products_status' => '1',
-  'products_tax_class_id' => DEFAULT_DOCUMENT_PRODUCT_TAX_CLASS_ID,
+  'products_tax_class_id' => DEFAULT_PRODUCT_TAX_CLASS_ID,
   'manufacturers_id' => '',
   'products_quantity_order_min' => '1',
   'products_quantity_order_units' => '1',
@@ -31,7 +31,7 @@ $parameters = [
   'product_is_free' => '0',
   'product_is_call' => '0',
   'products_quantity_mixed' => '1',
-  'product_is_always_free_shipping' => DEFAULT_DOCUMENT_PRODUCT_PRODUCTS_IS_ALWAYS_FREE_SHIPPING,
+  'product_is_always_free_shipping' => DEFAULT_PRODUCT_PRODUCTS_IS_ALWAYS_FREE_SHIPPING,
   'products_qty_box_status' => PRODUCTS_QTY_BOX_STATUS,
   'products_quantity_order_max' => '0',
   'products_sort_order' => '0',
@@ -41,21 +41,21 @@ $parameters = [
   'master_categories_id' => '',
 ];
 
-// bof - NPF [1 of 6]
-$dirList = dirList(NPF_INCLUDES_SQL_FOLDER);
-$npf_fields = "";
-$npf_tables = "";
-foreach ($dirList as $file) {
-  include(NPF_INCLUDES_SQL_FOLDER . $file);  
+    // bof - NPF [1 of 6]
+    $dirList = dirList(NPF_INCLUDES_SQL_FOLDER);
+    $npf_fields = "";
+    $npf_tables = "";
+    foreach ($dirList as $file) {
+      include(NPF_INCLUDES_SQL_FOLDER . $file);  
 
-}
-// eof - NPF [1 of 6]
+    }
+    // eof - NPF [1 of 6]
 
 $pInfo = new objectInfo($parameters);
 
 if (isset($_GET['pID']) && empty($_POST)) {
   $product = $db->Execute("SELECT pd.products_name, pd.products_description, pd.products_url,
-                                  p.*,
+                                  p.*, 
                                   date_format(p.products_date_available, '" .  zen_datepicker_format_forsql() . "') as products_date_available " . $npf_fields . " 
                               FROM " . TABLE_PRODUCTS . " p
                               LEFT JOIN " . TABLE_PRODUCTS_DESCRIPTION . " pd ON (p.products_id = pd.products_id)" . $npf_tables . "
@@ -76,8 +76,8 @@ if (isset($_GET['pID']) && empty($_POST)) {
   $products_name = $_POST['products_name'] ?? '';
   $products_description = $_POST['products_description'] ?? '';
   // bof - NPF [3 of 6]
-  $products_description2 = isset($_POST['products_description2']) ? $_POST['products_description2'] : ''; 
-  $care_instructions = isset($_POST['care_instructions']) ? $_POST['care_instructions'] : '';
+  $products_description2 = $_POST['products_description2'] ?? ''; 
+  $care_instructions = $_POST['care_instructions'] ?? '';
   // eof - NPF [3 of 6]
   $products_url = $_POST['products_url'] ?? '';
 }
@@ -121,8 +121,8 @@ foreach ($dirList as $file) {
   include(NPF_INCLUDES_MODULES_FOLDER . $file);  
 }    
 // eof - NPF [4 of 6]
-?>
 
+?>
 <div class="container-fluid">
     <?php
     echo zen_draw_form('new_product', FILENAME_PRODUCT, 'cPath=' . $current_category_id . (isset($_GET['pID']) ? '&pID=' . $_GET['pID'] : '') . '&action=new_product_preview' . (isset($_GET['page']) ? '&page=' . $_GET['page'] : '') . ( (isset($_GET['search']) && !empty($_GET['search'])) ? '&search=' . $_GET['search'] : '') . ( (isset($_POST['search']) && !empty($_POST['search']) && empty($_GET['search'])) ? '&search=' . $_POST['search'] : ''), 'post', 'enctype="multipart/form-data" class="form-horizontal"');
@@ -452,15 +452,16 @@ foreach ($dirList as $file) {
         <?php echo zen_draw_input_field('products_weight', $pInfo->products_weight, 'class="form-control" id="products_weight" inputmode="decimal"'); ?>
     </div>
   </div>
+
             <!--BOF NPF [5 of 6] -->
             <?php
             $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
             foreach ($dirList as $file) {
-              //echo NPF_INCLUDES_TEMPLATES_FOLDER . $file."<br>";
               include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
             }
           ?>
           <!--EOF NPF [5 of 6]-->
+          
   <div class="form-group">
       <?php echo zen_draw_label(TEXT_PRODUCTS_SORT_ORDER, 'products_sort_order', 'class="col-sm-3 control-label"'); ?>
     <div class="col-sm-9 col-md-6">
@@ -468,9 +469,10 @@ foreach ($dirList as $file) {
     </div>
     <?php
     // bof - NPF [6 of 6]
-    echo (!$npf_date_added ? zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d'))) : '');
+    echo (isset($npf_date_added)) ? (!$npf_date_added ? zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d'))) : '') : '';
     // echo zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d')));
-    // eof - NPF [6 of 6]echo ((isset($_GET['search']) && !empty($_GET['search'])) ? zen_draw_hidden_field('search', $_GET['search']) : '');
+    // eof - NPF [6 of 6]
+    echo ((isset($_GET['search']) && !empty($_GET['search'])) ? zen_draw_hidden_field('search', $_GET['search']) : '');
     echo ((isset($_POST['search']) && !empty($_POST['search']) && empty($_GET['search'])) ? zen_draw_hidden_field('search', $_POST['search']) : '');
     ?>
   </div>
