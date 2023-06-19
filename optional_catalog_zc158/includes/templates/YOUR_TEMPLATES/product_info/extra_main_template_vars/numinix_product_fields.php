@@ -46,7 +46,7 @@
   $products_out_of_stock = (isset($products->fields['out_of_stock'])) ? $products->fields['out_of_stock'] : "";
   $products_sku = (isset($products->fields['products_sku'])) ? $products->fields['products_sku'] : "";
   // create conversions
-  if (SHOW_PRODUCT_INFO_CONVERSIONS == 1) {
+  if (defined('SHOW_PRODUCT_INFO_CONVERSIONS') && SHOW_PRODUCT_INFO_CONVERSIONS == 1) {
     if ($products_weight_type == 'kgs') {
       $products_weight2 = round($products_weight * 2.20462262, 2);
       $products_actual_weight2 = round($products_actual_weight * 2.20462262, 2);
@@ -63,7 +63,7 @@
       $products_dim_type2 = 'cm';
       $conversion = 2.54;
     }
-    if (SHOW_PRODUCT_INFO_SMALLER_UNITS == 1) { 
+    if (defined('SHOW_PRODUCT_INFO_SMALLER_UNITS') && SHOW_PRODUCT_INFO_SMALLER_UNITS == 1) { 
       if ($products_weight_type == 'kgs') {
         $products_weight_type = 'g';
         $products_weight_type2 = 'oz';
@@ -86,7 +86,7 @@
     $products_diameter_display = TEXT_PRODUCTS_DIAMETER . ($products_diameter > 0 ? $products_diameter . $products_dim_type . ' (' . round($products_diameter * $conversion, 1) . $products_dim_type2 . ') ' : '');
   } else {
     
-    if (SHOW_PRODUCT_INFO_SMALLER_UNITS == 1) { 
+    if (defined('SHOW_PRODUCT_INFO_SMALLER_UNITS') && SHOW_PRODUCT_INFO_SMALLER_UNITS == 1) { 
       if ($products_weight_type = 'kgs') {
         $products_weight_type = 'g';
         $products_weight = $products_weight * 1000;

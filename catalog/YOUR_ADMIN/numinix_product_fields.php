@@ -8,15 +8,15 @@
  */
 
 require('includes/application_top.php');
-$add_npf_field = zen_db_prepare_input($_POST['add_npf_field']);
-$add_custom_npf_field = zen_db_prepare_input($_POST['add_custom_npf_field']);
-$add_custom_npf_field_name = zen_db_prepare_input($_POST['add_custom_npf_field_name']);
-$add_custom_npf_field_type = zen_db_prepare_input($_POST['add_custom_npf_field_type']);
-$add_custom_npf_field_length = zen_db_prepare_input($_POST['add_custom_npf_field_length']);
-$file_posted = basename($_FILES["file_download"]);
+$add_npf_field = (isset($_POST['add_npf_field'])) ? zen_db_prepare_input($_POST['add_npf_field']) : "";
+$add_custom_npf_field = (isset($_POST['add_custom_npf_field'])) ? zen_db_prepare_input($_POST['add_custom_npf_field']) : "";
+$add_custom_npf_field_name = (isset($_POST['add_custom_npf_field_name'])) ? zen_db_prepare_input($_POST['add_custom_npf_field_name']) : "";
+$add_custom_npf_field_type = (isset($_POST['add_custom_npf_field_type'])) ? zen_db_prepare_input($_POST['add_custom_npf_field_type']) : "";
+$add_custom_npf_field_length = (isset($_POST['add_custom_npf_field_length'])) ? zen_db_prepare_input($_POST['add_custom_npf_field_length']) : "";
+$file_posted = (isset($_FILES["file_download"]) && $_FILES["file_download"] != null) ? basename($_FILES["file_download"]) : "";
 //bof NX-2511: Program delete feature in NPF
-$delete_custom_npf_field = zen_db_prepare_input($_POST['delete_custom_npf_field']);
-$delete_custom_npf_field_name = zen_db_prepare_input($_POST['delete_custom_npf_field_name']);
+$delete_custom_npf_field = (isset($_POST['delete_custom_npf_field'])) ? zen_db_prepare_input($_POST['delete_custom_npf_field']) : "";
+$delete_custom_npf_field_name = (isset($_POST['delete_custom_npf_field_name'])) ? zen_db_prepare_input($_POST['delete_custom_npf_field_name']) : "";
 //eof NX-2511: Program delete feature in NPF
 
 if($add_npf_field != ''){
@@ -48,14 +48,14 @@ if($delete_custom_npf_field == "Y"){
 
       $current_product_fields = array();
       $tableFields = $db->metaColumns(TABLE_PRODUCTS);
-      $columnName = strtoupper($columnName);
+      $columnName = (isset($columnName) && $columnName != null) ? strtoupper($columnName) : "";
       //loop to traverse tableFields result set
       foreach($tableFields as $key=>$value) 
       {    
           $current_product_fields[] = strtolower($key);
       }
       $pdtableFields = $db->metaColumns(TABLE_PRODUCTS_DESCRIPTION);
-      $pdcolumnName = strtoupper($pdcolumnName);
+      $pdcolumnName = (isset($pdcolumnName) && $pdcolumnName != null) ? strtoupper($pdcolumnName) : "";
       //loop to traverse tableFields result set
       foreach($pdtableFields as $key=>$value) 
       {    

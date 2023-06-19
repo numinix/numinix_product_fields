@@ -28,6 +28,9 @@ DELETE FROM product_type_layout WHERE configuration_key = 'SHOW_PRODUCT_INFO_CON
 DELETE FROM product_type_layout WHERE configuration_key = 'SHOW_PRODUCT_INFO_SMALLER_UNITS'; 
 DELETE FROM product_type_layout WHERE configuration_key = 'SHOW_PRODUCT_INFO_ACTUAL_WEIGHT';   
 
+DELETE FROM admin_pages WHERE page_key = 'catalogNPF';
+DELETE FROM admin_pages WHERE page_key = 'configNPF';
+
 SET @configuration_group_id=0;
 SELECT @configuration_group_id:=configuration_group_id
 FROM configuration
