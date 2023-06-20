@@ -82,17 +82,17 @@ require($template->get_template_dir('/tpl_products_next_previous.php',DIR_WS_TEM
 <?php //if ( (($flag_show_product_info_model == 1 and $products_model != '') or ($flag_show_product_info_weight == 1 and $products_weight !=0) or ($flag_show_product_info_quantity == 1) or ($flag_show_product_info_manufacturer == 1 and !empty($manufacturers_name))) ) { ?>
 <?php if ( (($flag_show_product_info_model == 1 and $products_model != '') or ($flag_show_product_info_weight == 1 and $products_weight !=0) or ($flag_show_product_info_quantity == 1) or ($flag_show_product_info_dimensions == 1) or ($flag_show_product_info_condition == 1) or ($flag_show_product_info_upc == 1) or ($flag_show_product_info_isbn == 1) or ($flag_show_product_info_manufacturer == 1 and !empty($manufacturers_name))) ) { ?> 
 <ul id="productDetailsList" class="floatingBox back">
-  <?php echo (($flag_show_product_info_model == 1 and $products_model != '') ? '<li>' . TEXT_PRODUCT_MODEL . $products_model . '</li>' : '') . "\n"; ?>
-  <?php echo (($flag_show_product_info_weight == 1 and $products_weight != 0) ? '<li>' . $products_weight_display . '</li>'  : '') . "\n"; ?>
-  <?php echo (($flag_show_product_info_actual_weight == 1 and $products_actual_weight != 0) ? '<li>' . $products_actual_weight_display . '</li>'  : '') . "\n"; ?>
-  <?php echo (($flag_show_product_info_dimensions == 1 && ($products_length != 0 || $products_width != 0 || $products_height != 0)) ? '<li>' . $products_dim_display . '</li>'  : '') . "\n"; ?> 
-  <?php echo (($flag_show_product_info_diameter == 1 && $products_diameter != '') ? '<li>' . $products_diameter_display . '</li>'  : '') . "\n"; ?>   
-  <?php echo (($flag_show_product_info_quantity == 1) ? '<li>' . $products_quantity . TEXT_PRODUCT_QUANTITY . '</li>'  : '') . "\n"; ?>
-  <?php echo (($flag_show_product_info_manufacturer == 1 and !empty($manufacturers_name)) ? '<li>' . TEXT_PRODUCT_MANUFACTURER . $manufacturers_name . '</li>' : '') . "\n"; ?>
-  <?php echo (($flag_show_product_info_condition == 1 and $products_condition != '') ? '<li>' . TEXT_PRODUCTS_CONDITION . $products_condition . '</li>' : '') . "\n"; ?>
-  <?php echo (($flag_show_product_info_upc == 1 and $products_upc != '') ? '<li>' . TEXT_PRODUCTS_UPC . $products_upc . '</li>' : '') . "\n"; ?>  
-  <?php echo (($flag_show_product_info_isbn == 1 and $products_isbn != '') ? '<li>' . TEXT_PRODUCTS_ISBN . $products_isbn . '</li>' : '') . "\n"; ?>
-  <?php echo (($flag_show_product_info_sku == 1 and $products_sku != '') ? '<li>' . TEXT_PRODUCTS_SKU . $products_sku . '</li>' : '') . "\n"; ?>
+  <?php if(isset($flag_show_product_info_model)) echo (($flag_show_product_info_model == 1 and $products_model != '') ? '<li>' . TEXT_PRODUCT_MODEL . $products_model . '</li>' : '') . "\n"; ?>
+  <?php if(isset($flag_show_product_info_weight)) echo (($flag_show_product_info_weight == 1 and $products_weight != 0) ? '<li>' . $products_weight_display . '</li>'  : '') . "\n"; ?>
+  <?php if(isset($flag_show_product_info_actual_weight)) echo (($flag_show_product_info_actual_weight == 1 and $products_actual_weight != 0) ? '<li>' . $products_actual_weight_display . '</li>'  : '') . "\n"; ?>
+  <?php if(isset($flag_show_product_info_dimensions)) echo (($flag_show_product_info_dimensions == 1 && ($products_length != 0 || $products_width != 0 || $products_height != 0)) ? '<li>' . $products_dim_display . '</li>'  : '') . "\n"; ?> 
+  <?php if(isset($flag_show_product_info_diameter)) echo (($flag_show_product_info_diameter == 1 && $products_diameter != '') ? '<li>' . $products_diameter_display . '</li>'  : '') . "\n"; ?>   
+  <?php if(isset($flag_show_product_info_quantity)) echo (($flag_show_product_info_quantity == 1) ? '<li>' . $products_quantity . TEXT_PRODUCT_QUANTITY . '</li>'  : '') . "\n"; ?>
+  <?php if(isset($flag_show_product_info_manufacturer)) echo (($flag_show_product_info_manufacturer == 1 and !empty($manufacturers_name)) ? '<li>' . TEXT_PRODUCT_MANUFACTURER . $manufacturers_name . '</li>' : '') . "\n"; ?>
+  <?php if(isset($flag_show_product_info_condition)) echo (($flag_show_product_info_condition == 1 and $products_condition != '') ? '<li>' . TEXT_PRODUCTS_CONDITION . $products_condition . '</li>' : '') . "\n"; ?>
+  <?php if(isset($flag_show_product_info_upc)) echo (($flag_show_product_info_upc == 1 and $products_upc != '') ? '<li>' . TEXT_PRODUCTS_UPC . $products_upc . '</li>' : '') . "\n"; ?>  
+  <?php if(isset($flag_show_product_info_isbn)) echo (($flag_show_product_info_isbn == 1 and $products_isbn != '') ? '<li>' . TEXT_PRODUCTS_ISBN . $products_isbn . '</li>' : '') . "\n"; ?>
+  <?php if(isset($flag_show_product_info_sku)) echo (($flag_show_product_info_sku == 1 and $products_sku != '') ? '<li>' . TEXT_PRODUCTS_SKU . $products_sku . '</li>' : '') . "\n"; ?>
 </ul>
 <br class="clearBoth" />
 <?php
@@ -121,7 +121,7 @@ require($template->get_template_dir('/tpl_products_next_previous.php',DIR_WS_TEM
 <?php } ?>
 <!-- eof Care Instructions -->
 
-<?php if (!$flag_show_product_info_out_of_stock) { ?>
+<?php if (isset($flag_show_product_info_out_of_stock) && !$flag_show_product_info_out_of_stock) { ?>
 <!--bof Add to Cart Box -->
 <?php
 if (CUSTOMERS_APPROVAL == 3 and TEXT_LOGIN_FOR_PRICE_BUTTON_REPLACE_SHOWROOM == '') {
@@ -199,7 +199,7 @@ if (CUSTOMERS_APPROVAL == 3 and TEXT_LOGIN_FOR_PRICE_BUTTON_REPLACE_SHOWROOM == 
 
 <!--bof Tell a Friend button -->
 <?php
-  if ($flag_show_product_info_tell_a_friend == 1) { ?>
+  if (isset($flag_show_product_info_tell_a_friend) && $flag_show_product_info_tell_a_friend == 1) { ?>
 <div id="productTellFriendLink" class="buttonRow forward"><?php echo ($flag_show_product_info_tell_a_friend == 1 ? '<a href="' . zen_href_link(FILENAME_TELL_A_FRIEND, 'products_id=' . $_GET['products_id']) . '">' . zen_image_button(BUTTON_IMAGE_TELLAFRIEND, BUTTON_TELLAFRIEND_ALT) . '</a>' : ''); ?></div>
 <?php
   }

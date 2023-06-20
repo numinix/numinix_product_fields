@@ -1,0 +1,1 @@
+ALTER TABLE products ADD group_pricing_eligible int(1) NULL default 1;
