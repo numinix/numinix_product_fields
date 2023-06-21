@@ -121,7 +121,7 @@ require($template->get_template_dir('/tpl_products_next_previous.php',DIR_WS_TEM
 <?php } ?>
 <!-- eof Care Instructions -->
 
-<?php if (!isset($flag_show_product_info_out_of_stock) && !$flag_show_product_info_out_of_stock) { ?>
+<?php if (!isset($flag_show_product_info_out_of_stock) || !$flag_show_product_info_out_of_stock) { ?>
 <!--bof Add to Cart Box -->
 <?php
 if (CUSTOMERS_APPROVAL == 3 and TEXT_LOGIN_FOR_PRICE_BUTTON_REPLACE_SHOWROOM == '') {

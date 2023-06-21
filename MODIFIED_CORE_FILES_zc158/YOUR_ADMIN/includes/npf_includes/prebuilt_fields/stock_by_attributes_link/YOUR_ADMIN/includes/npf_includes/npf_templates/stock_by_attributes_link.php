@@ -2,7 +2,7 @@
 
 $zc156 = (PROJECT_VERSION_MAJOR > 1 || (PROJECT_VERSION_MAJOR == 1 && substr(PROJECT_VERSION_MINOR, 0, 3) >= 5.6));
 
-$filename = 'products_video_embed_2.php';
+$filename = 'stock_by_attributes_link.php';
 
 $path1 = 'languages/english/npf_definitions/';
 $path2 = 'languages/english/npf_definitions/lang.';
