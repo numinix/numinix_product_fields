@@ -89,7 +89,7 @@ function npf_copy_file($field, $folder) {
 }
 
 function npf_sql_patch($string) {
-    global $db;
+    global $sniffer, $db;
     $string = str_replace("`", "", $string);
     $string = str_replace(" products ", " " . DB_PREFIX . "products ", $string);
     $string = str_replace(" product_type_layout ", " " . DB_PREFIX . "product_type_layout ", $string);
@@ -257,15 +257,20 @@ if($zc156){
 
 //bof NX-2511: Program delete feature in NPF
 function delete_custom_field($field){
-    global $db, $messageStack;
-    (file_exists(NPF_DEFINITIONS_FOLDER . "lang." .$field . ".php")) ? unlink(NPF_DEFINITIONS_FOLDER . "lang." . $field . ".php") : unlink(NPF_DEFINITIONS_FOLDER . $field . ".php");
-    unlink(NPF_INCLUDES_SQL_FOLDER . $field . ".php");
-    unlink(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . ".php");
-    unlink(NPF_INCLUDES_TEMPLATES_FOLDER . $field . ".php");
-    unlink(NPF_INCLUDES_PROCESSING_FOLDER . $field . ".php");
-    unlink(NPF_INCLUDES_PREVIEW_FOLDER . $field . ".php");
-    unlink(NPF_INCLUDES_PREVIEW_INFO_FOLDER . $field . ".php");
-    $db->Execute("ALTER TABLE `" . DB_PREFIX . "products` DROP `" . $field . "`;");
+    global $sniffer, $db, $messageStack;
+    (file_exists(NPF_DEFINITIONS_FOLDER . "lang." .$field . ".php")) ? unlink(NPF_DEFINITIONS_FOLDER . "lang." . $field . ".php") : false;
+    (file_exists(NPF_DEFINITIONS_FOLDER . $field . ".php")) ? unlink(NPF_DEFINITIONS_FOLDER . $field . ".php") : false;
+    (file_exists(NPF_INCLUDES_SQL_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_SQL_FOLDER . $field . ".php") : false;
+    (file_exists(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . ".php") : false;
+    (file_exists(NPF_INCLUDES_TEMPLATES_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_TEMPLATES_FOLDER . $field . ".php") : false;
+    (file_exists(NPF_INCLUDES_PROCESSING_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_PROCESSING_FOLDER . $field . ".php") : false;
+    (file_exists(NPF_INCLUDES_PREVIEW_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_PREVIEW_FOLDER . $field . ".php") : false;
+    (file_exists(NPF_INCLUDES_PREVIEW_INFO_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_PREVIEW_INFO_FOLDER . $field . ".php") : false;
+    ($sniffer->field_exists(TABLE_PRODUCTS, $field)) ? $db->Execute("ALTER TABLE `" . DB_PREFIX . "products` DROP `" . $field . "`;") : false;
+    if(file_exists(NPF_INCLUDES_PREBUILT_FOLDER.$field.'/uninstall.sql')) {
+        $query_string = file_get_contents(NPF_INCLUDES_PREBUILT_FOLDER.$field.'/uninstall.sql');
+        npf_sql_patch($query_string);
+    }
     $messageStack->add($field . " deleted", 'success');
 }
 //eof NX-2511: Program delete feature in NPF
