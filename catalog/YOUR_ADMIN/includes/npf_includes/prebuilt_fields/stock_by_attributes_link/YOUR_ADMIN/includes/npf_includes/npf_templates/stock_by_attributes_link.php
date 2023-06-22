@@ -2,7 +2,7 @@
 
 $zc156 = (PROJECT_VERSION_MAJOR > 1 || (PROJECT_VERSION_MAJOR == 1 && substr(PROJECT_VERSION_MINOR, 0, 3) >= 5.6));
 
-if($zc156){ ?>
+if($zc156 && defined('FILENAME_PRODUCTS_WITH_ATTRIBUTES_STOCK')){ ?>
           <div class="form-group">
               <?php echo zen_draw_label(TEXT_PRODUCTS_STOCK_BY_ATTRIBUTES, 'products_stock_by_attributes', 'class="col-sm-3 control-label"'); ?>
             <div class="col-sm-9 col-md-6">
@@ -20,4 +20,6 @@ if($zc156){ ?>
           <tr>
             <td colspan="2"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
           </tr>
-<?php } ?>
+<?php }else{
+  echo "You must install Stock By Attributes to use this feature";
+} ?>
