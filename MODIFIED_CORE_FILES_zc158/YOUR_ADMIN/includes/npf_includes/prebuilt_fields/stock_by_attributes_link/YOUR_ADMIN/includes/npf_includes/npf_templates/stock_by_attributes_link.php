@@ -15,7 +15,7 @@ foreach($defines as $key=>$value){
   }
 }
 
-if(defined('FILENAME_PRODUCTS_WITH_ATTRIBUTES_STOCK')){
+if(!defined('FILENAME_PRODUCTS_WITH_ATTRIBUTES_STOCK')){
   
 }else{
 if($zc156){ ?>
