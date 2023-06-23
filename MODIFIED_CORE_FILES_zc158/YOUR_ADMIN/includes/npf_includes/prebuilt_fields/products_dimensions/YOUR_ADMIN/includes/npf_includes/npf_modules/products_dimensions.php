@@ -5,7 +5,7 @@
     case 'lbs':
     default: $in_weight_type = false; $out_weight_type = true;
   }
-  if (!isset($pInfo->products_dim_type)) $pInfo->products_dim_type = TEXT_PRODUCT_DIMENSION_UNIT;
+  if (!isset($pInfo->products_dim_type)) $pInfo->products_dim_type = (defined('SYSTEM_DIMENSION_UNITS')) ? SYSTEM_DIMENSION_UNITS : '';
   switch ($pInfo->products_dim_type) {
     case 'cm': $in_dim_type = true; $out_dim_type = false; break;
     case 'in':
