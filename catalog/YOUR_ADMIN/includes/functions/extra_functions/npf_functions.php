@@ -53,6 +53,7 @@ function npf_add_prebuilt_fields($field) {
     }
     $array_of_files = array(
         $lang_definitions_file,
+        'functions/extra_functions/' . $field . '.php',
         'npf_includes/npf_custom_execute/' . $field . '.php',
         'npf_includes/npf_description_sql_array/' . $field . '.php',
         'npf_includes/npf_modules/' . $field . '.php',
