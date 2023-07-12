@@ -262,6 +262,7 @@ function delete_custom_field($field){
     (file_exists(NPF_DEFINITIONS_FOLDER . "lang." .$field . ".php")) ? unlink(NPF_DEFINITIONS_FOLDER . "lang." . $field . ".php") : false;
     (file_exists(NPF_DEFINITIONS_FOLDER . $field . ".php")) ? unlink(NPF_DEFINITIONS_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_SQL_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_SQL_FOLDER . $field . ".php") : false;
+    (file_exists(NPF_INCLUDES_DESCRIPTION_SQL_ARRAY_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_DESCRIPTION_SQL_ARRAY_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_TEMPLATES_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_TEMPLATES_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_PROCESSING_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_PROCESSING_FOLDER . $field . ".php") : false;
