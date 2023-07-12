@@ -1,0 +1,3 @@
+<?
+
+// Fix checkbox bug

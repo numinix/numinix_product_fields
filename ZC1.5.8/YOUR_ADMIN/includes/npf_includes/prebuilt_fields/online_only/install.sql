@@ -1,0 +1,1 @@
+ALTER TABLE products ADD online_only tinyint(1) NULL default 0;
