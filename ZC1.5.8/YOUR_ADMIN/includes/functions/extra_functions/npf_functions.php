@@ -187,7 +187,7 @@ if (!defined('IS_ADMIN_FLAG')) {
   }
   ";
     $string_npf_lang_file = "
-                           define('TEXT_" . $lang_defines . "', '" . $nice_field_name . ": ');
+                            \$define = [ 'TEXT_" . $lang_defines . "' => '" . $nice_field_name . ": ' ]; return \$define;
                            // eof";
     file_put_contents(NPF_DEFINITIONS_FOLDER . $field . '.php', $admin_start_file.$string_npf_lang_file);
     $string_npf_sql_file = "
@@ -200,7 +200,7 @@ if(isset(\$_POST['" . $field . "'])){
                 \$sql_data_array['" . $field . "'] = zen_db_prepare_input(\$_POST['" . $field . "']);
 }";
     $string_npf_sql_array_file .= "
-if(\$_POST['" . $field . "_image_delete'] == 1){
+if(isset(\$_POST['" . $field . "_image_delete']) && \$_POST['" . $field . "_image_delete'] == 1){
                 \$sql_data_array['" . $field . "'] = '';
 }";
     file_put_contents(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . '.php', $admin_start_file.$string_npf_sql_array_file);
@@ -262,6 +262,7 @@ function delete_custom_field($field){
     (file_exists(NPF_DEFINITIONS_FOLDER . "lang." .$field . ".php")) ? unlink(NPF_DEFINITIONS_FOLDER . "lang." . $field . ".php") : false;
     (file_exists(NPF_DEFINITIONS_FOLDER . $field . ".php")) ? unlink(NPF_DEFINITIONS_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_SQL_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_SQL_FOLDER . $field . ".php") : false;
+    (file_exists(NPF_INCLUDES_MODULES_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_MODULES_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_DESCRIPTION_SQL_ARRAY_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_DESCRIPTION_SQL_ARRAY_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_TEMPLATES_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_TEMPLATES_FOLDER . $field . ".php") : false;

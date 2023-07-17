@@ -88,6 +88,16 @@ require($template->get_template_dir('/tpl_products_next_previous.php',DIR_WS_TEM
   <?php if(isset($flag_show_product_info_dimensions)) echo (($flag_show_product_info_dimensions == 1 && ($products_length != 0 || $products_width != 0 || $products_height != 0)) ? '<li>' . $products_dim_display . '</li>'  : '') . "\n"; ?> 
   <?php if(isset($flag_show_product_info_diameter)) echo (($flag_show_product_info_diameter == 1 && $products_diameter != '') ? '<li>' . $products_diameter_display . '</li>'  : '') . "\n"; ?>   
   <?php if(isset($flag_show_product_info_quantity)) echo (($flag_show_product_info_quantity == 1) ? '<li>' . $products_quantity . TEXT_PRODUCT_QUANTITY . '</li>'  : '') . "\n"; ?>
+  <!-- BEGIN NPF MODIFICATIONS -->
+  <?php
+    if(count($numinix_fields_display ) > 0) { ?>
+  <?php foreach ($numinix_fields_display as $field => $value) {
+      $field_name = ucwords(str_replace('_', ' ', $field));
+  ?>
+      <li><?php echo $field_name . ': ' . $value; ?></li>      
+    <?php } ?>
+  <?php } ?>
+  <!-- END NPF MODIFICATIONS -->
   <?php if(isset($flag_show_product_info_manufacturer)) echo (($flag_show_product_info_manufacturer == 1 and !empty($manufacturers_name)) ? '<li>' . TEXT_PRODUCT_MANUFACTURER . $manufacturers_name . '</li>' : '') . "\n"; ?>
   <?php if(isset($flag_show_product_info_condition)) echo (($flag_show_product_info_condition == 1 and $products_condition != '') ? '<li>' . TEXT_PRODUCTS_CONDITION . $products_condition . '</li>' : '') . "\n"; ?>
   <?php if(isset($flag_show_product_info_upc)) echo (($flag_show_product_info_upc == 1 and $products_upc != '') ? '<li>' . TEXT_PRODUCTS_UPC . $products_upc . '</li>' : '') . "\n"; ?>  

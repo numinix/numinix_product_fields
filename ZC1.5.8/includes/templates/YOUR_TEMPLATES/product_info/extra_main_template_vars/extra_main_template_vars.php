@@ -2,6 +2,7 @@
 
 global $sniffer, $db;
 //$sniffer->field_exists(TABLE_CONFIGURATION, 'configuration_tab')
+$numinix_fields_display = [];
 if (!empty(NUMINIX_PRODUCT_FIELDS_CATALOGUE)) {
 	$select = array();
 	$numinix_fields = explode(',', NUMINIX_PRODUCT_FIELDS_CATALOGUE);

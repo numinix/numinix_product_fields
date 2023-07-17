@@ -455,6 +455,23 @@ foreach ($dirList as $file) {
 
             <!--BOF NPF [5 of 6] -->
             <?php
+            $path1 = 'languages/english/npf_definitions/';
+            $opt1 = DIR_WS_INCLUDES.$path1;
+          
+            $directory = $opt1;
+          
+            $files = scandir($directory);
+            $files = array_diff($files, array('.', '..'));
+          
+            foreach ($files as $filename) {
+              $defines = include $opt1 . $filename;
+              foreach($defines as $key=>$value){
+                if(!defined($key)){
+                  define($key, $value);
+                }
+              }
+            }
+            
             $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
             foreach ($dirList as $file) {
               include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
