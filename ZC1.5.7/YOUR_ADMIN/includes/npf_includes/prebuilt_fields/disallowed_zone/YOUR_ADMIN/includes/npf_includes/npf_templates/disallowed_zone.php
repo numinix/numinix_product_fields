@@ -1,6 +1,8 @@
 <?php 
 
 $zc156 = (PROJECT_VERSION_MAJOR > 1 || (PROJECT_VERSION_MAJOR == 1 && substr(PROJECT_VERSION_MINOR, 0, 3) >= 5.6));
+
+
 if($zc156){ ?>
           <div class="form-group">
               <?php echo zen_draw_label(TEXT_PRODUCTS_DISALLOWED_ZONE, 'disallowed_zone', 'class="col-sm-3 control-label"'); ?>

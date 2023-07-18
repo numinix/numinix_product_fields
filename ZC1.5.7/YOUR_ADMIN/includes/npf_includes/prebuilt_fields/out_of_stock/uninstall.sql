@@ -1,0 +1,1 @@
+DELETE FROM product_type_layout WHERE configuration_key IN ('SHOW_PRODUCT_INFO_OUT_OF_STOCK', 'SHOW_PRODUCT_INFO_CONDITION');

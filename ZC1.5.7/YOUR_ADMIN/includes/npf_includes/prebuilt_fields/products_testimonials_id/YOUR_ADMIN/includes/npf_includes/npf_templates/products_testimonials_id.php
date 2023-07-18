@@ -8,6 +8,7 @@
       $testimonials->MoveNext();
     }
     $zc156 = (PROJECT_VERSION_MAJOR > 1 || (PROJECT_VERSION_MAJOR == 1 && substr(PROJECT_VERSION_MINOR, 0, 3) >= 5.6));
+
     if(!$zc156){
 ?>
           <tr>
@@ -28,7 +29,7 @@
                 <?php echo zen_draw_pull_down_menu('products_testimonials_id', $testimonials_options, $pInfo->products_testimonials_id); ?>
             </div>
           </div>
-<?    }
+<?php    }
     }
   }
 ?>

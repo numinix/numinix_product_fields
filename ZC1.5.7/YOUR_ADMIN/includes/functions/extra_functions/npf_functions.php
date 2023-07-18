@@ -45,12 +45,9 @@ function zen_get_products_video_embed($product_id, $language_id) {
 }
 
 function npf_add_prebuilt_fields($field) {
-    $version = filter_var(PROJECT_VERSION_MINOR, FILTER_SANITIZE_NUMBER_FLOAT);
-    if($version < 5.8){
-        $lang_definitions_file = 'languages/english/npf_definitions/' . $field . '.php';
-    }else{
-        $lang_definitions_file = 'languages/english/npf_definitions/lang.' . $field . '.php';
-    }
+    
+    $lang_definitions_file = 'languages/english/npf_definitions/' . $field . '.php';
+    
     $array_of_files = array(
         $lang_definitions_file,
         'functions/extra_functions/' . $field . '.php',
