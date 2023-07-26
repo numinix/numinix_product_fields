@@ -12,37 +12,37 @@ if($zc156){ ?>
           <div class="form-group">
               <?php echo zen_draw_label(TEXT_PRODUCTS_MATCHING_COLOR, 'matching_color', 'class="col-sm-3 control-label"'); ?>
             <div class="col-sm-9 col-md-6">
-                <?php echo zen_draw_pulldown_products('matching_color', 'size="15"', $products_array, true, $pInfo->matching_color, true); ?>
+                <?php echo zen_draw_pulldown_products('matching_color', 'size="15" class="form-control"', $products_array, true, $pInfo->matching_color, true); ?>
             </div>
           </div>
           <div class="form-group">
               <?php echo zen_draw_label(TEXT_PRODUCTS_MATCHING_FLEECE, 'matching_fleece', 'class="col-sm-3 control-label"'); ?>
             <div class="col-sm-9 col-md-6">
-                <?php echo zen_draw_pulldown_products('matching_fleece', 'size="15"', $products_array, true, $pInfo->matching_fleece, true); ?>
+                <?php echo zen_draw_pulldown_products('matching_fleece', 'size="15" class="form-control"', $products_array, true, $pInfo->matching_fleece, true); ?>
             </div>
           </div>
           <div class="form-group">
               <?php echo zen_draw_label(TEXT_PRODUCTS_MATCHING_TANK, 'matching_tank', 'class="col-sm-3 control-label"'); ?>
             <div class="col-sm-9 col-md-6">
-                <?php echo zen_draw_pulldown_products('matching_tank', 'size="15"', $products_array, true, $pInfo->matching_tank, true); ?>
+                <?php echo zen_draw_pulldown_products('matching_tank', 'size="15" class="form-control"', $products_array, true, $pInfo->matching_tank, true); ?>
             </div>
           </div>
           <div class="form-group">
               <?php echo zen_draw_label(TEXT_PRODUCTS_MATCHING_TSHIRT, 'matching_tshirt', 'class="col-sm-3 control-label"'); ?>
             <div class="col-sm-9 col-md-6">
-                <?php echo zen_draw_pulldown_products('matching_tshirt', 'size="15"', $products_array, true, $pInfo->matching_tshirt, true); ?>
+                <?php echo zen_draw_pulldown_products('matching_tshirt', 'size="15" class="form-control"', $products_array, true, $pInfo->matching_tshirt, true); ?>
             </div>
           </div>
           <div class="form-group">
               <?php echo zen_draw_label(TEXT_PRODUCTS_MATCHING_GENDER, 'matching_gender', 'class="col-sm-3 control-label"'); ?>
             <div class="col-sm-9 col-md-6">
-                <?php echo zen_draw_pulldown_products('matching_gender', 'size="15"', $products_array, true, $pInfo->matching_gender, true); ?>
+                <?php echo zen_draw_pulldown_products('matching_gender', 'size="15" class="form-control"', $products_array, true, $pInfo->matching_gender, true); ?>
             </div>
           </div>
           <div class="form-group">
               <?php echo zen_draw_label(TEXT_PRODUCTS_MATCHING_YOUTH, 'matching_youth', 'class="col-sm-3 control-label"'); ?>
             <div class="col-sm-9 col-md-6">
-                <?php echo zen_draw_pulldown_products('matching_youth', 'size="15"', $products_array, true, $pInfo->matching_youth, true); ?>
+                <?php echo zen_draw_pulldown_products('matching_youth', 'size="15" class="form-control"', $products_array, true, $pInfo->matching_youth, true); ?>
             </div>
           </div>
 <?php } else { ?>
