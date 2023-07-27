@@ -45,12 +45,9 @@ function zen_get_products_video_embed($product_id, $language_id) {
 }
 
 function npf_add_prebuilt_fields($field) {
-    $version = filter_var(PROJECT_VERSION_MINOR, FILTER_SANITIZE_NUMBER_FLOAT);
-    if($version < 5.8){
-        $lang_definitions_file = 'languages/english/npf_definitions/' . $field . '.php';
-    }else{
-        $lang_definitions_file = 'languages/english/npf_definitions/lang.' . $field . '.php';
-    }
+    
+    $lang_definitions_file = 'languages/english/npf_definitions/lang.' . $field . '.php';
+
     $array_of_files = array(
         $lang_definitions_file,
         'functions/extra_functions/' . $field . '.php',
@@ -189,7 +186,7 @@ if (!defined('IS_ADMIN_FLAG')) {
     $string_npf_lang_file = "
                             \$define = [ 'TEXT_" . $lang_defines . "' => '" . $nice_field_name . ": ' ]; return \$define;
                            // eof";
-    file_put_contents(NPF_DEFINITIONS_FOLDER . $field . '.php', $admin_start_file.$string_npf_lang_file);
+    file_put_contents(NPF_DEFINITIONS_FOLDER  . 'lang.' .  $field . '.php', $admin_start_file.$string_npf_lang_file);
     $string_npf_sql_file = "
                 \$parameters['" . $field . "'] = '';
                 \$npf_fields .= ', p." . $field . "'; 
@@ -260,7 +257,6 @@ if($zc156){
 function delete_custom_field($field){
     global $sniffer, $db, $messageStack;
     (file_exists(NPF_DEFINITIONS_FOLDER . "lang." .$field . ".php")) ? unlink(NPF_DEFINITIONS_FOLDER . "lang." . $field . ".php") : false;
-    (file_exists(NPF_DEFINITIONS_FOLDER . $field . ".php")) ? unlink(NPF_DEFINITIONS_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_SQL_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_SQL_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_MODULES_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_MODULES_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_DESCRIPTION_SQL_ARRAY_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_DESCRIPTION_SQL_ARRAY_FOLDER . $field . ".php") : false;

@@ -45,12 +45,9 @@ function zen_get_products_video_embed($product_id, $language_id) {
 }
 
 function npf_add_prebuilt_fields($field) {
-    $version = filter_var(PROJECT_VERSION_MINOR, FILTER_SANITIZE_NUMBER_FLOAT);
-    if($version < 5.8){
-        $lang_definitions_file = 'languages/english/npf_definitions/' . $field . '.php';
-    }else{
-        $lang_definitions_file = 'languages/english/npf_definitions/lang.' . $field . '.php';
-    }
+
+    $lang_definitions_file = 'languages/english/npf_definitions/' . $field . '.php';
+
     $array_of_files = array(
         $lang_definitions_file,
         'functions/extra_functions/' . $field . '.php',
@@ -259,7 +256,6 @@ if($zc156){
 //bof NX-2511: Program delete feature in NPF
 function delete_custom_field($field){
     global $sniffer, $db, $messageStack;
-    (file_exists(NPF_DEFINITIONS_FOLDER . "lang." .$field . ".php")) ? unlink(NPF_DEFINITIONS_FOLDER . "lang." . $field . ".php") : false;
     (file_exists(NPF_DEFINITIONS_FOLDER . $field . ".php")) ? unlink(NPF_DEFINITIONS_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_SQL_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_SQL_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_MODULES_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_MODULES_FOLDER . $field . ".php") : false;

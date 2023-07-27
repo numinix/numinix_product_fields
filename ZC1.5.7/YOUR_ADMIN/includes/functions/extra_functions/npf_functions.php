@@ -256,7 +256,6 @@ if($zc156){
 //bof NX-2511: Program delete feature in NPF
 function delete_custom_field($field){
     global $sniffer, $db, $messageStack;
-    (file_exists(NPF_DEFINITIONS_FOLDER . "lang." .$field . ".php")) ? unlink(NPF_DEFINITIONS_FOLDER . "lang." . $field . ".php") : false;
     (file_exists(NPF_DEFINITIONS_FOLDER . $field . ".php")) ? unlink(NPF_DEFINITIONS_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_SQL_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_SQL_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_MODULES_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_MODULES_FOLDER . $field . ".php") : false;
