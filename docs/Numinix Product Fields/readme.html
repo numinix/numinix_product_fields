@@ -120,6 +120,7 @@ if ( file_exists(DIR_WS_INCLUDES . &#x27;init_includes/extra_sanitation_rules.ph
                 </div>
               </div>
             </li>
+            <li>See the <strong>TIPS</strong> page for more details about the usage of this plugin.</li>
 
           </ol>
         </div>
@@ -136,6 +137,12 @@ if ( file_exists(DIR_WS_INCLUDES . &#x27;init_includes/extra_sanitation_rules.ph
           <ul>
             <li>Most of the fields have been setup for data entry only. To show them on your store's website you will
               need to modify your plugins and templates according to your project's specifications.</li>
+            <li>Create your own fields at the bottom of CATALOG > NUMINIX PRODUCT FIELDS.</li>
+            <li>
+              To show the information stored in the fields, add them to the list in CONFIGURATION > NUMINIX PRODUCT FIELDS > FIELDS TO DISPLAY ON PRODUCT INFO PAGE, separate them by commas (without spaces), 
+              eg. If the name of the field is "Additional Skus", the name to add in the list would be additional_skus.
+            </li>
+            <li>To add many fields to the list mentioned before, add them separated by commas without spaces. Eg. additional_skus,my_test_field.</li>
         </div>
       </div>
       <!--EOF TIPS-->
