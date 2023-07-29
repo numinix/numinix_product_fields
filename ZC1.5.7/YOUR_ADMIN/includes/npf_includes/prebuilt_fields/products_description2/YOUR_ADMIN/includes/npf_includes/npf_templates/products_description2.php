@@ -28,7 +28,7 @@ if($zc156){ ?>
 
           } else { // using HTMLAREA or just raw "source"
 
-            echo zen_draw_textarea_field('products_description2[' . $languages[$i]['id'] . ']', 'soft', '100%', '30', (isset($products_description2[$languages[$i]['id']])) ? stripslashes($products_description2[$languages[$i]['id']]) : zen_get_products_description2($pInfo->products_id, $languages[$i]['id'])); //,'id="'.'products_description' . $languages[$i]['id'] . '"');
+            echo zen_draw_textarea_field('products_description2[' . $languages[$i]['id'] . ']', 'soft', '100%', '30', (isset($products_description2[$languages[$i]['id']])) ? stripslashes($products_description2[$languages[$i]['id']]) : zen_get_products_description2($pInfo->products_id, $languages[$i]['id']),'class="editorHook form-control"'); //,'id="'.'products_description' . $languages[$i]['id'] . '"');
           } ?>
              <br>
                 </div>

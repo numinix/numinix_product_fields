@@ -7,7 +7,7 @@ if($zc156){ ?>
           <p class="col-sm-3 control-label"><?php echo TEXT_PRODUCTS_VIDEO_EMBED; ?></p>
         <div class="col-sm-9 col-md-6">
                     <div class="input-group">
-                        <?php echo zen_draw_textarea_field('products_video_embed', 'soft', '100%', '30', $pInfo->products_video_embed); ?>                  </td>
+                        <?php echo zen_draw_textarea_field('products_video_embed', 'soft', '100%', '30', $pInfo->products_video_embed,'class="editorHook form-control"'); ?>                  </td>
                     </div>
         </div>
     </div>
@@ -15,9 +15,7 @@ if($zc156){ ?>
     <div class="form-group">
           <p class="col-sm-3 control-label"><?php echo TEXT_PRODUCTS_VIDEO_EMBED; ?></p>
         <div class="col-sm-9 col-md-6">
-                    <div class="input-group">
-                  <?php echo zen_draw_input_field('products_video_embed_thumbnail', $pInfo->products_video_embed_thumbnail, zen_set_field_length(TABLE_PRODUCTS_DESCRIPTION, 'products_video_embed_thumbnail')); ?>
-                  </div>
+                  <?php echo zen_draw_input_field('products_video_embed_thumbnail', $pInfo->products_video_embed_thumbnail, 'class="form-control"'.zen_set_field_length(TABLE_PRODUCTS_DESCRIPTION, 'products_video_embed_thumbnail')); ?>
         </div>
     </div>
 <?php } else { ?>

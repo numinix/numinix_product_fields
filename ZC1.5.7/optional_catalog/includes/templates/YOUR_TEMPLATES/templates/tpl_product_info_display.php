@@ -74,13 +74,17 @@ require($template->get_template_dir('/tpl_products_next_previous.php',DIR_WS_TEM
 <!--bof Product Price block -->
 <!--bof Product details list  -->
 <?php if ( (($flag_show_product_info_model == 1 and $products_model != '') or ($flag_show_product_info_weight == 1 and $products_weight !=0) or ($flag_show_product_info_quantity == 1) or ($flag_show_product_info_manufacturer == 1 and !empty($manufacturers_name))) ) { ?>
-  <ul id="productDetailsList" class="floatingBox back">
-  <?php if(isset($flag_show_product_info_model)) echo (($flag_show_product_info_model == 1 and $products_model != '') ? '<li>' . TEXT_PRODUCT_MODEL . $products_model . '</li>' : '') . "\n"; ?>
-  <?php if(isset($flag_show_product_info_weight)) echo (($flag_show_product_info_weight == 1 and $products_weight != 0) ? '<li>' . $products_weight_display . '</li>'  : '') . "\n"; ?>
-  <?php if(isset($flag_show_product_info_actual_weight)) echo (($flag_show_product_info_actual_weight == 1 and $products_actual_weight != 0) ? '<li>' . $products_actual_weight_display . '</li>'  : '') . "\n"; ?>
-  <?php if(isset($flag_show_product_info_dimensions)) echo (($flag_show_product_info_dimensions == 1 && ($products_length != 0 || $products_width != 0 || $products_height != 0)) ? '<li>' . $products_dim_display . '</li>'  : '') . "\n"; ?> 
-  <?php if(isset($flag_show_product_info_diameter)) echo (($flag_show_product_info_diameter == 1 && $products_diameter != '') ? '<li>' . $products_diameter_display . '</li>'  : '') . "\n"; ?>   
-  <?php if(isset($flag_show_product_info_quantity)) echo (($flag_show_product_info_quantity == 1) ? '<li>' . $products_quantity . TEXT_PRODUCT_QUANTITY . '</li>'  : '') . "\n"; ?>
+<ul id="productDetailsList">
+  <?php echo (($flag_show_product_info_model == 1 and $products_model !='') ? '<li>' . TEXT_PRODUCT_MODEL . $products_model . '</li>' : '') . "\n"; ?>
+  <?php echo (($flag_show_product_info_weight == 1 and $products_weight !=0) ? '<li>' . TEXT_PRODUCT_WEIGHT .  $products_weight . TEXT_PRODUCT_WEIGHT_UNIT . '</li>'  : '') . "\n"; ?>
+  <!-- BEGIN NPF MODIFICATIONS -->
+  <?php if ((!isset($flag_show_product_info_out_of_stock) || ($flag_show_product_info_out_of_stock == 1 && $products_out_of_stock == 0))) { ?>
+  <!-- END NPF MODIFICATIONS -->
+  <?php echo (($flag_show_product_info_quantity == 1) ? '<li>' . $products_quantity . TEXT_PRODUCT_QUANTITY . '</li>'  : '') . "\n"; ?>
+  <!-- BEGIN NPF MODIFICATIONS -->
+  <?php }else{} ?>
+  <!-- END NPF MODIFICATIONS -->
+
   <!-- BEGIN NPF MODIFICATIONS -->
   <?php
     if(count($numinix_fields_display ) > 0) { ?>
@@ -91,17 +95,20 @@ require($template->get_template_dir('/tpl_products_next_previous.php',DIR_WS_TEM
     <?php } ?>
   <?php } ?>
   <!-- END NPF MODIFICATIONS -->
-  <?php if(isset($flag_show_product_info_manufacturer)) echo (($flag_show_product_info_manufacturer == 1 and !empty($manufacturers_name)) ? '<li>' . TEXT_PRODUCT_MANUFACTURER . $manufacturers_name . '</li>' : '') . "\n"; ?>
+  
+  <?php echo (($flag_show_product_info_manufacturer == 1 and !empty($manufacturers_name)) ? '<li>' . TEXT_PRODUCT_MANUFACTURER . $manufacturers_name . '</li>' : '') . "\n"; ?>
+  <!-- BEGIN NPF MODIFICATIONS -->
   <?php if(isset($flag_show_product_info_condition)) echo (($flag_show_product_info_condition == 1 and $products_condition != '') ? '<li>' . TEXT_PRODUCTS_CONDITION . $products_condition . '</li>' : '') . "\n"; ?>
   <?php if(isset($flag_show_product_info_upc)) echo (($flag_show_product_info_upc == 1 and $products_upc != '') ? '<li>' . TEXT_PRODUCTS_UPC . $products_upc . '</li>' : '') . "\n"; ?>  
   <?php if(isset($flag_show_product_info_isbn)) echo (($flag_show_product_info_isbn == 1 and $products_isbn != '') ? '<li>' . TEXT_PRODUCTS_ISBN . $products_isbn . '</li>' : '') . "\n"; ?>
   <?php if(isset($flag_show_product_info_sku)) echo (($flag_show_product_info_sku == 1 and $products_sku != '') ? '<li>' . TEXT_PRODUCTS_SKU . $products_sku . '</li>' : '') . "\n"; ?>
+  <!-- END NPF MODIFICATIONS -->
 </ul>
 <?php
   }
 ?>
 <!--eof Product details list -->
-
+<!-- BEGIN NPF MODIFICATIONS -->
 <!-- bof Product description 2 -->
 <?php if ($products_description2 != '') { ?>
 <div id="productDescription2" class="productGeneral biggerText"><?php echo stripslashes($products_description2); ?></div>
@@ -115,36 +122,8 @@ require($template->get_template_dir('/tpl_products_next_previous.php',DIR_WS_TEM
 <br class="clearBoth" />
 <?php } ?>
 <!-- eof Care Instructions -->
+<!-- END NPF MODIFICATIONS -->
 
-
-<?php if (isset($flag_show_product_info_out_of_stock) && !$flag_show_product_info_out_of_stock) { ?>
-<!--bof Add to Cart Box -->
-<?php
-if (CUSTOMERS_APPROVAL == 3 and TEXT_LOGIN_FOR_PRICE_BUTTON_REPLACE_SHOWROOM == '') {
-  // do nothing
-} else {
-?>
-            <?php
-    $display_qty = (($flag_show_product_info_in_cart_qty == 1 and $_SESSION['cart']->in_cart($_GET['products_id'])) ? '<p>' . PRODUCTS_ORDER_QTY_TEXT_IN_CART . $_SESSION['cart']->get_quantity($_GET['products_id']) . '</p>' : '');
-            if ($products_qty_box_status == 0 or $products_quantity_order_max== 1) {
-              // hide the quantity box and default to 1
-              $the_button = '<input type="hidden" name="cart_quantity" value="1" />' . zen_draw_hidden_field('products_id', (int)$_GET['products_id']) . zen_image_submit(BUTTON_IMAGE_IN_CART, BUTTON_IN_CART_ALT);
-            } else {
-              // show the quantity box
-    $the_button = PRODUCTS_ORDER_QTY_TEXT . '<input type="text" name="cart_quantity" value="' . (zen_get_buy_now_qty($_GET['products_id'])) . '" maxlength="6" size="4" /><br />' . zen_get_products_quantity_min_units_display((int)$_GET['products_id']) . '<br />' . zen_draw_hidden_field('products_id', (int)$_GET['products_id']) . zen_image_submit(BUTTON_IMAGE_IN_CART, BUTTON_IN_CART_ALT);
-            }
-    $display_button = zen_get_buy_now_button($_GET['products_id'], $the_button);
-  ?>
-  <?php if ($display_qty != '' or $display_button != '') { ?>
-    <div id="cartAdd">
-    <?php
-      echo $display_qty;
-      echo $display_button;
-            ?>
-          </div>
-  <?php } // display qty and button ?>
-<?php } // CUSTOMERS_APPROVAL == 3 ?>
-<!--eof Add to Cart Box-->
 
 <?php
 if ($flag_show_ask_a_question) {
@@ -208,17 +187,10 @@ if ($flag_show_ask_a_question) {
   }
 ?>
 <!--eof Quantity Discounts table -->
-<?php } else { ?>
-  <p class="outofStock"><?php echo TEXT_PRODUCTS_OUT_OF_STOCK; ?></p>
-<?php } // end out of stock ?>
-<!--bof Additional Product Images -->
-<?php
-/**
- * display the products additional images
- */
-  require($template->get_template_dir('/tpl_modules_additional_images.php',DIR_WS_TEMPLATE, $current_page_base,'templates'). '/tpl_modules_additional_images.php'); ?>
-<!--eof Additional Product Images -->
 
+<!-- BEGIN NPF MODIFICATIONS -->
+<?php if ((!isset($flag_show_product_info_out_of_stock) || ($flag_show_product_info_out_of_stock == 1 && $products_out_of_stock == 0))) { ?>
+<!-- END NPF MODIFICATIONS -->
 
 <!--bof Add to Cart Box -->
 <?php
@@ -247,6 +219,13 @@ if (CUSTOMERS_APPROVAL == 3 and TEXT_LOGIN_FOR_PRICE_BUTTON_REPLACE_SHOWROOM == 
 <?php   } // display qty and button ?>
 <?php } // CUSTOMERS_APPROVAL == 3 ?>
 <!--eof Add to Cart Box-->
+
+<!-- BEGIN NPF MODIFICATIONS -->
+<?php } else { ?>
+  <p class="outofStock"><?php echo TEXT_PRODUCTS_OUT_OF_STOCK; ?></p>
+<?php } // end out of stock ?>
+<!-- END NPF MODIFICATIONS -->
+
 </div>
 </div>
 
@@ -268,16 +247,6 @@ if (CUSTOMERS_APPROVAL == 3 and TEXT_LOGIN_FOR_PRICE_BUTTON_REPLACE_SHOWROOM == 
  require($template->get_template_dir('/tpl_products_next_previous.php',DIR_WS_TEMPLATE, $current_page_base,'templates'). '/tpl_products_next_previous.php'); ?>
 <?php } ?>
 <!--eof Prev/Next bottom position -->
-
-
-<!--bof Tell a Friend button -->
-<?php
-  if (isset($flag_show_product_info_tell_a_friend) && $flag_show_product_info_tell_a_friend == 1) { ?>
-<div id="productTellFriendLink" class="buttonRow forward"><?php echo ($flag_show_product_info_tell_a_friend == 1 ? '<a href="' . zen_href_link(FILENAME_TELL_A_FRIEND, 'products_id=' . $_GET['products_id']) . '">' . zen_image_button(BUTTON_IMAGE_TELLAFRIEND, BUTTON_TELLAFRIEND_ALT) . '</a>' : ''); ?></div>
-<?php
-  }
-?>
-<!--eof Tell a Friend button -->
 
 <!--bof Reviews button and count-->
 <?php
