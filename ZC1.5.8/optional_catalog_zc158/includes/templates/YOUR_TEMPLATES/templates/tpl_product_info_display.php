@@ -77,10 +77,17 @@ require($template->get_template_dir('/tpl_products_next_previous.php',DIR_WS_TEM
 <ul id="productDetailsList">
   <?php echo (($flag_show_product_info_model == 1 and $products_model !='') ? '<li>' . TEXT_PRODUCT_MODEL . $products_model . '</li>' : '') . "\n"; ?>
   <?php echo (($flag_show_product_info_weight == 1 and $products_weight !=0) ? '<li>' . TEXT_PRODUCT_WEIGHT .  $products_weight . TEXT_PRODUCT_WEIGHT_UNIT . '</li>'  : '') . "\n"; ?>
+  <!-- BEGIN NPF MODIFICATIONS -->
+  <?php if ((!isset($flag_show_product_info_out_of_stock) || ($flag_show_product_info_out_of_stock == 1 && $products_out_of_stock == 0))) { ?>
+  <!-- END NPF MODIFICATIONS -->
   <?php echo (($flag_show_product_info_quantity == 1) ? '<li>' . $products_quantity . TEXT_PRODUCT_QUANTITY . '</li>'  : '') . "\n"; ?>
   <!-- BEGIN NPF MODIFICATIONS -->
+  <?php }else{} ?>
+  <!-- END NPF MODIFICATIONS -->
+
+  <!-- BEGIN NPF MODIFICATIONS -->
   <?php
-    if(isset($numinix_fields_display) && count($numinix_fields_display ) > 0) { ?>
+    if(count($numinix_fields_display ) > 0) { ?>
   <?php foreach ($numinix_fields_display as $field => $value) {
       $field_name = ucwords(str_replace('_', ' ', $field));
   ?>
@@ -88,6 +95,7 @@ require($template->get_template_dir('/tpl_products_next_previous.php',DIR_WS_TEM
     <?php } ?>
   <?php } ?>
   <!-- END NPF MODIFICATIONS -->
+
   <?php echo (($flag_show_product_info_manufacturer == 1 and !empty($manufacturers_name)) ? '<li>' . TEXT_PRODUCT_MANUFACTURER . $manufacturers_name . '</li>' : '') . "\n"; ?>
   <!-- BEGIN NPF MODIFICATIONS -->
   <?php if(isset($flag_show_product_info_condition)) echo (($flag_show_product_info_condition == 1 and $products_condition != '') ? '<li>' . TEXT_PRODUCTS_CONDITION . $products_condition . '</li>' : '') . "\n"; ?>
@@ -99,6 +107,23 @@ require($template->get_template_dir('/tpl_products_next_previous.php',DIR_WS_TEM
 <?php
   }
 ?>
+
+<!-- BEGIN NPF MODIFICATIONS -->
+<!-- bof Product description 2 -->
+<?php if ($products_description2 != '') { ?>
+<div id="productDescription2" class="productGeneral biggerText"><?php echo stripslashes($products_description2); ?></div>
+<br class="clearBoth" />
+<?php } ?>
+<!-- eof Product description 2 -->
+
+<!-- bof Care Instructions  -->
+<?php if ($care_instructions != '') { ?>
+<div id="careInstructions" class="productGeneral biggerText"><?php echo stripslashes($care_instructions); ?></div>
+<br class="clearBoth" />
+<?php } ?>
+<!-- eof Care Instructions -->
+<!-- END NPF MODIFICATIONS -->
+
 <!--eof Product details list -->
 
 <?php
@@ -165,6 +190,11 @@ if ($flag_show_ask_a_question) {
 <!--eof Quantity Discounts table -->
 
 <!--bof Add to Cart Box -->
+
+<!-- BEGIN NPF MODIFICATIONS -->
+<?php if ((!isset($flag_show_product_info_out_of_stock) || ($flag_show_product_info_out_of_stock == 1 && $products_out_of_stock == 0))) { ?>
+<!-- END NPF MODIFICATIONS -->
+
 <?php
 if (CUSTOMERS_APPROVAL == 3 and TEXT_LOGIN_FOR_PRICE_BUTTON_REPLACE_SHOWROOM == '') {
   // do nothing
@@ -192,6 +222,12 @@ if (CUSTOMERS_APPROVAL == 3 and TEXT_LOGIN_FOR_PRICE_BUTTON_REPLACE_SHOWROOM == 
           </div>
 <?php   } // display qty and button ?>
 <?php } // CUSTOMERS_APPROVAL == 3 ?>
+
+<!-- BEGIN NPF MODIFICATIONS -->
+<?php } else { ?>
+  <p class="outofStock"><?php echo TEXT_PRODUCTS_OUT_OF_STOCK; ?></p>
+<?php } // end out of stock ?>
+<!-- END NPF MODIFICATIONS -->
 <!--eof Add to Cart Box-->
 </div>
 </div>

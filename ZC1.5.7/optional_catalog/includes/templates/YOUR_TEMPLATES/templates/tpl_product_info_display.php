@@ -107,7 +107,7 @@ require($template->get_template_dir('/tpl_products_next_previous.php',DIR_WS_TEM
 <?php
   }
 ?>
-<!--eof Product details list -->
+
 <!-- BEGIN NPF MODIFICATIONS -->
 <!-- bof Product description 2 -->
 <?php if ($products_description2 != '') { ?>
@@ -124,6 +124,7 @@ require($template->get_template_dir('/tpl_products_next_previous.php',DIR_WS_TEM
 <!-- eof Care Instructions -->
 <!-- END NPF MODIFICATIONS -->
 
+<!--eof Product details list -->
 
 <?php
 if ($flag_show_ask_a_question) {
@@ -188,11 +189,13 @@ if ($flag_show_ask_a_question) {
 ?>
 <!--eof Quantity Discounts table -->
 
+
+<!--bof Add to Cart Box -->
+
 <!-- BEGIN NPF MODIFICATIONS -->
 <?php if ((!isset($flag_show_product_info_out_of_stock) || ($flag_show_product_info_out_of_stock == 1 && $products_out_of_stock == 0))) { ?>
 <!-- END NPF MODIFICATIONS -->
 
-<!--bof Add to Cart Box -->
 <?php
 if (CUSTOMERS_APPROVAL == 3 and TEXT_LOGIN_FOR_PRICE_BUTTON_REPLACE_SHOWROOM == '') {
   // do nothing
@@ -218,14 +221,14 @@ if (CUSTOMERS_APPROVAL == 3 and TEXT_LOGIN_FOR_PRICE_BUTTON_REPLACE_SHOWROOM == 
           </div>
 <?php   } // display qty and button ?>
 <?php } // CUSTOMERS_APPROVAL == 3 ?>
-<!--eof Add to Cart Box-->
+
 
 <!-- BEGIN NPF MODIFICATIONS -->
 <?php } else { ?>
   <p class="outofStock"><?php echo TEXT_PRODUCTS_OUT_OF_STOCK; ?></p>
 <?php } // end out of stock ?>
 <!-- END NPF MODIFICATIONS -->
-
+<!--eof Add to Cart Box-->
 </div>
 </div>
 
