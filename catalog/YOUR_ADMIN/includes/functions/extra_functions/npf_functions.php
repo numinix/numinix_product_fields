@@ -1,12 +1,13 @@
 <?php
 
-function dirList($directory) {
+function dirList($directory)
+{
     // create an array to hold directory list
     $results = array();
-    
-    if (is_dir($directory)){
+
+    if (is_dir($directory)) {
         // create a handler for the directory
-        if ($handler = opendir($directory)){
+        if ($handler = opendir($directory)) {
             // keep going until all files in directory have been read
             while ($file = readdir($handler)) {
                 // if $file isn't this directory or its parent, 
@@ -20,11 +21,12 @@ function dirList($directory) {
             // done!
         }
     }
-    
+
     return $results;
 }
 
-function zen_get_products_description2($product_id, $language_id) {
+function zen_get_products_description2($product_id, $language_id)
+{
     global $db;
     $product = $db->Execute("select products_description2
                            from " . TABLE_PRODUCTS_DESCRIPTION . "
@@ -34,7 +36,8 @@ function zen_get_products_description2($product_id, $language_id) {
     return $product->fields['products_description2'];
 }
 
-function zen_get_products_video_embed($product_id, $language_id) {
+function zen_get_products_video_embed($product_id, $language_id)
+{
     global $db;
     $product = $db->Execute("select products_video_embed
                            from " . TABLE_PRODUCTS_DESCRIPTION . "
@@ -44,7 +47,8 @@ function zen_get_products_video_embed($product_id, $language_id) {
     return $product->fields['products_video_embed'];
 }
 
-function npf_add_prebuilt_fields($field) {
+function npf_add_prebuilt_fields($field)
+{
 
     $lang_definitions_file = 'languages/english/npf_definitions/' . $field . '.php';
 
@@ -63,17 +67,18 @@ function npf_add_prebuilt_fields($field) {
     );
     $npf_copy_failed_count = 0;
     foreach ($array_of_files as $possible_file) {
-        if (!npf_copy_file($field, $possible_file)){
-            $npf_copy_failed_count ++;
+        if (!npf_copy_file($field, $possible_file)) {
+            $npf_copy_failed_count++;
         }
     }
-    if( $npf_copy_failed_count == count($array_of_files) ){ // if none of the files gets copied over, something is wrong for sure
+    if ($npf_copy_failed_count == count($array_of_files)) { // if none of the files gets copied over, something is wrong for sure
         return false;
     }
     return true;
 }
 
-function npf_copy_file($field, $folder) {
+function npf_copy_file($field, $folder)
+{
     if (file_exists(DIR_FS_ADMIN . NPF_INCLUDES_PREBUILT_FOLDER . $field . '/YOUR_ADMIN/includes/' . $folder)) {
         $contents = file_get_contents(DIR_FS_ADMIN . NPF_INCLUDES_PREBUILT_FOLDER . $field . '/YOUR_ADMIN/includes/' . $folder);
         $copy_file_result = file_put_contents(DIR_FS_ADMIN . DIR_WS_INCLUDES . $folder, $contents);
@@ -86,7 +91,8 @@ function npf_copy_file($field, $folder) {
     }
 }
 
-function npf_sql_patch($string) {
+function npf_sql_patch($string)
+{
     global $sniffer, $db;
     $string = str_replace("`", "", $string);
     $string = str_replace(" products ", " " . DB_PREFIX . "products ", $string);
@@ -102,7 +108,8 @@ function npf_sql_patch($string) {
 
 if (!function_exists('npf_field_value')) {
 
-    function npf_field_value($id, $field) {
+    function npf_field_value($id, $field)
+    {
         global $db;
         $product = $db->Execute("SELECT * FROM " . TABLE_PRODUCTS . " WHERE products_id=" . (int) $id . " LIMIT 1");
         $value = $product->fields[$field];
@@ -111,7 +118,8 @@ if (!function_exists('npf_field_value')) {
 
 }
 
-function add_custom_field($field_name, $type, $length = '300') {
+function add_custom_field($field_name, $type, $length = '300')
+{
     global $db, $messageStack;
     $field = str_replace(" ", "_", strtolower($field_name));
     $nice_field_name = ucwords(strtolower(str_replace("_", " ", $field)));
@@ -163,7 +171,7 @@ function add_custom_field($field_name, $type, $length = '300') {
         case "text":
         default:
             $sql_type = "varchar(" . $length . ") NULL default NULL";
-            if($zc156){
+            if ($zc156) {
                 $string_input_field = "zen_draw_input_field('" . $field . "',(\$pInfo->" . $field . "),'class=\"form-control\"');";
             } else {
                 $string_input_field = "zen_draw_input_field('" . $field . "',(\$pInfo->" . $field . "),zen_set_field_length(TABLE_PRODUCTS, '" . $field . "'));";
@@ -183,15 +191,25 @@ if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
   }
   ";
+
     $string_npf_lang_file = "
-                \$define = [ 'TEXT_" . $lang_defines . "' => '" . $nice_field_name . ": ' ]; return \$define;
-                           // eof";
-    file_put_contents(NPF_DEFINITIONS_FOLDER . $field . '.php', $admin_start_file.$string_npf_lang_file);
+  \$define = [ 'TEXT_" . $lang_defines . "' => '" . $nice_field_name . ": ' ];
+  \$zc158 = (PROJECT_VERSION_MAJOR > 1 || (PROJECT_VERSION_MAJOR == 1 && substr(PROJECT_VERSION_MINOR, 0, 3) >= '5.8'));
+  if (\$zc158) {
+      return \$define;
+  } else {
+      nmx_create_defines(\$define);
+  }
+  // eof";
+    // $string_npf_lang_file = "
+    //             \$define = [ 'TEXT_" . $lang_defines . "' => '" . $nice_field_name . ": ' ]; return \$define;
+    //                        // eof";
+    file_put_contents(NPF_DEFINITIONS_FOLDER . $field . '.php', $admin_start_file . $string_npf_lang_file);
     $string_npf_sql_file = "
                 \$parameters['" . $field . "'] = '';
                 \$npf_fields .= ', p." . $field . "'; 
                 // eof";
-    file_put_contents(NPF_INCLUDES_SQL_FOLDER . $field . '.php', $admin_start_file.$string_npf_sql_file);
+    file_put_contents(NPF_INCLUDES_SQL_FOLDER . $field . '.php', $admin_start_file . $string_npf_sql_file);
     $string_npf_sql_array_file = "
 if(isset(\$_POST['" . $field . "'])){
                 \$sql_data_array['" . $field . "'] = zen_db_prepare_input(\$_POST['" . $field . "']);
@@ -200,20 +218,20 @@ if(isset(\$_POST['" . $field . "'])){
 if(isset(\$_POST['" . $field . "_image_delete']) && \$_POST['" . $field . "_image_delete'] == 1){
                 \$sql_data_array['" . $field . "'] = '';
 }";
-    file_put_contents(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . '.php', $admin_start_file.$string_npf_sql_array_file);
-if($zc156){
-    $string_npf_templates_file = "           <div class=\"form-group\">
-              <?php echo zen_draw_label(TEXT_" . $lang_defines . ", '".$field."', 'class=\"col-sm-3 control-label\"'); ?>
-            <div class=\"col-sm-9 col-md-6\">"; 
-            if ($type == "file") {
-                $string_npf_templates_file .= $string_input_field . "</div></div>";
-            } else {
-                $string_npf_templates_file .= "<?php echo " . $string_input_field . " ?>
+    file_put_contents(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . '.php', $admin_start_file . $string_npf_sql_array_file);
+    if ($zc156) {
+        $string_npf_templates_file = "           <div class=\"form-group\">
+              <?php echo zen_draw_label(TEXT_" . $lang_defines . ", '" . $field . "', 'class=\"col-sm-3 control-label\"'); ?>
+            <div class=\"col-sm-9 col-md-6\">";
+        if ($type == "file") {
+            $string_npf_templates_file .= $string_input_field . "</div></div>";
+        } else {
+            $string_npf_templates_file .= "<?php echo " . $string_input_field . " ?>
             </div>
           </div>";
-            }
-} else {
-    $string_npf_templates_file = "          <tr>
+        }
+    } else {
+        $string_npf_templates_file = "          <tr>
                <td colspan=\"2\"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
              </tr>          
              <tr bgcolor=\"#DDEACC\">
@@ -223,30 +241,30 @@ if($zc156){
              <tr>
                <td colspan=\"2\"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
              </tr>";
-}
+    }
     file_put_contents(NPF_INCLUDES_TEMPLATES_FOLDER . $field . '.php', $string_npf_templates_file);
     if ($type == 'file') {
         $process_string = "
         ";
-        file_put_contents(NPF_INCLUDES_PROCESSING_FOLDER . $field . '.php', $admin_start_file.$process_string);
+        file_put_contents(NPF_INCLUDES_PROCESSING_FOLDER . $field . '.php', $admin_start_file . $process_string);
         $preview_string = "
         if (!isset(\$_GET['read']) || \$_GET['read'] == 'only') {
           \$products_" . $field . " = new upload('" . $field . "');
-          \$products_" . $field . "->set_destination(DIR_FS_CATALOG .'".NPF_UPLOAD_FOLDER."/');
+          \$products_" . $field . "->set_destination(DIR_FS_CATALOG .'" . NPF_UPLOAD_FOLDER . "/');
           if (\$products_" . $field . "->parse() && \$products_" . $field . "->save(isset(\$_POST['" . $field . "_overwrite']) ? \$_POST['" . $field . "_overwrite'] : false)) {
-            \$products_" . $field . "_name = '".NPF_UPLOAD_FOLDER."/' . \$products_" . $field . "->filename;
+            \$products_" . $field . "_name = '" . NPF_UPLOAD_FOLDER . "/' . \$products_" . $field . "->filename;
           } else {
             \$products_" . $field . "_name = (isset(\$_POST['" . $field . "_previous_image']) ? \$_POST['" . $field . "_previous_image'] : '');
           }
         }
         if (\$_POST['" . $field . "_image_manual'] != '') {
-            \$products_" . $field . "_name = '".NPF_UPLOAD_FOLDER."/' . \$_POST['" . $field . "_image_manual'];
+            \$products_" . $field . "_name = '" . NPF_UPLOAD_FOLDER . "/' . \$_POST['" . $field . "_image_manual'];
         }
         \$_POST['" . $field . "'] = \$products_" . $field . "_name;
         ";
-        file_put_contents(NPF_INCLUDES_PREVIEW_FOLDER . $field . '.php', $admin_start_file.$preview_string);
-        $preview_info_string =  '';
-        file_put_contents(NPF_INCLUDES_PREVIEW_INFO_FOLDER . $field . '.php', $admin_start_file.$preview_info_string);
+        file_put_contents(NPF_INCLUDES_PREVIEW_FOLDER . $field . '.php', $admin_start_file . $preview_string);
+        $preview_info_string = '';
+        file_put_contents(NPF_INCLUDES_PREVIEW_INFO_FOLDER . $field . '.php', $admin_start_file . $preview_info_string);
     }
     //add the field to the DB
     $db->Execute("ALTER TABLE `" . DB_PREFIX . "products` ADD `" . $field . "` " . $sql_type . ";");
@@ -254,7 +272,8 @@ if($zc156){
 }
 
 //bof NX-2511: Program delete feature in NPF
-function delete_custom_field($field){
+function delete_custom_field($field)
+{
     global $sniffer, $db, $messageStack;
     (file_exists(NPF_DEFINITIONS_FOLDER . $field . ".php")) ? unlink(NPF_DEFINITIONS_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_SQL_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_SQL_FOLDER . $field . ".php") : false;
@@ -266,8 +285,8 @@ function delete_custom_field($field){
     (file_exists(NPF_INCLUDES_PREVIEW_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_PREVIEW_FOLDER . $field . ".php") : false;
     (file_exists(NPF_INCLUDES_PREVIEW_INFO_FOLDER . $field . ".php")) ? unlink(NPF_INCLUDES_PREVIEW_INFO_FOLDER . $field . ".php") : false;
     ($sniffer->field_exists(TABLE_PRODUCTS, $field)) ? $db->Execute("ALTER TABLE `" . DB_PREFIX . "products` DROP `" . $field . "`;") : false;
-    if(file_exists(NPF_INCLUDES_PREBUILT_FOLDER.$field.'/uninstall.sql')) {
-        $query_string = file_get_contents(NPF_INCLUDES_PREBUILT_FOLDER.$field.'/uninstall.sql');
+    if (file_exists(NPF_INCLUDES_PREBUILT_FOLDER . $field . '/uninstall.sql')) {
+        $query_string = file_get_contents(NPF_INCLUDES_PREBUILT_FOLDER . $field . '/uninstall.sql');
         npf_sql_patch($query_string);
     }
     $messageStack->add($field . " deleted", 'success');
