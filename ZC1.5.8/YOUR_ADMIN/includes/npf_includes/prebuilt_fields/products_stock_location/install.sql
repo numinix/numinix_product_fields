@@ -1,1 +1,0 @@
-ALTER TABLE products ADD products_stock_location varchar(150) NULL default NULL;

@@ -1,1 +1,0 @@
-ALTER TABLE products ADD discontinue int(1) NULL default 0;

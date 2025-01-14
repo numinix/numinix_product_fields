@@ -1,1 +1,0 @@
-ALTER TABLE `products` ADD `products_secret` int(1) DEFAULT 0;

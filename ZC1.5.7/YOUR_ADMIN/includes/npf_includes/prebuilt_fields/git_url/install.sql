@@ -1,1 +1,0 @@
-ALTER TABLE products ADD git_url varchar(300) NULL default NULL;

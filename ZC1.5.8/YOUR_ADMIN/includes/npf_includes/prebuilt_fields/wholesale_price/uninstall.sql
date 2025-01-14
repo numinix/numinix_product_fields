@@ -1,1 +1,0 @@
-ALTER TABLE `products` DROP `products_price_w`;

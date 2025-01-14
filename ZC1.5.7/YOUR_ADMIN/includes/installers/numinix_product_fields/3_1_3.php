@@ -1,2 +1,0 @@
-<?php
-//Fixed minor issues

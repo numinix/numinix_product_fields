@@ -1,2 +1,0 @@
-<?php
-// Updates license.txt

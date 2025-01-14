@@ -1,2 +1,0 @@
-<?php
-// Restores license.txt
