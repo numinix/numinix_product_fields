@@ -76,7 +76,7 @@ $form_action = (isset($_GET['pID'])) ? 'update_product' : 'insert_product';
     <div class="row"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></div>
     <div class="row">
         <?php
-//auto replace with defined missing image
+        //auto replace with defined missing image
         if ($_POST['products_image_manual'] != '') {
           $products_image_name = $_POST['img_dir'] . $_POST['products_image_manual'];
           $pInfo->products_name = $products_image_name;
