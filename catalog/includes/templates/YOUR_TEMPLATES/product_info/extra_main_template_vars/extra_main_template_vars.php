@@ -18,9 +18,9 @@ if (!empty(NUMINIX_PRODUCT_FIELDS_CATALOGUE)) {
 		$sql_query = $db->bindVars($sql_query, ':products_id', $_GET['products_id'], 'integer');
 
 		$sql = $db->Execute($sql_query);
-		foreach ($numinix_fields as $field) {
+		foreach ($numinix_fields as $field_to_show) {
 			if (!empty($sql->fields[$field])) { // bof modified for NX-1962 :: Issue on NPF
-				$numinix_fields_display[$field] = $sql->fields[$field];
+				$numinix_fields_display[$field_to_show] = $sql->fields[$field];
 			} // eof modified for NX-1962 :: Issue on NPF
 		}
 	}
