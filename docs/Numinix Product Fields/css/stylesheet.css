@@ -66,8 +66,8 @@ a:hover {
 }
 
 .contentMenu {
-    float: right;
-    margin-right: 10px;
+    text-align: right;
+    margin-right: 0px;
 }
 
 .logoWrapper {
