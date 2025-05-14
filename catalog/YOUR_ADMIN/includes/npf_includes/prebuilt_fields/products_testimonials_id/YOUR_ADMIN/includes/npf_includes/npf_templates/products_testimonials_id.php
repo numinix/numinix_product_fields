@@ -28,7 +28,7 @@
                 <?php echo zen_draw_pull_down_menu('products_testimonials_id', $testimonials_options, $pInfo->products_testimonials_id); ?>
             </div>
           </div>
-<?    }
+<?php }
     }
   }
 ?>
