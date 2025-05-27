@@ -24,6 +24,10 @@ jQuery(document).ready(function() {
     $(".bodyHeaderContainer").hide();
     $("#InstallationTips").show();
   });
+  $("#btnInstructions").click(function(){
+    $(".bodyHeaderContainer").hide();
+    $("#Instructions").show();
+  });
     $("#btnUninstall").click(function(){
     $(".bodyHeaderContainer").hide();
     $("#Uninstall").show();

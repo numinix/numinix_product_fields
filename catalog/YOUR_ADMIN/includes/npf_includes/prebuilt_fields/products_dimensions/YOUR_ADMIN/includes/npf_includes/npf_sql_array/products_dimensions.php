@@ -4,6 +4,7 @@
   $sql_data_array['products_length'] = (float)zen_db_prepare_input($_POST['products_length']);
   $sql_data_array['products_width'] = (float)zen_db_prepare_input($_POST['products_width']);
   $sql_data_array['products_height'] = (float)zen_db_prepare_input($_POST['products_height']);
+  if( !isset($_POST['products_ready_to_ship']) ) $_POST['products_ready_to_ship'] = 0; 
   $sql_data_array['products_ready_to_ship'] = (int)zen_db_prepare_input($_POST['products_ready_to_ship']);
   $sql_data_array['products_diameter'] = zen_db_prepare_input($_POST['products_diameter']);
   // eof
