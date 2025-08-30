@@ -54,56 +54,31 @@ jQuery(document).ready(function() {
   // CODE BOXES
   // highlight
   sh_highlightDocument();
-  // select all functionality
+  
   jQuery('.select').live('click', function() {
-    selectCode(jQuery(this).parent('div').next('pre').children('code')[0]);
+    let textToCopy = jQuery(this).parent('div').next('pre').children('code')[0];
+    let clickedSelect = jQuery(this);
+    // select all
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.selectNodeContents(textToCopy);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    
+    // Copy selected text
+    const selectedText = selection.toString();
+
+    navigator.clipboard.writeText(selectedText)
+      .then(() => {
+        clickedSelect.addClass('copied');
+      })
+      .catch(err => {
+        console.error("Copy failed: ", err);
+      });
+  });
+
+  // Remove Copied text
+  jQuery('.select').live('mouseout', function() {
+    jQuery(this).removeClass('copied');
   });
 });
-
-function selectCode(a)
-{
-  // Get ID of code block
-  var e = a.parentNode.parentNode.getElementsByTagName('CODE')[0];
-
-  // Not IE
-  if (window.getSelection)
-  {
-    var s = window.getSelection();
-    // Safari
-    if (s.setBaseAndExtent)
-    {
-      s.setBaseAndExtent(e, 0, e, e.innerText.length - 1);
-    }
-    // Firefox and Opera
-    else
-    {
-      // workaround for bug # 42885
-      if (window.opera && e.innerHTML.substring(e.innerHTML.length - 4) == '<BR>')
-      {
-        e.innerHTML = e.innerHTML + '&nbsp;';
-      }
-
-      var r = document.createRange();
-      r.selectNodeContents(e);
-      s.removeAllRanges();
-      s.addRange(r);
-    }
-  }
-  // Some older browsers
-  else if (document.getSelection)
-  {
-    var s = document.getSelection();
-    var r = document.createRange();
-    r.selectNodeContents(e);
-    s.removeAllRanges();
-    s.addRange(r);
-  }
-  // IE
-  else if (document.selection)
-  {
-    var r = document.body.createTextRange();
-    r.moveToElementText(e);
-    r.select();
-  }
-
-}
