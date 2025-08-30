@@ -73,7 +73,6 @@ if (isset($_GET['pID']) && empty($_POST)) {
   }
   $products_name = $_POST['products_name'] ?? '';
   $products_description = $_POST['products_description'] ?? '';
-  // $products_description = $_POST['products_description2'] ?? ''; // NPF [3 of 5]
   $products_description2 = $_POST['products_description2'] ?? ''; // NPF [3 of 5]
 
   $products_url = $_POST['products_url'] ?? '';
