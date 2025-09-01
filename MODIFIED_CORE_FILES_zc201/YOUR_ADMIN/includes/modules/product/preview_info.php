@@ -18,15 +18,15 @@ if (!empty($_POST)) {
   $products_name = $_POST['products_name'];
   $products_description = $_POST['products_description'];
   $products_url = $_POST['products_url'];
-  foreach ($products_url as &$url){ // remove protocol
-      $url = str_replace(array('http://', 'https://'), '', $url);
-  }
-  unset ($url);
   // bof - NPF [1 of 3]
   $products_description2 = $_POST['products_description2'] ?? '';
   $products_video_embed = $_POST['products_video_embed'] ?? '';
   $care_instructions = $_POST['care_instructions'] ?? '';
   // eof - NPF [1 of 3]
+  foreach ($products_url as &$url){ // remove protocol
+      $url = str_replace(array('http://', 'https://'), '', $url);
+  }
+  unset ($url);
 } else {
   $product = $db->Execute("SELECT p.*,
                                   pd.language_id, pd.products_name, pd.products_description, pd.products_url
@@ -61,12 +61,12 @@ $form_action = (isset($_GET['pID'])) ? 'update_product' : 'insert_product';
       } else {
         $pInfo->products_name = zen_db_prepare_input($products_name[$languages[$i]['id']]);
         $pInfo->products_description = zen_db_prepare_input($products_description[$languages[$i]['id']]);
+        $pInfo->products_url = zen_db_prepare_input($products_url[$languages[$i]['id']]);
         // bof - NPF [2 of 3]
         $pInfo->products_description2 = zen_db_prepare_input($products_description2[$languages[$i]['id']] ?? '');
         $pInfo->care_instructions = zen_db_prepare_input($care_instructions[$languages[$i]['id']] ?? '');
         $pInfo->products_video_embed = zen_db_prepare_input($products_video_embed[$languages[$i]['id']] ?? '');
         // eof - NPF [2 of 3]
-        $pInfo->products_url = zen_db_prepare_input($products_url[$languages[$i]['id']]);
       }
 
       if (isset($_GET['pID'])) {

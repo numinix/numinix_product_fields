@@ -40,14 +40,13 @@ $parameters = [
   'products_price_sorter' => '0',
   'master_categories_id' => '',
 ];
-
 // bof - NPF [1 of 5]
 $dirList = dirList(NPF_INCLUDES_SQL_FOLDER);
 $npf_fields = "";
 foreach ($dirList as $file) {
   include(NPF_INCLUDES_SQL_FOLDER . $file);  
 }
-// eof - NPF [n of 5]
+// eof - NPF [1 of 5]
 
 $pInfo = new objectInfo($parameters);
 
@@ -55,8 +54,9 @@ if (isset($_GET['pID']) && empty($_POST)) {
   $product = $db->Execute("SELECT pd.products_name, pd.products_description, pd.products_url,
                                   p.*,
                                   date_format(p.products_date_available, '" .  zen_datepicker_format_forsql() . "') as products_date_available
-                           FROM " . TABLE_PRODUCTS . " p,
-                                " . TABLE_PRODUCTS_DESCRIPTION . " pd
+                           " . $npf_fields . "
+                           FROM " . TABLE_PRODUCTS . " p
+                              LEFT JOIN " . TABLE_PRODUCTS_DESCRIPTION . " pd ON (p.products_id = pd.products_id)" . $npf_tables . "
                            WHERE p.products_id = " . (int)$_GET['pID'] . "
                            AND p.products_id = pd.products_id
                            AND pd.language_id = " . (int)$_SESSION['languages_id']); // NPF [2 of 5]
@@ -74,7 +74,6 @@ if (isset($_GET['pID']) && empty($_POST)) {
   $products_name = $_POST['products_name'] ?? '';
   $products_description = $_POST['products_description'] ?? '';
   $products_description2 = $_POST['products_description2'] ?? ''; // NPF [3 of 5]
-
   $products_url = $_POST['products_url'] ?? '';
 }
 
@@ -110,14 +109,12 @@ foreach ($manufacturers as $manufacturer) {
 if (zen_get_categories_status($current_category_id) == 0 && $pInfo->products_status != 1) {
   $pInfo->products_status = 0;
 }
-
 // bof - NPF [4 of 5]
 $dirList = dirList(NPF_INCLUDES_MODULES_FOLDER);
 foreach ($dirList as $file) {
   include(NPF_INCLUDES_MODULES_FOLDER . $file);  
 }    
 // eof - NPF [4 of 5]
-
 ?>
 <div class="container-fluid">
     <?php
@@ -344,32 +341,32 @@ foreach ($dirList as $file) {
       ?>
     </div>
   </div>
-            <!-- // NPF [5 of 5] -->
-            <?php
+  <!-- BOF NPF [5 of 5] -->
+  <?php
 
-    $path1 = 'languages/english/npf_definitions/';
-    $opt1 = DIR_WS_INCLUDES.$path1;
+  $path1 = 'languages/english/npf_definitions/';
+  $opt1 = DIR_WS_INCLUDES.$path1;
 
-    $directory = $opt1;
+  $directory = $opt1;
 
-    $files = scandir($directory);
-    $files = array_diff($files, array('.', '..'));
+  $files = scandir($directory);
+  $files = array_diff($files, array('.', '..'));
 
-    foreach ($files as $filename) {
-      $defines = include $opt1 . $filename;
-      foreach($defines as $key=>$value){
-        if(!defined($key)){
-          define($key, $value);
-        }
+  foreach ($files as $filename) {
+    $defines = include $opt1 . $filename;
+    foreach($defines as $key=>$value){
+      if(!defined($key)){
+        define($key, $value);
       }
     }
+  }
 
   $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
   foreach ($dirList as $file) {
     include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
   }
-?>
-          <!-- // NPF [5 of 5] -->
+  ?>
+  <!-- EOF NPF [5 of 5] -->
   <div class="form-group">
       <?php echo zen_draw_label(TEXT_PRODUCTS_SORT_ORDER, 'products_sort_order', 'class="col-sm-3 control-label"'); ?>
     <div class="col-sm-9 col-md-6">

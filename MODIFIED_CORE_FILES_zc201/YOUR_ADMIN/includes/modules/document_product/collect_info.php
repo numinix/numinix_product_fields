@@ -60,8 +60,8 @@ if (isset($_GET['pID']) && empty($_POST)) {
                                   p.*,
                                   date_format(p.products_date_available, '" .  zen_datepicker_format_forsql() . "') as products_date_available
                            " . $npf_fields . "
-                           FROM " . TABLE_PRODUCTS . " p,
-                                " . TABLE_PRODUCTS_DESCRIPTION . " pd
+                           FROM " . TABLE_PRODUCTS . " p
+                              LEFT JOIN " . TABLE_PRODUCTS_DESCRIPTION . " pd ON (p.products_id = pd.products_id)" . $npf_tables . "
                            WHERE p.products_id = " . (int)$_GET['pID'] . "
                            AND p.products_id = pd.products_id
                            AND pd.language_id = " . (int)$_SESSION['languages_id']); // NPF [2 of 5]
@@ -115,10 +115,10 @@ if (zen_get_categories_status($current_category_id) == 0 && $pInfo->products_sta
   $pInfo->products_status = 0;
 }
 // bof - NPF [4 of 5]
-  $dirList = dirList(NPF_INCLUDES_MODULES_FOLDER);
-  foreach ($dirList as $file) {
-    include(NPF_INCLUDES_MODULES_FOLDER . $file);  
-  }    
+$dirList = dirList(NPF_INCLUDES_MODULES_FOLDER);
+foreach ($dirList as $file) {
+  include(NPF_INCLUDES_MODULES_FOLDER . $file);  
+}    
 // eof - NPF [4 of 5]
 ?>
 <div class="container-fluid">

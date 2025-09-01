@@ -60,14 +60,12 @@ $pInfo = new objectInfo($parameters);
 if (isset($_GET['pID']) && empty($_POST)) {
   $product = $db->Execute("SELECT pd.products_name, pd.products_description, pd.products_url,
                                   p.*,
-                                  date_format(p.products_date_available, '" .  zen_datepicker_format_forsql() . "') as products_date_available
-                           " . $npf_fields . "
-                           FROM " . TABLE_PRODUCTS . " p,
-                                " . TABLE_PRODUCTS_DESCRIPTION . " pd
-                           " . $npf_tables . "
+                                  date_format(p.products_date_available, '" .  zen_datepicker_format_forsql() . "') as products_date_available " . $npf_fields . " 
+                              FROM " . TABLE_PRODUCTS . " p
+                              LEFT JOIN " . TABLE_PRODUCTS_DESCRIPTION . " pd ON (p.products_id = pd.products_id)" . $npf_tables . "
                            WHERE p.products_id = " . (int)$_GET['pID'] . "
                            AND p.products_id = pd.products_id
-                           AND pd.language_id = " . (int)$_SESSION['languages_id']); // NPF [3 of 6]
+                           AND pd.language_id = " . (int)$_SESSION['languages_id']); // NPF [2 of 6]
 
   $pInfo->updateObjectInfo($product->fields);
   $pInfo->product_type = $pInfo->products_type;

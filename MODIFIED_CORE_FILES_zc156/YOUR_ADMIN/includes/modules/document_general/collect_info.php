@@ -125,10 +125,10 @@ if (zen_get_categories_status($current_category_id) == 0 && $pInfo->products_sta
 }
 
 // bof - NPF [4 of 5]
-  $dirList = dirList(NPF_INCLUDES_MODULES_FOLDER);
-  foreach ($dirList as $file) {
-    include(NPF_INCLUDES_MODULES_FOLDER . $file);  
-  }    
+$dirList = dirList(NPF_INCLUDES_MODULES_FOLDER);
+foreach ($dirList as $file) {
+  include(NPF_INCLUDES_MODULES_FOLDER . $file);  
+}
 // eof - NPF [4 of 5]
 
 ?>
@@ -323,14 +323,14 @@ for ($i = 0, $n = sizeof($tax_class_array); $i < $n; $i++) {
       ?>
     </div>
   </div>
-          <!-- // NPF [5 of 5] -->
-<?php
+  <!-- // NPF [5 of 5] -->
+  <?php
   $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
   foreach ($dirList as $file) {
     include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
   }
-?>
-          <!-- // NPF [5 of 5] -->
+  ?>
+  <!-- // NPF [5 of 5] -->
   <div class="form-group">
       <?php echo zen_draw_label(TEXT_PRODUCTS_SORT_ORDER, 'products_sort_order', 'class="col-sm-3 control-label"'); ?>
     <div class="col-sm-9 col-md-6">

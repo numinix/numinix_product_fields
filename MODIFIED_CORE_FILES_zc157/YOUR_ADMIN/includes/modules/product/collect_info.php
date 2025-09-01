@@ -40,7 +40,6 @@ $parameters = [
   'products_price_sorter' => '0',
   'master_categories_id' => '',
 ];
-
     // bof - NPF [1 of 6]
     $dirList = dirList(NPF_INCLUDES_SQL_FOLDER);
     $npf_fields = "";
@@ -444,14 +443,14 @@ foreach ($dirList as $file) {
         <?php echo zen_draw_input_field('products_weight', $pInfo->products_weight, 'class="form-control" id="products_weight"'); ?>
     </div>
   </div>
-          <!--BOF NPF [5 of 6] -->
-          <?php
-            $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
-            foreach ($dirList as $file) {
-              include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
-            }
-          ?>
-          <!--EOF NPF [5 of 6]-->
+  <!--BOF NPF [5 of 6] -->
+  <?php
+    $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
+    foreach ($dirList as $file) {
+      include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
+    }
+  ?>
+  <!--EOF NPF [5 of 6]-->
   <div class="form-group">
       <?php echo zen_draw_label(TEXT_PRODUCTS_SORT_ORDER, 'products_sort_order', 'class="col-sm-3 control-label"'); ?>
     <div class="col-sm-9 col-md-6">

@@ -157,10 +157,7 @@ $form_action = (isset($_GET['pID'])) ? 'update_product' : 'insert_product';
         for ($i = 0, $n = count($languages); $i < $n; $i++) {
           echo zen_draw_hidden_field('products_name[' . $languages[$i]['id'] . ']', htmlspecialchars(stripslashes($products_name[$languages[$i]['id']]), ENT_COMPAT, CHARSET, TRUE));
           echo zen_draw_hidden_field('products_description[' . $languages[$i]['id'] . ']', htmlspecialchars(stripslashes($products_description[$languages[$i]['id']]), ENT_COMPAT, CHARSET, TRUE));
-          // NPF [3 of 3]
-          echo zen_draw_hidden_field('products_description2[' . $languages[$i]['id'] . ']', htmlspecialchars(stripslashes($products_description2[$languages[$i]['id']]), ENT_COMPAT, CHARSET, TRUE));
-          echo zen_draw_hidden_field('care_instructions[' . $languages[$i]['id'] . ']', htmlspecialchars(stripslashes($care_instructions[$languages[$i]['id']]), ENT_COMPAT, CHARSET, TRUE)); 
-          // NPF [3 of 3]
+          echo zen_draw_hidden_field('products_description2[' . $languages[$i]['id'] . ']', htmlspecialchars(stripslashes($products_description2[$languages[$i]['id']]), ENT_COMPAT, CHARSET, TRUE)); // NPF [3 of 3]
           echo zen_draw_hidden_field('products_url[' . $languages[$i]['id'] . ']', htmlspecialchars(stripslashes($products_url[$languages[$i]['id']]), ENT_COMPAT, CHARSET, TRUE));
         }
         echo zen_draw_hidden_field('products_image', stripslashes($products_image_name));

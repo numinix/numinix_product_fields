@@ -65,12 +65,12 @@ $form_action = (isset($_GET['pID'])) ? 'update_product' : 'insert_product';
       } else {
         $pInfo->products_name = zen_db_prepare_input($products_name[$languages[$i]['id']]);
         $pInfo->products_description = zen_db_prepare_input($products_description[$languages[$i]['id']]);
-  // bof - NPF [2 of 3]
+        $pInfo->products_url = zen_db_prepare_input($products_url[$languages[$i]['id']]);
+        // bof - NPF [2 of 3]
         $pInfo->products_description2 = zen_db_prepare_input($products_description2[$languages[$i]['id']]);
         $pInfo->care_instructions = zen_db_prepare_input($care_instructions[$languages[$i]['id']]);
         $pInfo->products_video_embed = zen_db_prepare_input($products_video_embed[$languages[$i]['id']]);
-  // eof - NPF [2 of 3]
-        $pInfo->products_url = zen_db_prepare_input($products_url[$languages[$i]['id']]);
+        // eof - NPF [2 of 3]
       }
 
       if (isset($_GET['pID'])) {

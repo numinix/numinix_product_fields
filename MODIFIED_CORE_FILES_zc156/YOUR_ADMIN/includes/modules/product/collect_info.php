@@ -130,11 +130,10 @@ if (zen_get_categories_status($current_category_id) == 0 && $pInfo->products_sta
 }
 
 // bof - NPF [4 of 6]
-  $dirList = dirList(NPF_INCLUDES_MODULES_FOLDER);
-  foreach ($dirList as $file) {
-    include(NPF_INCLUDES_MODULES_FOLDER . $file);  
-  }    
-
+$dirList = dirList(NPF_INCLUDES_MODULES_FOLDER);
+foreach ($dirList as $file) {
+  include(NPF_INCLUDES_MODULES_FOLDER . $file);  
+}    
 // eof - NPF [4 of 6]
 ?>
 <script>
@@ -482,14 +481,14 @@ for ($i = 0, $n = sizeof($tax_class_array); $i < $n; $i++) {
         <?php echo zen_draw_input_field('products_weight', $pInfo->products_weight, 'class="form-control"'); ?>
     </div>
   </div>
-          <!--BOF NPF [5 of 6] -->
-<?php
-  $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
-  foreach ($dirList as $file) {
-    include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
-  }
-?>
-          <!--EOF NPF [5 of 6]-->
+  <!--BOF NPF [5 of 6] -->
+  <?php
+    $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
+    foreach ($dirList as $file) {
+      include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
+    }
+  ?>
+  <!--EOF NPF [5 of 6]-->
   <div class="form-group">
       <?php echo zen_draw_label(TEXT_PRODUCTS_SORT_ORDER, 'products_sort_order', 'class="col-sm-3 control-label"'); ?>
     <div class="col-sm-9 col-md-6">
