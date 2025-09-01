@@ -55,7 +55,7 @@ $pInfo = new objectInfo($parameters);
 
 if (isset($_GET['pID']) && empty($_POST)) {
   $product = $db->Execute("SELECT pd.products_name, pd.products_description, pd.products_url,
-                                  p.*, 
+                                  p.*,
                                   date_format(p.products_date_available, '" .  zen_datepicker_format_forsql() . "') as products_date_available " . $npf_fields . " 
                               FROM " . TABLE_PRODUCTS . " p
                               LEFT JOIN " . TABLE_PRODUCTS_DESCRIPTION . " pd ON (p.products_id = pd.products_id)" . $npf_tables . "
@@ -486,8 +486,9 @@ foreach ($dirList as $file) {
     </div>
     <?php
     // bof - NPF [6 of 6]
-    echo (isset($npf_date_added)) ? (!$npf_date_added ? zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d'))) : '') : '';
-    // echo zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d')));
+    if (isset($npf_date_added) && !$npf_date_added) {
+      echo zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d')));
+    }
     // eof - NPF [6 of 6]
     echo ((isset($_GET['search']) && !empty($_GET['search'])) ? zen_draw_hidden_field('search', $_GET['search']) : '');
     echo ((isset($_POST['search']) && !empty($_POST['search']) && empty($_GET['search'])) ? zen_draw_hidden_field('search', $_POST['search']) : '');

@@ -4,7 +4,7 @@
  * @copyright Copyright 2003-2019 Zen Cart Development Team
  * @copyright Portions Copyright 2003 osCommerce
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
- * @version $Id: DrByte 2019 Jan 04 Modified in v1.5.6a $
+ * @version $Id: Zen4All 2019 Jan 20 Modified in v1.5.6b $
  */
 if (!defined('IS_ADMIN_FLAG')) {
   die('Illegal Access');
@@ -66,7 +66,7 @@ if (isset($_GET['pID']) && empty($_POST)) {
                                   p.products_sort_order,
                                   p.products_discount_type, p.products_discount_type_from,
                                   p.products_price_sorter, p.master_categories_id" . $npf_fields . "
-                              from " . TABLE_PRODUCTS . " p, " . TABLE_PRODUCTS_DESCRIPTION . " pd
+                              FROM " . TABLE_PRODUCTS . " p, " . TABLE_PRODUCTS_DESCRIPTION . " pd
                            WHERE p.products_id = " . (int)$_GET['pID'] . "
                            AND p.products_id = pd.products_id
                            AND pd.language_id = " . (int)$_SESSION['languages_id']); // NPF [2 of 5]
@@ -419,7 +419,7 @@ for ($i = 0, $n = sizeof($tax_class_array); $i < $n; $i++) {
         </div>
         <div class="row">&nbsp;</div>
         <div class="row">
-            <?php echo zen_draw_label(TEXT_IMAGE_CURRENT, 'products_previous_image', 'class="conrol-label"') . '&nbsp;' . ($pInfo->products_image != '' ? $pInfo->products_image : NONE); ?>
+            <?php echo zen_draw_label(TEXT_IMAGE_CURRENT, 'products_previous_image', 'class="control-label"') . '&nbsp;' . ($pInfo->products_image != '' ? $pInfo->products_image : NONE); ?>
             <?php echo zen_draw_hidden_field('products_previous_image', $pInfo->products_image); ?>
         </div>
         <div class="row">&nbsp;</div>

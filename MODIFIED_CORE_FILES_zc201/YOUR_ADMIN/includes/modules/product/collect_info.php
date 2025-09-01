@@ -1,9 +1,9 @@
 <?php
 /**
- * @copyright Copyright 2003-2020 Zen Cart Development Team
+ * @copyright Copyright 2003-2024 Zen Cart Development Team
  * @copyright Portions Copyright 2003 osCommerce
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
- * @version $Id: DrByte 2020 May 11 Modified in v1.5.7 $
+ * @version $Id: DrByte 2024 Feb 23 Modified in v2.0.0-beta1 $
  */
 if (!defined('IS_ADMIN_FLAG')) {
   die('Illegal Access');
@@ -17,8 +17,13 @@ $parameters = [
   'products_model' => '',
   'products_image' => '',
   'products_price' => '0.0000',
+  'products_price_w' => '0',
   'products_virtual' => DEFAULT_PRODUCT_PRODUCTS_VIRTUAL,
   'products_weight' => '0',
+  'products_length' => '',
+  'products_width' => '',
+  'products_height' => '',
+  'product_ships_in_own_box' => '',
   'products_date_added' => '',
   'products_last_modified' => '',
   'products_date_available' => '',
@@ -41,38 +46,46 @@ $parameters = [
   'master_categories_id' => '',
 ];
 
-    // bof - NPF [1 of 6]
-    $dirList = dirList(NPF_INCLUDES_SQL_FOLDER);
-    $npf_fields = "";
-    $npf_tables = "";
-    foreach ($dirList as $file) {
-      include(NPF_INCLUDES_SQL_FOLDER . $file);  
-
-    }
-    // eof - NPF [1 of 6]
+// bof - NPF [1 of 6]
+$dirList = dirList(NPF_INCLUDES_SQL_FOLDER);
+$npf_fields = "";
+$npf_tables = "";
+foreach ($dirList as $file) {
+  include(NPF_INCLUDES_SQL_FOLDER . $file);
+}
+// eof - NPF [1 of 6]
 
 $pInfo = new objectInfo($parameters);
 
 if (isset($_GET['pID']) && empty($_POST)) {
   $product = $db->Execute("SELECT pd.products_name, pd.products_description, pd.products_url,
-                                  p.*, 
-                                  date_format(p.products_date_available, '" .  zen_datepicker_format_forsql() . "') as products_date_available " . $npf_fields . " 
-                              FROM " . TABLE_PRODUCTS . " p
-                              LEFT JOIN " . TABLE_PRODUCTS_DESCRIPTION . " pd ON (p.products_id = pd.products_id)" . $npf_tables . "
+                                  p.*,
+                                  date_format(p.products_date_available, '" .  zen_datepicker_format_forsql() . "') as products_date_available
+                           " . $npf_fields . "
+                           FROM " . TABLE_PRODUCTS . " p,
+                                " . TABLE_PRODUCTS_DESCRIPTION . " pd
+                           " . $npf_tables . "
                            WHERE p.products_id = " . (int)$_GET['pID'] . "
                            AND p.products_id = pd.products_id
-                           AND pd.language_id = " . (int)$_SESSION['languages_id']); // NPF [2 of 6]
+                           AND pd.language_id = " . (int)$_SESSION['languages_id']); // NPF [3 of 6]
 
   $pInfo->updateObjectInfo($product->fields);
-} elseif (zen_not_null($_POST)) {
+  $pInfo->product_type = $pInfo->products_type;
+} elseif (!empty($_POST)) {
   $pInfo->updateObjectInfo($_POST);
-  $products_name = isset($_POST['products_name']) ? $_POST['products_name'] : '';
-  $products_description = isset($_POST['products_description']) ? $_POST['products_description'] : '';
+  if (isset($_GET['pID'])) {
+     $pInfo->products_id = (int)$_GET['pID'];
+  }
+  if (isset($pInfo->cPath)) {
+      $pInfo->master_categories_id = $pInfo->cPath;
+  }
+  $products_name = $_POST['products_name'] ?? '';
+  $products_description = $_POST['products_description'] ?? '';
   // bof - NPF [3 of 6]
-  $products_description2 = isset($_POST['products_description2']) ? $_POST['products_description2'] : ''; 
-  $care_instructions = isset($_POST['care_instructions']) ? $_POST['care_instructions'] : '';
+  $products_description2 = $_POST['products_description2'] ?? ''; 
+  $care_instructions = $_POST['care_instructions'] ?? '';
   // eof - NPF [3 of 6]
-  $products_url = isset($_POST['products_url']) ? $_POST['products_url'] : '';
+  $products_url = $_POST['products_url'] ?? '';
 }
 
 $category_lookup = $db->Execute("SELECT *
@@ -90,7 +103,7 @@ if (!$category_lookup->EOF) {
 $manufacturers_array = [
     [
     'id' => '',
-    'text' => TEXT_NONE
+    'text' => TEXT_NONE,
     ]
 ];
 $manufacturers = $db->Execute("SELECT manufacturers_id, manufacturers_name
@@ -99,7 +112,7 @@ $manufacturers = $db->Execute("SELECT manufacturers_id, manufacturers_name
 foreach ($manufacturers as $manufacturer) {
   $manufacturers_array[] = [
     'id' => $manufacturer['manufacturers_id'],
-    'text' => $manufacturer['manufacturers_name']
+    'text' => $manufacturer['manufacturers_name'],
   ];
 }
 
@@ -107,12 +120,11 @@ foreach ($manufacturers as $manufacturer) {
 if (zen_get_categories_status($current_category_id) == 0 && $pInfo->products_status != 1) {
   $pInfo->products_status = 0;
 }
-
 // bof - NPF [4 of 6]
 $dirList = dirList(NPF_INCLUDES_MODULES_FOLDER);
 foreach ($dirList as $file) {
   include(NPF_INCLUDES_MODULES_FOLDER . $file);  
-}    
+}
 // eof - NPF [4 of 6]
 ?>
 <div class="container-fluid">
@@ -137,7 +149,7 @@ foreach ($dirList as $file) {
         <div class="input-group">
           <span class="input-group-addon">
               <?php
-              echo zen_image(DIR_WS_IMAGES . 'icon_yellow_on.gif', IMAGE_ICON_LINKED) . '&nbsp;&nbsp;';
+              echo zen_icon('linked', IMAGE_ICON_LINKED) . '&nbsp;&nbsp;';
               ?>
           </span>
           <?php
@@ -166,7 +178,7 @@ foreach ($dirList as $file) {
   echo zen_draw_hidden_field('products_discount_type_from', $pInfo->products_discount_type_from);
   echo zen_draw_hidden_field('products_price_sorter', $pInfo->products_price_sorter);
   ?>
-  <div class="col-sm-12 text-center"><?php echo (zen_get_categories_status($current_category_id) == '0' ? TEXT_CATEGORIES_STATUS_INFO_OFF : '') . (isset($out_status) && $out_status == true ? ' ' . TEXT_PRODUCTS_STATUS_INFO_OFF : ''); ?></div>
+  <div class="col-sm-12 text-center"><?php echo (zen_get_categories_status($current_category_id) == '0' ? TEXT_CATEGORIES_STATUS_INFO_OFF : '') . (isset($out_status) && $out_status ? ' ' . TEXT_PRODUCTS_STATUS_INFO_OFF : ''); ?></div>
   <div class="form-group">
       <p class="col-sm-3 control-label"><?php echo TEXT_PRODUCTS_STATUS; ?></p>
     <div class="col-sm-9 col-md-6">
@@ -179,7 +191,7 @@ foreach ($dirList as $file) {
     <div class="col-sm-9 col-md-6">
       <div class="date input-group" id="datepicker">
         <span class="input-group-addon datepicker_icon">
-          <i class="fa fa-calendar fa-lg">&nbsp;</i>
+          <i class="fa-regular fa-calendar-days fa-lg">&nbsp;</i>
         </span>
         <?php echo zen_draw_input_field('products_date_available', $pInfo->products_date_available, 'class="form-control" id="products_date_available" autocomplete="off"'); ?>
       </div>
@@ -266,7 +278,7 @@ foreach ($dirList as $file) {
       <?php echo ($pInfo->products_priced_by_attribute == 1 ? '<span class="help-block errorText">' . TEXT_PRODUCTS_PRICED_BY_ATTRIBUTES_EDIT . '</span>' : ''); ?>
     </div>
   </div>
-  <div class="well" style="color: #31708f;background-color: #d9edf7;border-color: #bce8f1;padding: 10px 10px 0 0;">
+  <div class="well product-tax-prices">
     <div class="form-group">
         <?php echo zen_draw_label(TEXT_PRODUCTS_TAX_CLASS, 'products_tax_class_id', 'class="col-sm-3 control-label"'); ?>
       <div class="col-sm-9 col-md-6">
@@ -276,15 +288,28 @@ foreach ($dirList as $file) {
     <div class="form-group">
         <?php echo zen_draw_label(TEXT_PRODUCTS_PRICE_NET, 'products_price', 'class="col-sm-3 control-label"'); ?>
       <div class="col-sm-9 col-md-6">
-          <?php echo zen_draw_input_field('products_price', $pInfo->products_price, 'onkeyup="updateGross()" class="form-control" id="products_price"'); ?>
+          <?php echo zen_draw_input_field('products_price', $pInfo->products_price, 'onkeyup="updateGross()" class="form-control" id="products_price" inputmode="decimal"'); ?>
       </div>
     </div>
     <div class="form-group">
         <?php echo zen_draw_label(TEXT_PRODUCTS_PRICE_GROSS, 'products_price_gross', 'class="col-sm-3 control-label"'); ?>
       <div class="col-sm-9 col-md-6">
-          <?php echo zen_draw_input_field('products_price_gross', $pInfo->products_price, 'onkeyup="updateNet()" class="form-control" id="products_price_gross"'); ?>
+          <?php echo zen_draw_input_field('products_price_gross', $pInfo->products_price, 'onkeyup="updateNet()" class="form-control" id="products_price_gross" inputmode="decimal"'); ?>
       </div>
     </div>
+<?php
+    if (WHOLESALE_PRICING_CONFIG !== 'false') {
+?>
+    <div class="form-group">
+        <?php echo zen_draw_label(TEXT_PRODUCTS_WHOLESALE_PRICE, 'products-price-w', 'class="col-sm-3 control-label"'); ?>
+      <div class="col-sm-9 col-md-6">
+          <?php echo zen_draw_input_field('products_price_w', $pInfo->products_price_w, 'class="form-control" id="products-price-w"'); ?>
+          <span class="help-block"><?php echo HELPTEXT_WHOLESALE_PRICES; ?></span>
+      </div>
+    </div>
+<?php
+    }
+?>
   </div>
   <script>
     updateGross();
@@ -309,27 +334,27 @@ foreach ($dirList as $file) {
   <div class="form-group">
       <p class="col-sm-3 control-label"><?php echo TEXT_PRODUCTS_QTY_BOX_STATUS; ?></p>
     <div class="col-sm-9 col-md-6">
-      <label class="radio-inline"><?php echo zen_draw_radio_field('products_qty_box_status', '1', ($pInfo->products_qty_box_status == 1 ? true : false)) . TEXT_PRODUCTS_QTY_BOX_STATUS_ON; ?></label>
-      <label class="radio-inline"><?php echo zen_draw_radio_field('products_qty_box_status', '0', ($pInfo->products_qty_box_status == 0 ? true : false)) . TEXT_PRODUCTS_QTY_BOX_STATUS_OFF; ?></label>
+      <label class="radio-inline"><?php echo zen_draw_radio_field('products_qty_box_status', '1', $pInfo->products_qty_box_status == 1) . TEXT_PRODUCTS_QTY_BOX_STATUS_ON; ?></label>
+      <label class="radio-inline"><?php echo zen_draw_radio_field('products_qty_box_status', '0', $pInfo->products_qty_box_status == 0) . TEXT_PRODUCTS_QTY_BOX_STATUS_OFF; ?></label>
       <?php echo ($pInfo->products_qty_box_status == 0 ? '<span class="help-block errorText">' . TEXT_PRODUCTS_QTY_BOX_STATUS_EDIT . '</span>' : ''); ?>
     </div>
   </div>
   <div class="form-group">
       <?php echo zen_draw_label(TEXT_PRODUCTS_QUANTITY_MIN_RETAIL, 'products_quantity_order_min', 'class="col-sm-3 control-label"'); ?>
     <div class="col-sm-9 col-md-6">
-        <?php echo zen_draw_input_field('products_quantity_order_min', ($pInfo->products_quantity_order_min == 0 ? 1 : $pInfo->products_quantity_order_min), 'class="form-control" id="products_quantity_order_min"'); ?>
+        <?php echo zen_draw_input_field('products_quantity_order_min', ($pInfo->products_quantity_order_min == 0 ? 1 : $pInfo->products_quantity_order_min), 'class="form-control" id="products_quantity_order_min" inputmode="decimal"'); ?>
     </div>
   </div>
   <div class="form-group">
       <?php echo zen_draw_label(TEXT_PRODUCTS_QUANTITY_MAX_RETAIL, 'products_quantity_order_max', 'class="col-sm-3 control-label"'); ?>
     <div class="col-sm-9 col-md-6">
-      <?php echo zen_draw_input_field('products_quantity_order_max', $pInfo->products_quantity_order_max, 'class="form-control" id="products_quantity_order_max"'); ?>&nbsp;&nbsp;<?php echo TEXT_PRODUCTS_QUANTITY_MAX_RETAIL_EDIT; ?>
+      <?php echo zen_draw_input_field('products_quantity_order_max', $pInfo->products_quantity_order_max, 'class="form-control" id="products_quantity_order_max" inputmode="decimal"'); ?>&nbsp;&nbsp;<?php echo TEXT_PRODUCTS_QUANTITY_MAX_RETAIL_EDIT; ?>
     </div>
   </div>
   <div class="form-group">
       <?php echo zen_draw_label(TEXT_PRODUCTS_QUANTITY_UNITS_RETAIL, 'products_quantity_order_units', 'class="col-sm-3 control-label"'); ?>
     <div class="col-sm-9 col-md-6">
-        <?php echo zen_draw_input_field('products_quantity_order_units', ($pInfo->products_quantity_order_units == 0 ? 1 : $pInfo->products_quantity_order_units), 'class="form-control" id="products_quantity_order_units"'); ?>
+        <?php echo zen_draw_input_field('products_quantity_order_units', ($pInfo->products_quantity_order_units == 0 ? 1 : $pInfo->products_quantity_order_units), 'class="form-control" id="products_quantity_order_units" inputmode="decimal"'); ?>
     </div>
   </div>
   <div class="form-group">
@@ -360,7 +385,7 @@ foreach ($dirList as $file) {
   <div class="form-group">
       <?php echo zen_draw_label(TEXT_PRODUCTS_QUANTITY, 'products_quantity', 'class="col-sm-3 control-label"'); ?>
     <div class="col-sm-9 col-md-6">
-        <?php echo zen_draw_input_field('products_quantity', $pInfo->products_quantity, 'class="form-control" id="products_quantity"'); ?>
+        <?php echo zen_draw_input_field('products_quantity', $pInfo->products_quantity, 'class="form-control" id="products_quantity" inputmode="decimal"'); ?>
     </div>
   </div>
   <div class="form-group">
@@ -375,7 +400,7 @@ foreach ($dirList as $file) {
     if (!empty($pInfo->products_image)) { ?>
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9 col-md-6">
-                <?php echo zen_info_image($pInfo->products_image, $pInfo->categories_name); ?>
+                <?php echo zen_info_image($pInfo->products_image, (is_array($pInfo->products_name) ? $pInfo->products_name[$_SESSION['languages_id']] : $pInfo->products_name)); ?>
                 <br>
                 <?php echo $pInfo->products_image; ?>
             </div>
@@ -401,7 +426,7 @@ foreach ($dirList as $file) {
     $default_directory = substr($pInfo->products_image, 0, strpos($pInfo->products_image, '/') + 1);
     ?>
     <div class="form-group">
-        <?php echo zen_draw_label(TEXT_PRODUCTS_IMAGE_DIR, 'img_dir', 'class="col-sm-3 control-label"'); ?>
+        <?php echo zen_draw_label(TEXT_UPLOAD_DIR, 'img_dir', 'class="col-sm-3 control-label"'); ?>
         <div class="col-sm-9 col-md-9 col-lg-6">
             <?php echo zen_draw_pull_down_menu('img_dir', $dir_info, $default_directory, 'class="form-control" id="img_dir"'); ?>
         </div>
@@ -430,7 +455,7 @@ foreach ($dirList as $file) {
           <span class="input-group-addon">
               <?php echo zen_image(DIR_WS_CATALOG_LANGUAGES . $languages[$i]['directory'] . '/images/' . $languages[$i]['image'], $languages[$i]['name']); ?>
           </span>
-          <?php echo zen_draw_input_field('products_url[' . $languages[$i]['id'] . ']', htmlspecialchars(isset($products_url[$languages[$i]['id']]) ? $products_url[$languages[$i]['id']] : zen_get_products_url($pInfo->products_id, $languages[$i]['id']), ENT_COMPAT, CHARSET, TRUE), zen_set_field_length(TABLE_PRODUCTS_DESCRIPTION, 'products_url') . ' class="form-control"'); ?>
+          <?php echo zen_draw_input_field('products_url[' . $languages[$i]['id'] . ']', htmlspecialchars($products_url[$languages[$i]['id']] ?? zen_get_products_url($pInfo->products_id, $languages[$i]['id']), ENT_COMPAT, CHARSET, TRUE), zen_set_field_length(TABLE_PRODUCTS_DESCRIPTION, 'products_url') . ' class="form-control" inputmode="url"'); ?>
         </div>
         <br>
         <?php
@@ -438,24 +463,72 @@ foreach ($dirList as $file) {
       ?>
     </div>
   </div>
+  <div class="well product-shipping-measurements">
+      <h2><?php echo TEXT_SHIPPING_PACKAGE_DETAILS; ?></h2>
   <div class="form-group">
       <?php echo zen_draw_label(TEXT_PRODUCTS_WEIGHT, 'products_weight', 'class="col-sm-3 control-label"'); ?>
-    <div class="col-sm-9 col-md-6">
-        <?php echo zen_draw_input_field('products_weight', $pInfo->products_weight, 'class="form-control" id="products_weight"'); ?>
+      <?php echo zen_get_translated_config_setting('SHIPPING_WEIGHT_UNITS', 'TEXT_SHIPPING_', SHIPPING_WEIGHT_UNITS); ?>
+    <div class="col-sm-6 col-md-4">
+        <?php echo zen_draw_input_field('products_weight', $pInfo->products_weight, 'class="form-control" id="products_weight" inputmode="decimal"'); ?>
     </div>
   </div>
-          <!--BOF NPF [5 of 6] -->
-          <?php
-            $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
-            foreach ($dirList as $file) {
-              include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
-            }
-          ?>
-          <!--EOF NPF [5 of 6]-->
+  <div class="form-group">
+    <?php echo zen_draw_label(TEXT_PRODUCTS_LENGTH, 'products_length', 'class="col-sm-3 control-label"'); ?>
+      <?php echo zen_get_translated_config_setting('SHIPPING_DIMENSION_UNITS', 'TEXT_SHIPPING_', SHIPPING_DIMENSION_UNITS); ?>
+    <div class="col-sm-6 col-md-4">
+    <?php echo zen_draw_input_field('products_length', $pInfo->products_length, 'class="form-control" id="products_length" inputmode="decimal"'); ?>
+    </div>
+  </div>
+  <div class="form-group">
+     <?php echo zen_draw_label(TEXT_PRODUCTS_WIDTH, 'products_width', 'class="col-sm-3 control-label"'); ?>
+      <?php echo zen_get_translated_config_setting('SHIPPING_DIMENSION_UNITS', 'TEXT_SHIPPING_', SHIPPING_DIMENSION_UNITS); ?>
+    <div class="col-sm-6 col-md-4">
+    <?php echo zen_draw_input_field('products_width', $pInfo->products_width, 'class="form-control" id="products_width" inputmode="decimal"'); ?>
+    </div>
+  </div>
+    <div class="form-group">
+    <?php echo zen_draw_label(TEXT_PRODUCTS_HEIGHT, 'products_height', 'class="col-sm-3 control-label"'); ?>
+        <?php echo zen_get_translated_config_setting('SHIPPING_DIMENSION_UNITS', 'TEXT_SHIPPING_', SHIPPING_DIMENSION_UNITS); ?>
+    <div class="col-sm-6 col-md-4">
+    <?php echo zen_draw_input_field('products_height', $pInfo->products_height, 'class="form-control" id="products_height" inputmode="decimal"'); ?>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="product_ships_in_own_box"><?php echo TEXT_PRODUCT_SHIPS_IN_OWN_BOX; ?></label>
+    <div class="col-sm-6 col-md-4">
+    <?php echo zen_draw_checkbox_field('product_ships_in_own_box', '1', $pInfo->product_ships_in_own_box, '', 'id="product_ships_in_own_box"') . '&nbsp;' . TEXT_PRODUCT_SHIPS_IN_OWN_BOX_HELP . '&nbsp;' ?>
+    </div>
+  </div>
+  </div>
+  <!-- bof - NPF [5 of 6] -->
+  <?php
+  $path1 = 'languages/english/npf_definitions/';
+  $opt1 = DIR_WS_INCLUDES.$path1;
+
+  $directory = $opt1;
+
+  $files = scandir($directory);
+  $files = array_diff($files, array('.', '..'));
+
+  foreach ($files as $filename) {
+    $defines = include $opt1 . $filename;
+    foreach($defines as $key=>$value){
+      if(!defined($key)){
+        define($key, $value);
+      }
+    }
+  }
+
+  $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
+  foreach ($dirList as $file) {
+    include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
+  }
+  ?>
+  <!-- eof - NPF [5 of 6] -->
   <div class="form-group">
       <?php echo zen_draw_label(TEXT_PRODUCTS_SORT_ORDER, 'products_sort_order', 'class="col-sm-3 control-label"'); ?>
     <div class="col-sm-9 col-md-6">
-      <?php echo zen_draw_input_field('products_sort_order', $pInfo->products_sort_order, 'class="form-control" id="products_sort_order"'); ?>
+      <?php echo zen_draw_input_field('products_sort_order', $pInfo->products_sort_order, 'class="form-control" id="products_sort_order" inputmode="decimal"'); ?>
     </div>
     <?php
     // bof - NPF [6 of 6]
