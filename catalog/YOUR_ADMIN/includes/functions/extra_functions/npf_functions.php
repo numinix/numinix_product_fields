@@ -28,25 +28,37 @@ function dirList($directory)
 function zen_get_products_description2($product_id, $language_id)
 {
     global $db;
-    $product = $db->Execute("SELECT products_description2
+    $product = $db->Execute(
+        "SELECT products_description2
         FROM " . TABLE_PRODUCTS_DESCRIPTION . "
         WHERE products_id = " . (int)$product_id . "
         AND language_id = " . (int)$language_id
     );
-
     return $product->fields['products_description2'];
 }
 
 function zen_get_products_video_embed($product_id, $language_id)
 {
     global $db;
-    $product = $db->Execute("SELECT products_video_embed
+    $product = $db->Execute(
+        "SELECT products_video_embed
         FROM " . TABLE_PRODUCTS_DESCRIPTION . "
         WHERE products_id = " . (int)$product_id . "
         AND language_id = " . (int)$language_id
     );
-
     return $product->fields['products_video_embed'];
+}
+
+function zen_get_products_video_embed_2($product_id, $language_id)
+{
+    global $db;
+    $product = $db->Execute(
+        "SELECT products_video_embed_2
+        FROM " . TABLE_PRODUCTS_DESCRIPTION . "
+        WHERE products_id = " . (int)$product_id . "
+        AND language_id = " . (int)$language_id
+    );
+    return $product->fields['products_video_embed_2'];
 }
 
 function npf_add_prebuilt_fields($field)

@@ -1,3 +1,3 @@
 <?php
-  define('TEXT_PRODUCTS_SKU', 'SKU: ');
-  // eof
+
+define('TEXT_PRODUCTS_SKU', 'SKU: ');

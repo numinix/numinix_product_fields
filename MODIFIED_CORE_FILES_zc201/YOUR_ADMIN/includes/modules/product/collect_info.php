@@ -48,10 +48,10 @@ $parameters = [
 
 // bof - NPF [1 of 6]
 $dirList = dirList(NPF_INCLUDES_SQL_FOLDER);
-$npf_fields = "";
-$npf_tables = "";
+$npf_fields = '';
+$npf_tables = '';
 foreach ($dirList as $file) {
-  include(NPF_INCLUDES_SQL_FOLDER . $file);
+  include NPF_INCLUDES_SQL_FOLDER . $file;
 }
 // eof - NPF [1 of 6]
 
@@ -118,12 +118,14 @@ foreach ($manufacturers as $manufacturer) {
 if (zen_get_categories_status($current_category_id) == 0 && $pInfo->products_status != 1) {
   $pInfo->products_status = 0;
 }
+
 // bof - NPF [4 of 6]
 $dirList = dirList(NPF_INCLUDES_MODULES_FOLDER);
 foreach ($dirList as $file) {
   include(NPF_INCLUDES_MODULES_FOLDER . $file);  
 }
 // eof - NPF [4 of 6]
+
 ?>
 <div class="container-fluid">
     <?php
@@ -500,26 +502,26 @@ foreach ($dirList as $file) {
   </div>
   <!-- bof - NPF [5 of 6] -->
   <?php
-  $path1 = 'languages/english/npf_definitions/';
-  $opt1 = DIR_WS_INCLUDES.$path1;
+  // $path1 = 'languages/english/npf_definitions/';
+  // $opt1 = DIR_WS_INCLUDES . $path1;
 
-  $directory = $opt1;
+  // $directory = $opt1;
 
-  $files = scandir($directory);
-  $files = array_diff($files, array('.', '..'));
+  // $files = scandir($directory);
+  // $files = array_diff($files, ['.', '..']);
 
-  foreach ($files as $filename) {
-    $defines = include $opt1 . $filename;
-    foreach($defines as $key=>$value){
-      if(!defined($key)){
-        define($key, $value);
-      }
-    }
-  }
+  // foreach ($files as $filename) {
+  //   $defines = include $opt1 . $filename;
+  //   foreach ($defines as $key => $value) {
+  //     if (!defined($key)) {
+  //       define($key, $value);
+  //     }
+  //   }
+  // }
 
   $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
   foreach ($dirList as $file) {
-    include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);  
+    include NPF_INCLUDES_TEMPLATES_FOLDER . $file;
   }
   ?>
   <!-- eof - NPF [5 of 6] -->

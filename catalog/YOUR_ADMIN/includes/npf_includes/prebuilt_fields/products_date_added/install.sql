@@ -1,1 +1,0 @@
-ALTER TABLE products ADD products_date_added DATETIME DEFAULT CURRENT_TIMESTAMP;

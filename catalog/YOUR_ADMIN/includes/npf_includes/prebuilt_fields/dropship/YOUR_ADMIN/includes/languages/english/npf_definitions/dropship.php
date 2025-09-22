@@ -1,3 +1,3 @@
 <?php
-  define('TEXT_PRODUCTS_DROPSHIP', 'Dropship: ');
-  // eof
+
+define('TEXT_PRODUCTS_DROPSHIP', 'Dropship: ');

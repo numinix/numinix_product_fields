@@ -1,1 +1,1 @@
-ALTER TABLE products ADD google_conversion_label varchar(300) NULL default NULL;
+ALTER TABLE products ADD google_conversion_label varchar(255) DEFAULT NULL;

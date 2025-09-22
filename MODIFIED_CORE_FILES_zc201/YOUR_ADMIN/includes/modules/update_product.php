@@ -43,8 +43,8 @@ if (isset($_POST['edit']) && $_POST['edit'] === 'edit') {
     
     // bof - NPF [1 of 4]
     $dirList = dirList(NPF_INCLUDES_PROCESSING_FOLDER);
-    foreach($dirList as $file) {
-      include(NPF_INCLUDES_PROCESSING_FOLDER . $file);
+    foreach ($dirList as $file) {
+        include NPF_INCLUDES_PROCESSING_FOLDER . $file;
     }
     // eof - NPF [1 of 4]
     $sql_data_array = [
@@ -82,8 +82,8 @@ if (isset($_POST['edit']) && $_POST['edit'] === 'edit') {
 
     // bof - NPF [2 of 4]
     $dirList = dirList(NPF_INCLUDES_SQL_ARRAY_FOLDER);
-    foreach($dirList as $file) {
-      include(NPF_INCLUDES_SQL_ARRAY_FOLDER . $file);
+    foreach ($dirList as $file) {
+        include NPF_INCLUDES_SQL_ARRAY_FOLDER . $file;
     }
     // eof - NPF [2 of 4]
 
@@ -152,8 +152,8 @@ if (isset($_POST['edit']) && $_POST['edit'] === 'edit') {
 
         // bof - NPF [3 of 4]
         $dirList = dirList(NPF_INCLUDES_DESCRIPTION_SQL_ARRAY_FOLDER);
-        foreach($dirList as $file) {
-          include(NPF_INCLUDES_DESCRIPTION_SQL_ARRAY_FOLDER . $file);
+        foreach ($dirList as $file) {
+            include NPF_INCLUDES_DESCRIPTION_SQL_ARRAY_FOLDER . $file;
         }
         // eof - NPF [3 of 4]
 
@@ -173,8 +173,8 @@ if (isset($_POST['edit']) && $_POST['edit'] === 'edit') {
 
     // bof - NPF [4 of 4]
     $dirList = dirList(NPF_INCLUDES_CUSTOM_EXECUTE_FOLDER);
-    foreach($dirList as $file) {
-      include(NPF_INCLUDES_CUSTOM_EXECUTE_FOLDER . $file);
+    foreach ($dirList as $file) {
+        include NPF_INCLUDES_CUSTOM_EXECUTE_FOLDER . $file;
     }
     // eof - NPF [4 of 4]
 

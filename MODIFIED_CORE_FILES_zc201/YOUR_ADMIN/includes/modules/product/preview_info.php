@@ -20,8 +20,9 @@ if (!empty($_POST)) {
   $products_url = $_POST['products_url'];
   // bof - NPF [1 of 3]
   $products_description2 = $_POST['products_description2'] ?? '';
-  $products_video_embed = $_POST['products_video_embed'] ?? '';
   $care_instructions = $_POST['care_instructions'] ?? '';
+  $products_video_embed = $_POST['products_video_embed'] ?? '';
+  $products_video_embed_2 = $_POST['products_video_embed_2'] ?? '';
   // eof - NPF [1 of 3]
   foreach ($products_url as &$url){ // remove protocol
       $url = str_replace(array('http://', 'https://'), '', $url);
@@ -163,11 +164,11 @@ $form_action = (isset($_GET['pID'])) ? 'update_product' : 'insert_product';
           }
         }
         // NPF
-        $dirList = dirList(NPF_INCLUDES_PREVIEW_INFO_FOLDER);
-        $npf_fields = "";
-        $npf_tables = "";
+        $dirList   = dirList(NPF_INCLUDES_PREVIEW_INFO_FOLDER);
+        $npf_fields = '';
+        $npf_tables = '';
         foreach ($dirList as $file) {
-          include(NPF_INCLUDES_PREVIEW_INFO_FOLDER . $file);
+          include NPF_INCLUDES_PREVIEW_INFO_FOLDER . $file;
         }
         if (!isset($_POST['products_date_added'])) {
           echo zen_draw_hidden_field('products_date_added', date('Y-m-d'));
@@ -179,6 +180,8 @@ $form_action = (isset($_GET['pID'])) ? 'update_product' : 'insert_product';
           // bof - NPF [3 of 3]
           echo zen_draw_hidden_field('products_description2[' . $languages[$i]['id'] . ']', htmlspecialchars(((isset($products_description2[$languages[$i]['id']])) ? stripslashes($products_description2[$languages[$i]['id']]) : ''), ENT_COMPAT, CHARSET, TRUE));   
           echo zen_draw_hidden_field('care_instructions[' . $languages[$i]['id'] . ']', htmlspecialchars(((isset($care_instructions[$languages[$i]['id']])) ? stripslashes($care_instructions[$languages[$i]['id']]) : ''), ENT_COMPAT, CHARSET, TRUE));
+          echo zen_draw_hidden_field('products_video_embed[' . $languages[$i]['id'] . ']', htmlspecialchars(((isset($products_video_embed[$languages[$i]['id']])) ? stripslashes($products_video_embed[$languages[$i]['id']]) : ''), ENT_COMPAT, CHARSET, TRUE));
+          echo zen_draw_hidden_field('products_video_embed_2[' . $languages[$i]['id'] . ']', htmlspecialchars(((isset($products_video_embed_2[$languages[$i]['id']])) ? stripslashes($products_video_embed_2[$languages[$i]['id']]) : ''), ENT_COMPAT, CHARSET, TRUE));
           // eof - NPF [3 of 3]
           echo zen_draw_hidden_field('products_url[' . $languages[$i]['id'] . ']', htmlspecialchars(stripslashes($products_url[$languages[$i]['id']]), ENT_COMPAT, CHARSET, TRUE));
         }

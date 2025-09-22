@@ -1,1 +1,1 @@
-ALTER TABLE products ADD discontinue int(1) NULL default 0;
+ALTER TABLE products ADD discontinue tinyint(1) NOT NULL DEFAULT 0;

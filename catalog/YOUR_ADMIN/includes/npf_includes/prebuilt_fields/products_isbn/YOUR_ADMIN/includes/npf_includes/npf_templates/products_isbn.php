@@ -1,53 +1,24 @@
-<?php 
-
-$zc156 = (PROJECT_VERSION_MAJOR > 1 || (PROJECT_VERSION_MAJOR == 1 && substr(PROJECT_VERSION_MINOR, 0, 3) >= 5.6));
-
-if($zc156){ ?>
-          <div class="form-group">
-              <?php echo zen_draw_label(TEXT_PRODUCTS_UPC, 'products_upc', 'class="col-sm-3 control-label"'); ?>
-            <div class="col-sm-9 col-md-6">
-                <?php echo zen_draw_input_field('products_upc', $pInfo->products_upc, 'class="form-control"'); ?>
-            </div>
-          </div>
-          <div class="form-group">
-              <?php echo zen_draw_label(TEXT_PRODUCTS_ISBN, 'products_isbn', 'class="col-sm-3 control-label"'); ?>
-            <div class="col-sm-9 col-md-6">
-                <?php echo zen_draw_input_field('products_isbn', $pInfo->products_isbn, 'class="form-control"'); ?>
-            </div>
-          </div>
-          <div class="form-group">
-              <?php echo zen_draw_label(TEXT_PRODUCTS_EAN, 'products_ean', 'class="col-sm-3 control-label"'); ?>
-            <div class="col-sm-9 col-md-6">
-                <?php echo zen_draw_input_field('products_ean', $pInfo->products_ean, 'class="form-control"'); ?>
-            </div>
-          </div>
-          <div class="form-group">
-              <?php echo zen_draw_label(TEXT_PRODUCTS_ASIN, 'products_asin', 'class="col-sm-3 control-label"'); ?>
-            <div class="col-sm-9 col-md-6">
-                <?php echo zen_draw_input_field('products_asin', $pInfo->products_asin, 'class="form-control"'); ?>
-            </div>
-          </div>
-<?php } else { ?>
-          <tr>
-            <td colspan="2"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
-          </tr>          
-          <tr bgcolor="#DDEACC">
-            <td class="main"><?php echo TEXT_PRODUCTS_UPC; ?></td>
-            <td class="main"><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;' . zen_draw_input_field('products_upc', $pInfo->products_upc, zen_set_field_length(TABLE_PRODUCTS, 'products_upc')); ?></td>
-          </tr>
-          <tr bgcolor="#DDEACC">
-            <td class="main"><?php echo TEXT_PRODUCTS_ISBN; ?></td>
-            <td class="main"><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;' . zen_draw_input_field('products_isbn', $pInfo->products_isbn, zen_set_field_length(TABLE_PRODUCTS, 'products_isbn')); ?></td>
-          </tr>
-          <tr bgcolor="#DDEACC">
-            <td class="main"><?php echo TEXT_PRODUCTS_EAN; ?></td>
-            <td class="main"><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;' . zen_draw_input_field('products_ean', $pInfo->products_ean, zen_set_field_length(TABLE_PRODUCTS, 'products_ean')); ?></td>
-          </tr>
-          <tr bgcolor="#DDEACC">
-            <td class="main"><?php echo TEXT_PRODUCTS_ASIN; ?></td>
-            <td class="main"><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;' . zen_draw_input_field('products_asin', $pInfo->products_asin, zen_set_field_length(TABLE_PRODUCTS, 'products_asin')); ?></td>
-          </tr>
-          <tr>
-            <td colspan="2"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
-          </tr>
-<?php } ?>
+<div class="form-group">
+    <?php echo zen_draw_label(TEXT_PRODUCTS_UPC, 'products_upc', 'class="col-sm-3 control-label"'); ?>
+    <div class="col-sm-9 col-md-6">
+        <?php echo zen_draw_input_field('products_upc', $pInfo->products_upc, 'class="form-control" id="products_upc"'); ?>
+    </div>
+</div>
+<div class="form-group">
+    <?php echo zen_draw_label(TEXT_PRODUCTS_ISBN, 'products_isbn', 'class="col-sm-3 control-label"'); ?>
+    <div class="col-sm-9 col-md-6">
+        <?php echo zen_draw_input_field('products_isbn', $pInfo->products_isbn, 'class="form-control" id="products_isbn"'); ?>
+    </div>
+</div>
+<div class="form-group">
+    <?php echo zen_draw_label(TEXT_PRODUCTS_EAN, 'products_ean', 'class="col-sm-3 control-label"'); ?>
+    <div class="col-sm-9 col-md-6">
+        <?php echo zen_draw_input_field('products_ean', $pInfo->products_ean, 'class="form-control" id="products_ean"'); ?>
+    </div>
+</div>
+<div class="form-group">
+    <?php echo zen_draw_label(TEXT_PRODUCTS_ASIN, 'products_asin', 'class="col-sm-3 control-label"'); ?>
+    <div class="col-sm-9 col-md-6">
+        <?php echo zen_draw_input_field('products_asin', $pInfo->products_asin, 'class="form-control" id="products_asin"'); ?>
+    </div>
+</div>

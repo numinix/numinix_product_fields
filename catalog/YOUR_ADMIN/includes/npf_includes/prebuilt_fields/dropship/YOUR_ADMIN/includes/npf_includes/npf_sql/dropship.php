@@ -1,4 +1,4 @@
 <?php
-  $parameters['dropship'] = '';
-  $npf_fields .= ', p.dropship'; 
-  // eof
+
+$parameters['dropship'] = '';
+$npf_fields .= ', p.dropship';

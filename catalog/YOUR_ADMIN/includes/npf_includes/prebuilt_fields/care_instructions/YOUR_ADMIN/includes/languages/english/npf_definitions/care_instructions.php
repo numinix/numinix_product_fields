@@ -1,3 +1,3 @@
 <?php
-  define('TEXT_CARE_INSTRUCTIONS', 'Care Instructions:');
-// eof
+
+define('TEXT_CARE_INSTRUCTIONS', 'Care Instructions:');
