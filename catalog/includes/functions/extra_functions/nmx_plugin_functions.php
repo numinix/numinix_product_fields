@@ -1,12 +1,12 @@
 <?php
 
 if (!function_exists('nmx_create_defines')) {
-    function nmx_create_defines(array $defines = [])
+    function nmx_create_defines($defines = array())
     {
-        if (!empty($defines)) {
-            foreach ($defines as $key => $value) {
-                if (!defined($key)) {
-                    @define($key, $value);
+        if (is_array($defines) && count($defines) > 0) {
+            foreach ($defines as $constantName => $constantValue) {
+                if (!defined($constantName)) {
+                    define($constantName, $constantValue);
                 }
             }
         }

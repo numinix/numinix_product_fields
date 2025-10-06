@@ -7,7 +7,7 @@
 				<?php echo zen_image(DIR_WS_CATALOG_LANGUAGES . $languages[$i]['directory'] . '/images/' . $languages[$i]['image'], $languages[$i]['name']); ?>
 			</span>
 			<?php
-            $products_video_embed_2_ = isset($products_video_embed_2[$languages[$i]['id']]) ? stripslashes($products_video_embed_2[$languages[$i]['id']]) : zen_get_products_video_embed_2($pInfo->products_id, $languages[$i]['id']);
+            $products_video_embed_2_ = isset($products_video_embed_2[$languages[$i]['id']]) ? stripslashes($products_video_embed_2[$languages[$i]['id']]) : zen_get_field_from_table_products_description($pInfo->products_id, $languages[$i]['id'], 'products_video_embed_2');
 		    $products_video_embed_2_ = ($products_video_embed_2_ === null) ? '' : $products_video_embed_2_;
 		    echo zen_draw_textarea_field('products_video_embed_2[' . $languages[$i]['id'] . ']', 'soft', '100', '30', htmlspecialchars($products_video_embed_2_, ENT_COMPAT, CHARSET, true), 'class="editorHook form-control"');
 		    ?>

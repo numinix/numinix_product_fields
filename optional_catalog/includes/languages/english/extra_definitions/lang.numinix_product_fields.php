@@ -1,6 +1,7 @@
 <?php
+
 /**
- * product_info.php 
+ * product_info.php
  *
  * @package page
  * @copyright Copyright 2003-2007 Zen Cart Development Team
@@ -9,7 +10,7 @@
  * @version $Id: numinix_product_fields.php 4 2011-09-28 01:00:29Z numinix $
  */
 
- $define = [
+$define = [
     'TEXT_PRODUCTS_ACTUAL_WEIGHT' => 'Products Weight: ',
     'TEXT_PRODUCT_DIMENSIONS' => 'Dimensions: ',
     'TEXT_PRODUCTS_LENGTH' => '',
@@ -21,8 +22,8 @@
     'TEXT_PRODUCTS_ISBN' => 'ISBN: ',
     'TEXT_PRODUCTS_OUT_OF_STOCK' => 'Out of Stock',
     'TEXT_PRODUCTS_SKU' => 'SKU: '
- ];
- 
+];
+
 $zc158 = (PROJECT_VERSION_MAJOR > 1 || (PROJECT_VERSION_MAJOR == 1 && substr(PROJECT_VERSION_MINOR, 0, 3) >= '5.8'));
 if ($zc158) {
     return $define;

@@ -25,40 +25,15 @@ function dirList($directory)
     return $results;
 }
 
-function zen_get_products_description2($product_id, $language_id)
-{
-    global $db;
-    $product = $db->Execute(
-        "SELECT products_description2
-        FROM " . TABLE_PRODUCTS_DESCRIPTION . "
-        WHERE products_id = " . (int)$product_id . "
-        AND language_id = " . (int)$language_id
-    );
-    return $product->fields['products_description2'];
-}
 
-function zen_get_products_video_embed($product_id, $language_id)
+function zen_get_field_from_table_products_description($product_id, $language_id, $field_name)
 {
     global $db;
+    $field_name = zen_db_input($field_name);
     $product = $db->Execute(
-        "SELECT products_video_embed
-        FROM " . TABLE_PRODUCTS_DESCRIPTION . "
-        WHERE products_id = " . (int)$product_id . "
-        AND language_id = " . (int)$language_id
+        "SELECT `" . $field_name . "` FROM " . TABLE_PRODUCTS_DESCRIPTION . " WHERE products_id = " . (int)$product_id . " AND language_id = " . (int)$language_id
     );
-    return $product->fields['products_video_embed'];
-}
-
-function zen_get_products_video_embed_2($product_id, $language_id)
-{
-    global $db;
-    $product = $db->Execute(
-        "SELECT products_video_embed_2
-        FROM " . TABLE_PRODUCTS_DESCRIPTION . "
-        WHERE products_id = " . (int)$product_id . "
-        AND language_id = " . (int)$language_id
-    );
-    return $product->fields['products_video_embed_2'];
+    return $product->fields[$field_name];
 }
 
 function npf_add_prebuilt_fields($field)

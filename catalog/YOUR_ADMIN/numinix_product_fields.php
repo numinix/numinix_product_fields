@@ -83,10 +83,40 @@ foreach ($dirList as $file) {
 ?>
 <!doctype html>
 <html <?php echo HTML_PARAMS; ?>>
-  <head>
-    <?php require DIR_WS_INCLUDES . 'admin_html_head.php'; ?>
-  </head>
-  <body>
+  <?php
+  $zcVersion = (PROJECT_VERSION_MAJOR > 1);
+  if($zcVersion) {
+    ?>
+    <head>
+      <?php require DIR_WS_INCLUDES . 'admin_html_head.php'; ?>
+    </head>
+    <body>
+    <?php
+  } else {
+    ?>
+    <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=<?php echo CHARSET; ?>">
+      <title><?php echo TITLE; ?> - Numinix Product Fields</title>
+      <link rel="stylesheet" type="text/css" href="includes/stylesheet.css">
+      <link rel="stylesheet" type="text/css" href="includes/cssjsmenuhover.css" media="all" id="hoverJS">
+      <script language="javascript" src="includes/menu.js"></script>
+      <script language="javascript" src="includes/general.js"></script>
+      <script type="text/javascript">
+        function init()
+        {
+          cssjsmenu('navbar');
+          if (document.getElementById)
+          {
+            var kill = document.getElementById('hoverJS');
+            kill.disabled = true;
+          }
+        }
+      </script>
+    </head>
+    <body onLoad="init()">
+    <?php
+  }
+  ?>
     <!-- header //-->
     <?php require DIR_WS_INCLUDES . 'header.php'; ?>
     <!-- header_eof //-->
