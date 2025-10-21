@@ -193,7 +193,7 @@ foreach ($dirList as $file) {
                 $pull_down_array = [];
                 $npf_definitions_dir = dirList(NPF_DEFINITIONS_FOLDER);
                 foreach ($npf_definitions_dir as $file) {
-                  if ($file !== 'common.php' && $file !== 'lang.common.php') {
+                  if ($file !== '.htaccess') {
                     $field = str_replace('.php', '', $file);
                     $field = str_replace('lang.', '', $field);
                     $pull_down_array[] = ['id' => $field, 'text' => $field];

@@ -600,21 +600,26 @@ foreach ($dirList as $file) {
   </div>
   <!-- bof - NPF [5 of 6] -->
   <?php
-  $path1 = 'languages/english/npf_definitions/';
-  $opt1 = DIR_WS_INCLUDES.$path1;
+  $npf_definitions_path = 'languages/english/npf_definitions/';
+  $npf_definitions_base_path = DIR_WS_INCLUDES . $npf_definitions_path;
 
-  $directory = $opt1;
+  if (is_dir($npf_definitions_base_path)) {
+    $npf_entries = array_diff(scandir($npf_definitions_base_path), ['.', '..']);
 
-  $files = scandir($directory);
-  $files = array_diff($files, array('.', '..'));
-
-  foreach ($files as $filename) {
-    $defines = include $opt1 . $filename;
-    foreach($defines as $key=>$value){
-      if(!defined($key)){
-        define($key, $value);
+    foreach ($npf_entries as $npf_filename) {
+      $npf_file = $npf_definitions_base_path . $npf_filename;
+      $npf_definitions = @include $npf_file; // include once; capture returned array (if any)
+      if (is_array($npf_definitions)) {
+        foreach ($npf_definitions as $npf_const_name => $npf_const_value) {
+          if (!defined($npf_const_name)) {
+            define($npf_const_name, $npf_const_value);
+          }
+        }
       }
     }
+  } else {
+    // NPF definitions directory not found
+    trigger_error('NPF definitions directory not found: ' . $npf_definitions_base_path, E_USER_WARNING);
   }
 
   $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);

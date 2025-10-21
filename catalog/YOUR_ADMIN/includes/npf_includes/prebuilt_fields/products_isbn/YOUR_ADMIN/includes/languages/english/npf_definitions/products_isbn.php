@@ -1,6 +1,19 @@
 <?php
 
-define('TEXT_PRODUCTS_UPC', 'UPC: ');
-define('TEXT_PRODUCTS_ISBN', 'ISBN: ');
-define('TEXT_PRODUCTS_EAN', 'EAN: ');
-define('TEXT_PRODUCTS_ASIN', 'ASIN: ');
+if (!defined('IS_ADMIN_FLAG')) {
+    die('Illegal Access');
+}
+
+$define = [
+    'TEXT_PRODUCTS_UPC'  => 'UPC: ',
+    'TEXT_PRODUCTS_ISBN' => 'ISBN: ',
+    'TEXT_PRODUCTS_EAN'  => 'EAN: ',
+    'TEXT_PRODUCTS_ASIN' => 'ASIN: ',
+];
+
+$zc158 = (PROJECT_VERSION_MAJOR > 1 || (PROJECT_VERSION_MAJOR == 1 && substr(PROJECT_VERSION_MINOR, 0, 3) >= '5.8'));
+if ($zc158) {
+    return $define;
+} else {
+    nmx_create_defines($define);
+}
