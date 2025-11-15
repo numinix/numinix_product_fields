@@ -32,6 +32,7 @@
         <div class="contentMenu">
           <ul>
             <li><a href="#" id="btnInstallation" class="btn" title="Installation">Installation</a></li>
+            <li><a href="#" id="btnMigration" class="btn" title="Migration Guide">Migration</a></li>
             <li><a href="#" id="btnInstallationTips" class="btn" title="Installation Tips">Tips</a></li>
             <li><a href="#" id="btnInstructions" class="btn" title="Instructions">Instructions</a></li>
             <li><a href="#" id="btnUninstall" class="btn" title="Uninstall">Uninstall</a></li>
@@ -244,6 +245,94 @@ if (isset($_GET['pID']) && empty($_POST)) {
         </div>
       </div>
       <!--EOF INSTALLATION-->
+
+      <!--BOF MIGRATION GUIDE-->
+      <div class="bodyHeaderContainer" id="Migration">
+        <div class="bodyHeader" id="orange">
+          <span class="bodyHeaderTxt">Migration Guide from v3.x to v4.0</span>
+        </div>
+        <div class="bodyWrapper">
+          <p><strong>IMPORTANT:</strong> Version 4.0 is a major refactoring that only supports Zen Cart v2.0+. 
+             If you are using an older version of Zen Cart, you must stay on v3.x.</p>
+
+          <h3>What Changed in v4.0?</h3>
+          <ul>
+            <li><strong>Zen Cart v2 Only:</strong> Dropped support for Zen Cart versions prior to v2.0</li>
+            <li><strong>Observer Pattern:</strong> Now uses Zen Cart's observer/notification system for field display</li>
+            <li><strong>Minimal Core Changes:</strong> Significantly reduced core file modifications required</li>
+            <li><strong>Cleaner Integration:</strong> Better separation between NPF code and Zen Cart core</li>
+          </ul>
+
+          <h3>Migration Steps</h3>
+          <ol>
+            <li><strong>Backup Everything:</strong> Make complete backups of your files and database before upgrading</li>
+            <li><strong>Verify Zen Cart v2:</strong> Ensure you are running Zen Cart v2.0 or higher</li>
+            <li><strong>Backup Current NPF Installation:</strong> Note all your custom fields and their configurations</li>
+            <li><strong>Remove Old Core Modifications:</strong>
+              <ul>
+                <li>Remove the NPF code blocks from YOUR_ADMIN/includes/modules/product/collect_info.php</li>
+                <li>Remove the NPF code blocks from YOUR_ADMIN/includes/modules/update_product.php</li>
+                <li>Remove similar blocks from document_product and document_general modules if applicable</li>
+              </ul>
+            </li>
+            <li><strong>Upload New Files:</strong> Upload all v4.0 files, overwriting the old ones</li>
+            <li><strong>Apply New Core Modifications:</strong> Follow the minimal modifications documented in the Installation section above</li>
+            <li><strong>Test Thoroughly:</strong> 
+              <ul>
+                <li>Verify fields display correctly in product edit pages</li>
+                <li>Test creating a new product with NPF fields</li>
+                <li>Test updating an existing product</li>
+                <li>Verify field data is saved and retrieved correctly</li>
+              </ul>
+            </li>
+          </ol>
+
+          <h3>Key Differences</h3>
+          <table border="1" cellpadding="5" cellspacing="0" style="margin: 20px 0;">
+            <tr style="background-color: #f0f0f0;">
+              <th>Aspect</th>
+              <th>v3.x</th>
+              <th>v4.0</th>
+            </tr>
+            <tr>
+              <td>Core File Edits</td>
+              <td>Extensive modifications to multiple files</td>
+              <td>Minimal modifications (documented in readme)</td>
+            </tr>
+            <tr>
+              <td>Field Display</td>
+              <td>Direct include in collect_info.php</td>
+              <td>Observer pattern with NOTIFY_ADMIN_PRODUCT_PRICE_EDIT_ABOVE</td>
+            </tr>
+            <tr>
+              <td>Data Processing</td>
+              <td>Inline code in update_product.php</td>
+              <td>Helper includes (cleaner separation)</td>
+            </tr>
+            <tr>
+              <td>Zen Cart Support</td>
+              <td>1.5.5 through 2.x</td>
+              <td>2.0+ only</td>
+            </tr>
+            <tr>
+              <td>Upgrade Path</td>
+              <td>Manual merging of core changes</td>
+              <td>Simpler, cleaner upgrade process</td>
+            </tr>
+          </table>
+
+          <h3>Troubleshooting Migration</h3>
+          <ul>
+            <li><strong>Fields not displaying:</strong> Verify the collect_info.php modification was applied correctly</li>
+            <li><strong>Data not saving:</strong> Check that update_product.php modifications are in place</li>
+            <li><strong>Observer not loading:</strong> Verify the auto_loader configuration is correct</li>
+            <li><strong>SQL errors:</strong> Make sure helper files have proper permissions and paths</li>
+          </ul>
+
+          <p><strong>Need Help?</strong> If you encounter issues during migration, please check the Help section or contact support.</p>
+        </div>
+      </div>
+      <!--EOF MIGRATION GUIDE-->
 
       <!--BOF TIPS-->
       <div class="bodyHeaderContainer" id="InstallationTips">
