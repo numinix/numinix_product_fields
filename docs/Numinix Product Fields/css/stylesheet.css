@@ -80,10 +80,6 @@ a:hover {
     float: left;
 }
 
-.logoWrapper, .contentMenu {
-    display: inline-block;
-}
-
 .contentMenu ul {
     list-style: none;
     padding: 0;
