@@ -1,113 +1,94 @@
-jQuery(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
   // LICENSE
   // hide documentation unless license terms are agreed
-  //jQuery('#licenseAgreed').hide();
-  // show the documentation if the page loads with agreement radio checked
-  // if (jQuery('input[name="license"]:checked').val() == 1) {
-  //   jQuery('#licenseAgreed').fadeIn();
-  // }
-  // bind click event to license agreement and show/hide documentation based on selection
-  // jQuery('input[name="license"]').live('click', function() {
-  //   if (jQuery('input[name="license"]:checked').val() == 1) {
-  //     jQuery('#licenseAgreed').fadeIn(); 
-  //   } else {
-  //     jQuery('#licenseAgreed').fadeOut();
-  //   }
-  // });
+  // (code commented out in original)
 
-// Menu Links
-  $("#btnInstallation").click(function(){
-    $(".bodyHeaderContainer").hide();
-    $("#Installation").show();
+  // Menu Links - helper function to hide all sections and show target
+  function showSection(sectionId) {
+    var sections = document.querySelectorAll('.bodyHeaderContainer');
+    sections.forEach(function(section) {
+      section.style.display = 'none';
+    });
+    var targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+      targetSection.style.display = 'block';
+    }
+  }
+
+  // Attach click handlers to navigation buttons
+  document.getElementById('btnInstallation').addEventListener('click', function(e) {
+    e.preventDefault();
+    showSection('Installation');
   });
-  $("#btnMigration").click(function(){
-    $(".bodyHeaderContainer").hide();
-    $("#Migration").show();
+  document.getElementById('btnMigration').addEventListener('click', function(e) {
+    e.preventDefault();
+    showSection('Migration');
   });
-   $("#btnInstallationTips").click(function(){
-    $(".bodyHeaderContainer").hide();
-    $("#InstallationTips").show();
+  document.getElementById('btnInstallationTips').addEventListener('click', function(e) {
+    e.preventDefault();
+    showSection('InstallationTips');
   });
-  $("#btnInstructions").click(function(){
-    $(".bodyHeaderContainer").hide();
-    $("#Instructions").show();
+  document.getElementById('btnInstructions').addEventListener('click', function(e) {
+    e.preventDefault();
+    showSection('Instructions');
   });
-    $("#btnUninstall").click(function(){
-    $(".bodyHeaderContainer").hide();
-    $("#Uninstall").show();
+  document.getElementById('btnUninstall').addEventListener('click', function(e) {
+    e.preventDefault();
+    showSection('Uninstall');
   });
-    $("#btnAbout").click(function(){
-    $(".bodyHeaderContainer").hide();
-    $("#About").show();
+  document.getElementById('btnAbout').addEventListener('click', function(e) {
+    e.preventDefault();
+    showSection('About');
   });
-    $("#btnLicense").click(function(){
-    $(".bodyHeaderContainer").hide();
-    $("#License").show();
+  document.getElementById('btnLicense').addEventListener('click', function(e) {
+    e.preventDefault();
+    showSection('License');
   });
-    $("#btnDisclaimer").click(function(){
-    $(".bodyHeaderContainer").hide();
-    $("#Disclaimer").show();
+  document.getElementById('btnDisclaimer').addEventListener('click', function(e) {
+    e.preventDefault();
+    showSection('Disclaimer');
   });
-    $("#btnHelp").click(function(){
-    $(".bodyHeaderContainer").hide();
-    $("#Help").show();
+  document.getElementById('btnHelp').addEventListener('click', function(e) {
+    e.preventDefault();
+    showSection('Help');
   });
 
-
-  
   // CODE BOXES
   // highlight
-  sh_highlightDocument();
-  // select all functionality
-  jQuery('.select').live('click', function() {
-    selectCode(jQuery(this).parent('div').next('pre').children('code')[0]);
+  if (typeof sh_highlightDocument !== 'undefined') {
+    sh_highlightDocument();
+  }
+  
+  // select all functionality - use event delegation on document
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('select')) {
+      var codeElement = e.target.parentElement.nextElementSibling.querySelector('code');
+      if (codeElement) {
+        selectCode(codeElement);
+      }
+    }
   });
 });
 
-function selectCode(a)
+function selectCode(codeElement)
 {
-  // Get ID of code block
-  var e = a.parentNode.parentNode.getElementsByTagName('CODE')[0];
+  // The code element is already the target
+  var e = codeElement;
 
-  // Not IE
+  // Modern browsers
   if (window.getSelection)
   {
     var s = window.getSelection();
-    // Safari
-    if (s.setBaseAndExtent)
-    {
-      s.setBaseAndExtent(e, 0, e, e.innerText.length - 1);
-    }
-    // Firefox and Opera
-    else
-    {
-      // workaround for bug # 42885
-      if (window.opera && e.innerHTML.substring(e.innerHTML.length - 4) == '<BR>')
-      {
-        e.innerHTML = e.innerHTML + '&nbsp;';
-      }
-
-      var r = document.createRange();
-      r.selectNodeContents(e);
-      s.removeAllRanges();
-      s.addRange(r);
-    }
-  }
-  // Some older browsers
-  else if (document.getSelection)
-  {
-    var s = document.getSelection();
     var r = document.createRange();
     r.selectNodeContents(e);
     s.removeAllRanges();
     s.addRange(r);
   }
-  // IE
+  // Legacy IE
   else if (document.selection)
   {
     var r = document.body.createTextRange();
     r.moveToElementText(e);
     r.select();
   }
-
 }

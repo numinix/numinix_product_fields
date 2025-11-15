@@ -58,6 +58,12 @@ a:hover {
     float: right;
 }
 
+#headerContainer {
+    background-color: #fff;
+    position: relative;
+    z-index: 10;
+}
+
 .headerWrapper {
     width: 100%;
     max-width: 1024px;
