@@ -68,7 +68,12 @@
             <li>Reload your admin, the module will self-install the additional page located at ADMIN > CATALOG > NUMINIX
               PRODUCT FIELDS</li>
             <li>Add additional fields using the pre-Built sets in ADMIN > CATALOG > NUMINIX PRODUCT FIELDS</li>
-            <li><strong>Apply Required Core File Modifications</strong> (see detailed instructions below)</li>
+            <li><strong>Apply Core File Integration</strong> - Choose one of two methods (see detailed instructions below):
+              <ul>
+                <li><strong>Method 1 (Recommended):</strong> Use the automatic override generator</li>
+                <li><strong>Method 2 (Fallback):</strong> Manual core file modifications</li>
+              </ul>
+            </li>
             <li>File uploads will be saved to the media directory so make sure that exists, or you can change this in
               the configuration menu</li>
             <li>
@@ -103,11 +108,70 @@
 
           </ol>
 
-          <h3>Required Core File Modifications for Zen Cart v2</h3>
-          <p>The following minimal modifications are required to integrate Numinix Product Fields with Zen Cart v2. 
-             These changes allow NPF to load and save custom field data alongside core product data.</p>
+          <h3>Core File Integration for Zen Cart v2</h3>
+          <p><strong>NPF v4.1 offers TWO methods for integrating with Zen Cart v2:</strong></p>
           
-          <h4>1. Modify YOUR_ADMIN/includes/modules/product/collect_info.php (SQL query section)</h4>
+          <h4>Method 1: Automatic Override Generator (RECOMMENDED) ✨</h4>
+          <p>NPF provides an automatic override file generator that eliminates manual core file editing!</p>
+          
+          <div class="bodyTxt">
+            <strong>What is the Override System?</strong>
+            <p>Zen Cart v2.0+ includes an official override system for product modules. When loading files like 
+               <code>collect_info.php</code>, Zen Cart searches in this order:</p>
+            <ol>
+              <li><code>YOUR_ADMIN/includes/modules/product/collect_info.php</code> (override - NPF uses this!)</li>
+              <li><code>YOUR_ADMIN/includes/modules/collect_info.php</code> (base - remains untouched)</li>
+            </ol>
+            
+            <strong>Benefits:</strong>
+            <ul>
+              <li>✅ No manual editing of core Zen Cart files required</li>
+              <li>✅ Easier to upgrade Zen Cart (core files remain pristine)</li>
+              <li>✅ Easier to upgrade NPF (just replace override files)</li>
+              <li>✅ Official Zen Cart methodology</li>
+              <li>✅ One-click automated process</li>
+            </ul>
+            
+            <strong>How to Use the Override Generator:</strong>
+            <ol>
+              <li>Upload <code>npf_generate_overrides.php</code> from the NPF package to your <code>YOUR_ADMIN</code> directory</li>
+              <li>Login to your admin panel as a superuser</li>
+              <li>Access the generator via browser: <code>http://yourstore.com/YOUR_ADMIN/npf_generate_overrides.php</code></li>
+              <li>Click "Generate Override Files" button</li>
+              <li>Verify the success message</li>
+              <li><strong>Delete the generator script</strong> (<code>npf_generate_overrides.php</code>) for security</li>
+              <li>Test product editing to verify NPF fields display and save correctly</li>
+            </ol>
+            
+            <strong>Generated Files:</strong>
+            <p>The generator creates these override files in <code>YOUR_ADMIN/includes/modules/product/</code>:</p>
+            <ul>
+              <li><code>collect_info.php</code> - Loads NPF field data when editing products</li>
+              <li><code>update_product.php</code> - Saves NPF field data when creating/updating products</li>
+            </ul>
+            
+            <strong>How to Revert Changes if Issues Occur:</strong>
+            <p>If you encounter problems after generating override files, you can easily revert:</p>
+            <ol>
+              <li>Delete or rename the override files:
+                <ul>
+                  <li><code>YOUR_ADMIN/includes/modules/product/collect_info.php</code></li>
+                  <li><code>YOUR_ADMIN/includes/modules/product/update_product.php</code></li>
+                </ul>
+              </li>
+              <li>Zen Cart will automatically fall back to using the base files (without NPF integration)</li>
+              <li>Your custom fields will not be lost - they remain in the database</li>
+              <li>You can then try Method 2 (manual editing) or contact support for assistance</li>
+            </ol>
+          </div>
+          
+          <h4>Method 2: Manual Core File Modifications (Fallback)</h4>
+          <p>If the automatic generator doesn't work for your setup, you can manually apply the modifications. 
+             The following minimal modifications are required to integrate Numinix Product Fields with Zen Cart v2.</p>
+          
+          <h5>1. Modify YOUR_ADMIN/includes/modules/product/collect_info.php (SQL query section)</h5>
+          <p><strong>Note:</strong> Create this file by copying the base <code>YOUR_ADMIN/includes/modules/collect_info.php</code> 
+             to <code>YOUR_ADMIN/includes/modules/product/collect_info.php</code>, then apply the modifications below.</p>
           <p>This modification loads NPF field data when editing a product.</p>
           
           <div class="bodyTxt">
@@ -150,7 +214,9 @@ if (isset($_GET['pID']) && empty($_POST)) {
             </div>
           </div>
 
-          <h4>2. Modify YOUR_ADMIN/includes/modules/update_product.php</h4>
+          <h5>2. Modify YOUR_ADMIN/includes/modules/product/update_product.php</h5>
+          <p><strong>Note:</strong> Create this file by copying the base <code>YOUR_ADMIN/includes/modules/update_product.php</code> 
+             to <code>YOUR_ADMIN/includes/modules/product/update_product.php</code>, then apply the modifications below.</p>
           <p>These modifications allow NPF to save field data when products are created or updated.</p>
           
           <div class="bodyTxt">
@@ -196,6 +262,10 @@ if (isset($_GET['pID']) && empty($_POST)) {
 
           <p><strong>Note:</strong> Similar modifications may be needed for document_product and document_general modules 
              if you use those product types. Follow the same pattern as above.</p>
+          
+          <p><strong>Important:</strong> If you use the manual modification method (Method 2), you are responsible for 
+             maintaining these files when upgrading Zen Cart or NPF. The automatic generator (Method 1) is strongly 
+             recommended as it makes upgrades much simpler.</p>
         </div>
       </div>
       <!--EOF INSTALLATION-->
@@ -215,6 +285,7 @@ if (isset($_GET['pID']) && empty($_POST)) {
             <li><strong>Observer Pattern:</strong> Now uses Zen Cart's observer/notification system for field display</li>
             <li><strong>Minimal Core Changes:</strong> Significantly reduced core file modifications required</li>
             <li><strong>Cleaner Integration:</strong> Better separation between NPF code and Zen Cart core</li>
+            <li><strong>Override System (v4.1+):</strong> Automatic generator eliminates manual core file editing</li>
           </ul>
 
           <h3>Migration Steps</h3>
@@ -224,13 +295,19 @@ if (isset($_GET['pID']) && empty($_POST)) {
             <li><strong>Backup Current NPF Installation:</strong> Note all your custom fields and their configurations</li>
             <li><strong>Remove Old Core Modifications:</strong>
               <ul>
-                <li>Remove the NPF code blocks from YOUR_ADMIN/includes/modules/product/collect_info.php</li>
-                <li>Remove the NPF code blocks from YOUR_ADMIN/includes/modules/update_product.php</li>
+                <li>If you manually edited core files in v3.x, restore the original files or remove NPF code blocks from:</li>
+                <li>YOUR_ADMIN/includes/modules/collect_info.php (if edited)</li>
+                <li>YOUR_ADMIN/includes/modules/update_product.php (if edited)</li>
                 <li>Remove similar blocks from document_product and document_general modules if applicable</li>
               </ul>
             </li>
-            <li><strong>Upload New Files:</strong> Upload all v4.0 files, overwriting the old ones</li>
-            <li><strong>Apply New Core Modifications:</strong> Follow the minimal modifications documented in the Installation section above</li>
+            <li><strong>Upload New Files:</strong> Upload all v4.1 files, overwriting the old ones</li>
+            <li><strong>Apply New Integration:</strong> 
+              <ul>
+                <li><strong>Recommended:</strong> Use the automatic override generator (see Installation section, Method 1)</li>
+                <li><strong>Alternative:</strong> Follow the manual modifications (see Installation section, Method 2)</li>
+              </ul>
+            </li>
             <li><strong>Test Thoroughly:</strong> 
               <ul>
                 <li>Verify fields display correctly in product edit pages</li>
@@ -247,40 +324,60 @@ if (isset($_GET['pID']) && empty($_POST)) {
               <th>Aspect</th>
               <th>v3.x</th>
               <th>v4.0</th>
+              <th>v4.1</th>
             </tr>
             <tr>
               <td>Core File Edits</td>
               <td>Extensive modifications to multiple files</td>
               <td>Minimal modifications (documented in readme)</td>
+              <td>None (automatic override generator)</td>
+            </tr>
+            <tr>
+              <td>Installation Method</td>
+              <td>Manual editing required</td>
+              <td>Manual editing required</td>
+              <td>One-click generator + optional manual fallback</td>
             </tr>
             <tr>
               <td>Field Display</td>
               <td>Direct include in collect_info.php</td>
+              <td>Observer pattern with NOTIFY_ADMIN_PRODUCT_PRICE_EDIT_ABOVE</td>
               <td>Observer pattern with NOTIFY_ADMIN_PRODUCT_PRICE_EDIT_ABOVE</td>
             </tr>
             <tr>
               <td>Data Processing</td>
               <td>Inline code in update_product.php</td>
               <td>Helper includes (cleaner separation)</td>
+              <td>Helper includes (cleaner separation)</td>
+            </tr>
+            <tr>
+              <td>Override Files</td>
+              <td>Not used</td>
+              <td>Not used</td>
+              <td>Yes - uses Zen Cart v2 override system</td>
             </tr>
             <tr>
               <td>Zen Cart Support</td>
               <td>1.5.5 through 2.x</td>
+              <td>2.0+ only</td>
               <td>2.0+ only</td>
             </tr>
             <tr>
               <td>Upgrade Path</td>
               <td>Manual merging of core changes</td>
               <td>Simpler, cleaner upgrade process</td>
+              <td>Easiest - regenerate override files</td>
             </tr>
           </table>
 
           <h3>Troubleshooting Migration</h3>
           <ul>
-            <li><strong>Fields not displaying:</strong> Verify the collect_info.php modification was applied correctly</li>
-            <li><strong>Data not saving:</strong> Check that update_product.php modifications are in place</li>
+            <li><strong>Override generator fails:</strong> Check file permissions on YOUR_ADMIN/includes/modules/product/ directory, ensure you're logged in as superuser</li>
+            <li><strong>Fields not displaying:</strong> Verify the override files exist in YOUR_ADMIN/includes/modules/product/ or that manual modifications were applied correctly</li>
+            <li><strong>Data not saving:</strong> Check that update_product.php override exists or manual modifications are in place</li>
             <li><strong>Observer not loading:</strong> Verify the auto_loader configuration is correct</li>
             <li><strong>SQL errors:</strong> Make sure helper files have proper permissions and paths</li>
+            <li><strong>Need to revert changes:</strong> Simply delete the override files in YOUR_ADMIN/includes/modules/product/ and Zen Cart will use the original files</li>
           </ul>
 
           <p><strong>Need Help?</strong> If you encounter issues during migration, please check the Help section or contact support.</p>
@@ -430,7 +527,7 @@ if (isset($_GET['pID']) && empty($_POST)) {
             <div class="bodyRow"><span class="bodyStrong">Compatibility:</span><span class="content">Zen Cart v2.0+</span></div>
             <div class="bodyRow"><span class="bodyStrong">Author Notes:</span><span class="content">Zen Cart is the
                 copyright of the Zen Cart Development Team.</span></div>
-            <div class="bodyRow"><span class="bodyStrong">Version:</span><span class="content">4.0.0</span></div>
+            <div class="bodyRow"><span class="bodyStrong">Version:</span><span class="content">4.1.0</span></div>
           </div>
         </div>
       </div>
