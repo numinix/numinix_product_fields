@@ -20,6 +20,10 @@ jQuery(document).ready(function() {
     $(".bodyHeaderContainer").hide();
     $("#Installation").show();
   });
+  $("#btnMigration").click(function(){
+    $(".bodyHeaderContainer").hide();
+    $("#Migration").show();
+  });
    $("#btnInstallationTips").click(function(){
     $(".bodyHeaderContainer").hide();
     $("#InstallationTips").show();

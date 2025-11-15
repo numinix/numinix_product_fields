@@ -1,0 +1,100 @@
+NUMINIX PRODUCT FIELDS v4.0.0 - CHANGELOG AND MIGRATION NOTES
+================================================================
+
+MAJOR REFACTORING FOR ZEN CART v2 ONLY
+---------------------------------------
+
+Version 4.0.0 represents a complete refactoring of Numinix Product Fields
+to work with Zen Cart v2's notification system, significantly reducing
+the need for core file modifications.
+
+BREAKING CHANGES
+----------------
+- Zen Cart v2.0+ is now REQUIRED
+- Support for Zen Cart versions prior to v2.0 has been REMOVED
+- If you need support for older Zen Cart versions, use NPF v3.x
+
+WHAT'S NEW
+----------
+1. Observer Pattern Integration
+   - New observer class (NuminixProductFieldsObserver) handles field display
+   - Uses NOTIFY_ADMIN_PRODUCT_PRICE_EDIT_ABOVE notification
+   - Cleaner separation between NPF and Zen Cart core
+
+2. Helper Files for Core Integration
+   - npf_collect_info_sql.php - Loads NPF SQL data
+   - npf_update_product_sql.php - Builds SQL array for products table
+   - npf_update_product_description_sql.php - Builds SQL array for descriptions
+   - npf_custom_execute.php - Executes custom NPF scripts
+
+3. Minimal Core File Changes
+   - Reduced from extensive modifications to just 3 small changes
+   - All changes clearly documented in readme.html
+   - Total of ~22 lines added to core files (vs hundreds in v3.x)
+
+4. Removed Directories
+   - MODIFIED_CORE_FILES (1.5.5 and older)
+   - MODIFIED_CORE_FILES_zc156
+   - MODIFIED_CORE_FILES_zc157
+   - MODIFIED_CORE_FILES_zc158
+   - MODIFIED_CORE_FILES_zc200
+   - admin_menu_for_zc1.3.x
+   Total: 60 files removed
+
+5. Enhanced Documentation
+   - Complete rewrite of installation instructions
+   - Detailed migration guide from v3.x to v4.0
+   - Clear examples of required core file modifications
+   - Troubleshooting tips
+
+NEW FILES
+---------
+catalog/YOUR_ADMIN/includes/classes/observers/NuminixProductFieldsObserver.php
+catalog/YOUR_ADMIN/includes/npf_includes/npf_collect_info_sql.php
+catalog/YOUR_ADMIN/includes/npf_includes/npf_update_product_sql.php
+catalog/YOUR_ADMIN/includes/npf_includes/npf_update_product_description_sql.php
+catalog/YOUR_ADMIN/includes/npf_includes/npf_custom_execute.php
+catalog/YOUR_ADMIN/includes/installers/numinix_product_fields/4_0_0.php
+
+MODIFIED FILES
+--------------
+catalog/YOUR_ADMIN/includes/auto_loaders/config.numinix_product_fields.php
+docs/Numinix Product Fields/readme.html
+docs/Numinix Product Fields/js/documentation.js
+
+REQUIRED CORE FILE MODIFICATIONS
+---------------------------------
+See docs/Numinix Product Fields/readme.html for detailed instructions.
+Summary:
+1. YOUR_ADMIN/includes/modules/product/collect_info.php (10 lines)
+2. YOUR_ADMIN/includes/modules/update_product.php (12 lines in 3 places)
+
+MIGRATION FROM v3.x
+-------------------
+1. Backup everything
+2. Verify you're on Zen Cart v2.0+
+3. Remove old NPF core modifications
+4. Upload v4.0 files
+5. Apply new minimal core modifications (see documentation)
+6. Test thoroughly
+
+COMPATIBILITY
+-------------
+- Zen Cart v2.0 or higher REQUIRED
+- All existing NPF templates are compatible (no changes needed)
+- All prebuilt fields work without modification
+- Database structure unchanged (automatic upgrade to v4.0.0)
+
+BENEFITS
+--------
+- Easier installation and upgrades
+- Less chance of conflicts with other plugins
+- Better compatibility with future Zen Cart versions
+- Cleaner code organization
+- Simpler troubleshooting
+
+SUPPORT
+-------
+See docs/Numinix Product Fields/readme.html for full documentation
+including installation, migration, and troubleshooting guides.
+

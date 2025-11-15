@@ -32,6 +32,7 @@
         <div class="contentMenu">
           <ul>
             <li><a href="#" id="btnInstallation" class="btn" title="Installation">Installation</a></li>
+            <li><a href="#" id="btnMigration" class="btn" title="Migration Guide">Migration</a></li>
             <li><a href="#" id="btnInstallationTips" class="btn" title="Installation Tips">Tips</a></li>
             <li><a href="#" id="btnInstructions" class="btn" title="Instructions">Instructions</a></li>
             <li><a href="#" id="btnUninstall" class="btn" title="Uninstall">Uninstall</a></li>
@@ -55,40 +56,19 @@
       <!--BOF INSTALLATION-->
       <div class="bodyHeaderContainer" id="Installation">
         <div class="bodyHeader" id="green">
-          <span class="bodyHeaderTxt">Installation</span>
+          <span class="bodyHeaderTxt">Installation for Zen Cart v2.0+</span>
         </div>
         <div class="bodyWrapper">
+          <p><strong>NOTE: This version only supports Zen Cart v2.0 and above. For older versions, please use a previous release.</strong></p>
           <ol>
             <li>Backup your files and database</li>
             <li>Upload all files in this package while maintaining the directory structure (rename YOUR_ADMIN to your
               custom admin folder name except for the ones in <span
                 class="break">catalog/YOUR_ADMIN/includes/npf_includes/prebuilt_fields</span> folder)</li>
-            <li>Reload you admin, the module will self install the additional page located at ADMIN > CATALOG > NUMINIX
+            <li>Reload your admin, the module will self-install the additional page located at ADMIN > CATALOG > NUMINIX
               PRODUCT FIELDS</li>
             <li>Add additional fields using the pre-Built sets in ADMIN > CATALOG > NUMINIX PRODUCT FIELDS</li>
-            <li>Merge the changes of the included files in the MODIFIED_CORE_FILES if your Zen Cart version is 1.5.5 or older. Use files
-              in MODIFIED_CORE_FILES_zc156 for 1.5.6, MODIFIED_CORE_FILES_zc157 for 1.5.7, MODIFIED_CORE_FILES_zc158 for 1.5.8, and MODIFIED_CORE_FILES_zc200 for Zen Cart 2.0+.</li>
-            <li>
-              <div class="bodyTxt">
-                For Zen Cart 1.5.5 only (inapplicable for Zen Cart 1.5.5a and above), open
-                /YOUR_ADMIN/includes/init_includes/init_sanitize.php and find at the end of the file:
-                <div class="code">
-                  <div class="codeTitle"><span class="select">Select code</span></div>
-                  <pre class="sh_php"><code>$sanitizer->runSanitizers();
-</code></pre>
-                </div>
-                Add before:
-                <div class="code">
-                  <div class="codeTitle"><span class="select">Select code</span></div>
-                  <pre class="sh_php"><code>// bof modified by numinix for extra sanitation rules
-if ( file_exists(DIR_WS_INCLUDES . &#x27;init_includes/extra_sanitation_rules.php&#x27;) ) {
-    include(DIR_WS_INCLUDES . &#x27;init_includes/extra_sanitation_rules.php&#x27;);
-}
-// eof modified by numinix for extra sanitation rules
-</code></pre>
-                </div>
-              </div>
-            </li>
+            <li><strong>Apply Required Core File Modifications</strong> (see detailed instructions below)</li>
             <li>File uploads will be saved to the media directory so make sure that exists, or you can change this in
               the configuration menu</li>
             <li>
@@ -100,7 +80,7 @@ if ( file_exists(DIR_WS_INCLUDES . &#x27;init_includes/extra_sanitation_rules.ph
                 <div class="code">
                   <div class="codeTitle"> <span class="select">Select code</span></div>
                   <pre
-                    class="sh_php"><code> &lt;php echo (($flag_show_product_info_manufacturer == 1 and !empty($manufacturers_name)) ? '&lt;li&gt;' . TEXT_PRODUCT_MANUFACTURER . $manufacturers_name . '&lt;/li&gt;' : '') . "\n"; ?&gt;</code></pre>
+                    class="sh_php"><code> &lt;?php echo (($flag_show_product_info_manufacturer == 1 and !empty($manufacturers_name)) ? '&lt;li&gt;' . TEXT_PRODUCT_MANUFACTURER . $manufacturers_name . '&lt;/li&gt;' : '') . "\n"; ?&gt;</code></pre>
                 </div>
                 Add the following:
                 <div class="code">
@@ -122,9 +102,237 @@ if ( file_exists(DIR_WS_INCLUDES . &#x27;init_includes/extra_sanitation_rules.ph
             <li>See the <strong>TIPS</strong> page for more details about the usage of this plugin.</li>
 
           </ol>
+
+          <h3>Required Core File Modifications for Zen Cart v2</h3>
+          <p>The following minimal modifications are required to integrate Numinix Product Fields with Zen Cart v2. 
+             These changes allow NPF to hook into the product editing system without extensive core file modifications.</p>
+          
+          <h4>1. Modify YOUR_ADMIN/includes/modules/product/collect_info.php</h4>
+          <p>This modification allows NPF fields to display properly in the product edit form.</p>
+          
+          <div class="bodyTxt">
+            Find (around line 455-465):
+            <div class="code">
+              <div class="codeTitle"><span class="select">Select code</span></div>
+              <pre class="sh_php"><code>$additional_fields = [];
+$zco_notifier-&gt;notify('NOTIFY_ADMIN_PRODUCT_PRICE_EDIT_ABOVE', $pInfo, $additional_fields);
+if (!empty($additional_fields)) {
+    foreach ($additional_fields as $current_field) {
+?&gt;
+&lt;div class="form-group"&gt;
+    &lt;?php echo zen_draw_label($current_field['label'], $current_field['fieldname'], 'class="col-sm-3 control-label"'); ?&gt;
+    &lt;div class="col-sm-9 col-md-6"&gt;&lt;?php echo $current_field['input']; ?&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;?php
+    }
+}
+?&gt;</code></pre>
+            </div>
+            Replace with:
+            <div class="code">
+              <div class="codeTitle"><span class="select">Select code</span></div>
+              <pre class="sh_php"><code>$additional_fields = [];
+$zco_notifier-&gt;notify('NOTIFY_ADMIN_PRODUCT_PRICE_EDIT_ABOVE', $pInfo, $additional_fields);
+if (!empty($additional_fields)) {
+    foreach ($additional_fields as $current_field) {
+        // NPF: Check if this is a complete HTML block (marked by special label)
+        if ($current_field['label'] === '&lt;!-- NPF_COMPLETE_HTML --&gt;') {
+            // Output complete HTML without additional wrapping
+            echo $current_field['input'];
+        } else {
+?&gt;
+&lt;div class="form-group"&gt;
+    &lt;?php echo zen_draw_label($current_field['label'], $current_field['fieldname'], 'class="col-sm-3 control-label"'); ?&gt;
+    &lt;div class="col-sm-9 col-md-6"&gt;&lt;?php echo $current_field['input']; ?&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;?php
+        }
+    }
+}
+?&gt;</code></pre>
+            </div>
+          </div>
+
+          <h4>2. Modify YOUR_ADMIN/includes/modules/product/collect_info.php (SQL query section)</h4>
+          <p>This modification loads NPF field data when editing a product.</p>
+          
+          <div class="bodyTxt">
+            Find (around line 44-52):
+            <div class="code">
+              <div class="codeTitle"><span class="select">Select code</span></div>
+              <pre class="sh_php"><code>$pInfo = new objectInfo($parameters);
+
+if (isset($_GET['pID']) && empty($_POST)) {
+  $product = $db-&gt;Execute("SELECT pd.products_name, pd.products_description, pd.products_url,
+                                  p.*, 
+                                  date_format(p.products_date_available, '" .  zen_datepicker_format_forsql() . "') as products_date_available
+                              FROM " . TABLE_PRODUCTS . " p
+                              LEFT JOIN " . TABLE_PRODUCTS_DESCRIPTION . " pd ON (p.products_id = pd.products_id)
+                           WHERE p.products_id = " . (int)$_GET['pID'] . "
+                           AND p.products_id = pd.products_id
+                           AND pd.language_id = " . (int)$_SESSION['languages_id']);</code></pre>
+            </div>
+            Replace with:
+            <div class="code">
+              <div class="codeTitle"><span class="select">Select code</span></div>
+              <pre class="sh_php"><code>// NPF: Load SQL extensions for additional fields
+if (file_exists(DIR_WS_INCLUDES . 'npf_includes/npf_collect_info_sql.php')) {
+    include(DIR_WS_INCLUDES . 'npf_includes/npf_collect_info_sql.php');
+}
+
+$pInfo = new objectInfo($parameters);
+
+if (isset($_GET['pID']) && empty($_POST)) {
+  $product = $db-&gt;Execute("SELECT pd.products_name, pd.products_description, pd.products_url,
+                                  p.*, 
+                                  date_format(p.products_date_available, '" .  zen_datepicker_format_forsql() . "') as products_date_available" . 
+                                  (isset($npf_fields) ? $npf_fields : '') . "
+                              FROM " . TABLE_PRODUCTS . " p
+                              LEFT JOIN " . TABLE_PRODUCTS_DESCRIPTION . " pd ON (p.products_id = pd.products_id)" .
+                              (isset($npf_tables) ? $npf_tables : '') . "
+                           WHERE p.products_id = " . (int)$_GET['pID'] . "
+                           AND p.products_id = pd.products_id
+                           AND pd.language_id = " . (int)$_SESSION['languages_id']);</code></pre>
+            </div>
+          </div>
+
+          <h4>3. Modify YOUR_ADMIN/includes/modules/update_product.php</h4>
+          <p>These modifications allow NPF to save field data when products are created or updated.</p>
+          
+          <div class="bodyTxt">
+            <strong>Modification 3a:</strong> Add after the $sql_data_array is created (around line 65-72):
+            <div class="code">
+              <div class="codeTitle"><span class="select">Select code</span></div>
+              <pre class="sh_php"><code>  );
+
+  // NPF: Include SQL array builder for products table
+  if (file_exists(DIR_WS_INCLUDES . 'npf_includes/npf_update_product_sql.php')) {
+      include(DIR_WS_INCLUDES . 'npf_includes/npf_update_product_sql.php');
+  }
+
+  $db_filename = zen_limit_image_filename($_POST['products_image'], TABLE_PRODUCTS, 'products_image');</code></pre>
+            </div>
+
+            <strong>Modification 3b:</strong> Add in the products_description loop (around line 130-136):
+            <div class="code">
+              <div class="codeTitle"><span class="select">Select code</span></div>
+              <pre class="sh_php"><code>      'products_url' => zen_db_prepare_input($_POST['products_url'][$language_id]));
+
+      // NPF: Include SQL array builder for products_description table
+      if (file_exists(DIR_WS_INCLUDES . 'npf_includes/npf_update_product_description_sql.php')) {
+          include(DIR_WS_INCLUDES . 'npf_includes/npf_update_product_description_sql.php');
+      }
+
+    if ($action == 'insert_product') {</code></pre>
+            </div>
+
+            <strong>Modification 3c:</strong> Add before the final redirect (around line 151-157):
+            <div class="code">
+              <div class="codeTitle"><span class="select">Select code</span></div>
+              <pre class="sh_php"><code>  }
+
+    // NPF: Execute custom scripts after product data is saved
+    if (file_exists(DIR_WS_INCLUDES . 'npf_includes/npf_custom_execute.php')) {
+        include(DIR_WS_INCLUDES . 'npf_includes/npf_custom_execute.php');
+    }
+
+  $zco_notifier-&gt;notify('NOTIFY_MODULES_UPDATE_PRODUCT_END', array('action' => $action, 'products_id' => $products_id));</code></pre>
+            </div>
+          </div>
+
+          <p><strong>Note:</strong> Similar modifications may be needed for document_product and document_general modules 
+             if you use those product types. Follow the same pattern as above.</p>
         </div>
       </div>
       <!--EOF INSTALLATION-->
+
+      <!--BOF MIGRATION GUIDE-->
+      <div class="bodyHeaderContainer" id="Migration">
+        <div class="bodyHeader" id="orange">
+          <span class="bodyHeaderTxt">Migration Guide from v3.x to v4.0</span>
+        </div>
+        <div class="bodyWrapper">
+          <p><strong>IMPORTANT:</strong> Version 4.0 is a major refactoring that only supports Zen Cart v2.0+. 
+             If you are using an older version of Zen Cart, you must stay on v3.x.</p>
+
+          <h3>What Changed in v4.0?</h3>
+          <ul>
+            <li><strong>Zen Cart v2 Only:</strong> Dropped support for Zen Cart versions prior to v2.0</li>
+            <li><strong>Observer Pattern:</strong> Now uses Zen Cart's observer/notification system for field display</li>
+            <li><strong>Minimal Core Changes:</strong> Significantly reduced core file modifications required</li>
+            <li><strong>Cleaner Integration:</strong> Better separation between NPF code and Zen Cart core</li>
+          </ul>
+
+          <h3>Migration Steps</h3>
+          <ol>
+            <li><strong>Backup Everything:</strong> Make complete backups of your files and database before upgrading</li>
+            <li><strong>Verify Zen Cart v2:</strong> Ensure you are running Zen Cart v2.0 or higher</li>
+            <li><strong>Backup Current NPF Installation:</strong> Note all your custom fields and their configurations</li>
+            <li><strong>Remove Old Core Modifications:</strong>
+              <ul>
+                <li>Remove the NPF code blocks from YOUR_ADMIN/includes/modules/product/collect_info.php</li>
+                <li>Remove the NPF code blocks from YOUR_ADMIN/includes/modules/update_product.php</li>
+                <li>Remove similar blocks from document_product and document_general modules if applicable</li>
+              </ul>
+            </li>
+            <li><strong>Upload New Files:</strong> Upload all v4.0 files, overwriting the old ones</li>
+            <li><strong>Apply New Core Modifications:</strong> Follow the minimal modifications documented in the Installation section above</li>
+            <li><strong>Test Thoroughly:</strong> 
+              <ul>
+                <li>Verify fields display correctly in product edit pages</li>
+                <li>Test creating a new product with NPF fields</li>
+                <li>Test updating an existing product</li>
+                <li>Verify field data is saved and retrieved correctly</li>
+              </ul>
+            </li>
+          </ol>
+
+          <h3>Key Differences</h3>
+          <table border="1" cellpadding="5" cellspacing="0" style="margin: 20px 0;">
+            <tr style="background-color: #f0f0f0;">
+              <th>Aspect</th>
+              <th>v3.x</th>
+              <th>v4.0</th>
+            </tr>
+            <tr>
+              <td>Core File Edits</td>
+              <td>Extensive modifications to multiple files</td>
+              <td>Minimal modifications (documented in readme)</td>
+            </tr>
+            <tr>
+              <td>Field Display</td>
+              <td>Direct include in collect_info.php</td>
+              <td>Observer pattern with NOTIFY_ADMIN_PRODUCT_PRICE_EDIT_ABOVE</td>
+            </tr>
+            <tr>
+              <td>Data Processing</td>
+              <td>Inline code in update_product.php</td>
+              <td>Helper includes (cleaner separation)</td>
+            </tr>
+            <tr>
+              <td>Zen Cart Support</td>
+              <td>1.5.5 through 2.x</td>
+              <td>2.0+ only</td>
+            </tr>
+            <tr>
+              <td>Upgrade Path</td>
+              <td>Manual merging of core changes</td>
+              <td>Simpler, cleaner upgrade process</td>
+            </tr>
+          </table>
+
+          <h3>Troubleshooting Migration</h3>
+          <ul>
+            <li><strong>Fields not displaying:</strong> Verify the collect_info.php modification was applied correctly</li>
+            <li><strong>Data not saving:</strong> Check that update_product.php modifications are in place</li>
+            <li><strong>Observer not loading:</strong> Verify the auto_loader configuration is correct</li>
+            <li><strong>SQL errors:</strong> Make sure helper files have proper permissions and paths</li>
+          </ul>
+
+          <p><strong>Need Help?</strong> If you encounter issues during migration, please check the Help section or contact support.</p>
+        </div>
+      </div>
+      <!--EOF MIGRATION GUIDE-->
 
       <!--BOF TIPS-->
       <div class="bodyHeaderContainer" id="InstallationTips">
@@ -219,7 +427,7 @@ if ( file_exists(DIR_WS_INCLUDES . &#x27;init_includes/extra_sanitation_rules.ph
                   </li>
                   <li><strong>Plugin Not Working Correctly</strong>
                     <ol>
-                      <li>Ensure you're using a compatible Zen Cart version (1.5.7 or higher, including Zen Cart 2.x).</li>
+                      <li>Ensure you're using Zen Cart v2.0 or higher. This version only supports Zen Cart v2.</li>
                       <li>Check for conflicts with other plugins by temporarily disabling them.</li>
                     </ol>
                   </li>
@@ -265,10 +473,10 @@ if ( file_exists(DIR_WS_INCLUDES . &#x27;init_includes/extra_sanitation_rules.ph
                 class="content">Moderate</span></div>
             <div class="bodyRow"><span class="bodyStrong">Installation Time:</span><span class="content">~ 10-15
                 minutes</span></div>
-            <div class="bodyRow"><span class="bodyStrong">Compatibility:</span><span class="content">Zen Cart 1.5.7 - 2.x</span></div>
+            <div class="bodyRow"><span class="bodyStrong">Compatibility:</span><span class="content">Zen Cart v2.0+</span></div>
             <div class="bodyRow"><span class="bodyStrong">Author Notes:</span><span class="content">Zen Cart is the
                 copyright of the Zen Cart Development Team.</span></div>
-            <div class="bodyRow"><span class="bodyStrong">Version:</span><span class="content">3.1.8</span></div>
+            <div class="bodyRow"><span class="bodyStrong">Version:</span><span class="content">4.0.0</span></div>
           </div>
         </div>
       </div>
