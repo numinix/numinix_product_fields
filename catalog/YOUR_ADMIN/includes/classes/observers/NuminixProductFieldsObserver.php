@@ -46,16 +46,10 @@ class NuminixProductFieldsObserver extends base
     {
         global $db, $pInfo;
         
-        if (!isset($paramsArray[1]) || !is_array($paramsArray[1])) {
-            return;
-        }
-        
         // Get pInfo from parameters
         if (isset($paramsArray[0])) {
             $pInfo = $paramsArray[0];
         }
-        
-        $additional_fields = &$paramsArray[1];
         
         if (!$pInfo) {
             return;
@@ -72,26 +66,11 @@ class NuminixProductFieldsObserver extends base
         $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
         
         foreach ($dirList as $file) {
-            // Capture the output from the template file
-            ob_start();
+            // NPF templates output complete <div class="form-group"> blocks for ZC 1.5.6+.
+            // Instead of adding to $additional_fields and requiring a core file modification,
+            // we directly output the HTML here. This eliminates the need for users to modify
+            // collect_info.php in the Zen Cart core.
             include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);
-            $template_output = ob_get_clean();
-            
-            if (empty(trim($template_output))) {
-                continue;
-            }
-
-            // The existing NPF templates output complete <div class="form-group"> blocks for ZC 1.5.6+.
-            // We mark these with a special prefix so the collect_info.php template can detect
-            // and output them without additional wrapping.
-            // 
-            // See readme.html for the required modification to collect_info.php
-            
-            $additional_fields[] = [
-                'label' => '<!-- NPF_COMPLETE_HTML -->', 
-                'fieldname' => '',
-                'input' => $template_output
-            ];
         }
     }
 
