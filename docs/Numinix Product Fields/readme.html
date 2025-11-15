@@ -105,55 +105,9 @@
 
           <h3>Required Core File Modifications for Zen Cart v2</h3>
           <p>The following minimal modifications are required to integrate Numinix Product Fields with Zen Cart v2. 
-             These changes allow NPF to hook into the product editing system without extensive core file modifications.</p>
+             These changes allow NPF to load and save custom field data alongside core product data.</p>
           
-          <h4>1. Modify YOUR_ADMIN/includes/modules/product/collect_info.php</h4>
-          <p>This modification allows NPF fields to display properly in the product edit form.</p>
-          
-          <div class="bodyTxt">
-            Find (around line 455-465):
-            <div class="code">
-              <div class="codeTitle"><span class="select">Select code</span></div>
-              <pre class="sh_php"><code>$additional_fields = [];
-$zco_notifier-&gt;notify('NOTIFY_ADMIN_PRODUCT_PRICE_EDIT_ABOVE', $pInfo, $additional_fields);
-if (!empty($additional_fields)) {
-    foreach ($additional_fields as $current_field) {
-?&gt;
-&lt;div class="form-group"&gt;
-    &lt;?php echo zen_draw_label($current_field['label'], $current_field['fieldname'], 'class="col-sm-3 control-label"'); ?&gt;
-    &lt;div class="col-sm-9 col-md-6"&gt;&lt;?php echo $current_field['input']; ?&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;?php
-    }
-}
-?&gt;</code></pre>
-            </div>
-            Replace with:
-            <div class="code">
-              <div class="codeTitle"><span class="select">Select code</span></div>
-              <pre class="sh_php"><code>$additional_fields = [];
-$zco_notifier-&gt;notify('NOTIFY_ADMIN_PRODUCT_PRICE_EDIT_ABOVE', $pInfo, $additional_fields);
-if (!empty($additional_fields)) {
-    foreach ($additional_fields as $current_field) {
-        // NPF: Check if this is a complete HTML block (marked by special label)
-        if ($current_field['label'] === '&lt;!-- NPF_COMPLETE_HTML --&gt;') {
-            // Output complete HTML without additional wrapping
-            echo $current_field['input'];
-        } else {
-?&gt;
-&lt;div class="form-group"&gt;
-    &lt;?php echo zen_draw_label($current_field['label'], $current_field['fieldname'], 'class="col-sm-3 control-label"'); ?&gt;
-    &lt;div class="col-sm-9 col-md-6"&gt;&lt;?php echo $current_field['input']; ?&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;?php
-        }
-    }
-}
-?&gt;</code></pre>
-            </div>
-          </div>
-
-          <h4>2. Modify YOUR_ADMIN/includes/modules/product/collect_info.php (SQL query section)</h4>
+          <h4>1. Modify YOUR_ADMIN/includes/modules/product/collect_info.php (SQL query section)</h4>
           <p>This modification loads NPF field data when editing a product.</p>
           
           <div class="bodyTxt">
@@ -196,11 +150,11 @@ if (isset($_GET['pID']) && empty($_POST)) {
             </div>
           </div>
 
-          <h4>3. Modify YOUR_ADMIN/includes/modules/update_product.php</h4>
+          <h4>2. Modify YOUR_ADMIN/includes/modules/update_product.php</h4>
           <p>These modifications allow NPF to save field data when products are created or updated.</p>
           
           <div class="bodyTxt">
-            <strong>Modification 3a:</strong> Add after the $sql_data_array is created (around line 65-72):
+            <strong>Modification 2a:</strong> Add after the $sql_data_array is created (around line 65-72):
             <div class="code">
               <div class="codeTitle"><span class="select">Select code</span></div>
               <pre class="sh_php"><code>  );
@@ -213,7 +167,7 @@ if (isset($_GET['pID']) && empty($_POST)) {
   $db_filename = zen_limit_image_filename($_POST['products_image'], TABLE_PRODUCTS, 'products_image');</code></pre>
             </div>
 
-            <strong>Modification 3b:</strong> Add in the products_description loop (around line 130-136):
+            <strong>Modification 2b:</strong> Add in the products_description loop (around line 130-136):
             <div class="code">
               <div class="codeTitle"><span class="select">Select code</span></div>
               <pre class="sh_php"><code>      'products_url' => zen_db_prepare_input($_POST['products_url'][$language_id]));
@@ -226,7 +180,7 @@ if (isset($_GET['pID']) && empty($_POST)) {
     if ($action == 'insert_product') {</code></pre>
             </div>
 
-            <strong>Modification 3c:</strong> Add before the final redirect (around line 151-157):
+            <strong>Modification 2c:</strong> Add before the final redirect (around line 151-157):
             <div class="code">
               <div class="codeTitle"><span class="select">Select code</span></div>
               <pre class="sh_php"><code>  }

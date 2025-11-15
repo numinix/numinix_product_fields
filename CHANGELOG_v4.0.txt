@@ -28,9 +28,9 @@ WHAT'S NEW
    - npf_custom_execute.php - Executes custom NPF scripts
 
 3. Minimal Core File Changes
-   - Reduced from extensive modifications to just 3 small changes
+   - Reduced from extensive modifications to just 2 small changes
    - All changes clearly documented in readme.html
-   - Total of ~22 lines added to core files (vs hundreds in v3.x)
+   - Total of ~17 lines added to core files (vs hundreds in v3.x)
 
 4. Removed Directories
    - MODIFIED_CORE_FILES (1.5.5 and older)
@@ -66,7 +66,7 @@ REQUIRED CORE FILE MODIFICATIONS
 ---------------------------------
 See docs/Numinix Product Fields/readme.html for detailed instructions.
 Summary:
-1. YOUR_ADMIN/includes/modules/product/collect_info.php (10 lines)
+1. YOUR_ADMIN/includes/modules/product/collect_info.php (5 lines for SQL loading)
 2. YOUR_ADMIN/includes/modules/update_product.php (12 lines in 3 places)
 
 MIGRATION FROM v3.x
