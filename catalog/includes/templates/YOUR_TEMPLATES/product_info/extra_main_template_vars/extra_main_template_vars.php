@@ -19,8 +19,8 @@ if (!empty(NUMINIX_PRODUCT_FIELDS_CATALOGUE)) {
 
 		$sql = $db->Execute($sql_query);
 		foreach ($numinix_fields as $field_to_show) {
-			if (!empty($sql->fields[$field])) { // bof modified for NX-1962 :: Issue on NPF
-				$numinix_fields_display[$field_to_show] = $sql->fields[$field];
+			if (!empty($sql->fields[$field_to_show])) { // bof modified for NX-1962 :: Issue on NPF
+				$numinix_fields_display[$field_to_show] = $sql->fields[$field_to_show];
 			} // eof modified for NX-1962 :: Issue on NPF
 		}
 	}

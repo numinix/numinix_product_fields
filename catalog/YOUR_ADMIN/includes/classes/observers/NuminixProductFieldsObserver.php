@@ -45,13 +45,24 @@ class NuminixProductFieldsObserver extends base
     protected function addProductFields(&$paramsArray)
     {
         global $db, $pInfo;
-        
-        // Get pInfo from parameters
-        if (isset($paramsArray[0])) {
-            $pInfo = $paramsArray[0];
+
+        // Determine the product info object passed by the notifier.
+        $incomingPInfo = null;
+        if ($paramsArray instanceof objectInfo) {
+            $incomingPInfo = $paramsArray;
+        } elseif (is_array($paramsArray)) {
+            if (isset($paramsArray['pInfo']) && $paramsArray['pInfo'] instanceof objectInfo) {
+                $incomingPInfo = $paramsArray['pInfo'];
+            } elseif (isset($paramsArray[0]) && $paramsArray[0] instanceof objectInfo) {
+                $incomingPInfo = $paramsArray[0];
+            }
         }
-        
-        if (!$pInfo) {
+
+        if ($incomingPInfo instanceof objectInfo) {
+            $pInfo = $incomingPInfo;
+        }
+
+        if (empty($pInfo)) {
             return;
         }
 
