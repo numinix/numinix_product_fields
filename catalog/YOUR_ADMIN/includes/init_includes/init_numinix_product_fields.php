@@ -6,9 +6,9 @@ if (!defined('IS_ADMIN_FLAG')) {
 
 // NPF v4.0+ requires Zen Cart v2.0 or higher
 // Check if running on compatible Zen Cart version
-if (!defined('PROJECT_VERSION_MAJOR') || PROJECT_VERSION_MAJOR < 2) {
+if (!defined('PROJECT_VERSION_MAJOR') || !is_numeric(PROJECT_VERSION_MAJOR) || PROJECT_VERSION_MAJOR < 2) {
     $zen_cart_version = defined('PROJECT_VERSION_MAJOR') && defined('PROJECT_VERSION_MINOR') 
-        ? 'v' . PROJECT_VERSION_MAJOR . '.' . PROJECT_VERSION_MINOR 
+        ? 'v' . htmlspecialchars(PROJECT_VERSION_MAJOR, ENT_QUOTES, 'UTF-8') . '.' . htmlspecialchars(PROJECT_VERSION_MINOR, ENT_QUOTES, 'UTF-8')
         : 'unknown version';
     
     // Use die() with a clear message as messageStack may not be available yet
