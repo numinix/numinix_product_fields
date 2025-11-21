@@ -4,6 +4,27 @@ if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
 }
 
+// NPF v4.0+ requires Zen Cart v2.0 or higher
+// Check if running on compatible Zen Cart version
+if (!defined('PROJECT_VERSION_MAJOR') || !defined('PROJECT_VERSION_MINOR') || (int)PROJECT_VERSION_MAJOR < 2) {
+    $zen_cart_version = (defined('PROJECT_VERSION_MAJOR') && defined('PROJECT_VERSION_MINOR'))
+        ? 'v' . PROJECT_VERSION_MAJOR . '.' . PROJECT_VERSION_MINOR
+        : 'unknown version';
+    
+    // Use die() with a clear message as messageStack may not be available yet
+    die(
+        '<h2>Numinix Product Fields - Incompatible Zen Cart Version</h2>' .
+        '<p><strong>ERROR:</strong> Numinix Product Fields v4.0+ requires Zen Cart v2.0 or higher.</p>' .
+        '<p>You are currently running Zen Cart ' . $zen_cart_version . '.</p>' .
+        '<p><strong>Solutions:</strong></p>' .
+        '<ul>' .
+        '<li>Upgrade to Zen Cart v2.0 or higher, or</li>' .
+        '<li>Use Numinix Product Fields v3.x for older Zen Cart versions</li>' .
+        '</ul>' .
+        '<p>Please see the CHANGELOG_v4.0.txt file for more information.</p>'
+    );
+}
+
 $module_constant = 'NUMINIX_PRODUCT_FIELDS_VERSION';
 $module_installer_directory = DIR_FS_ADMIN . 'includes/installers/numinix_product_fields';
 $module_name = "Numinix Product Fields";
