@@ -4,6 +4,19 @@ if (!defined('IS_ADMIN_FLAG')) {
     die('Illegal Access');
 }
 
+// NPF v4.0+ requires Zen Cart v2.0 or higher
+// Check if running on compatible Zen Cart version
+if (defined('PROJECT_VERSION_MAJOR') && PROJECT_VERSION_MAJOR < 2) {
+    $messageStack->add_session(
+        'ERROR: Numinix Product Fields v4.0+ requires Zen Cart v2.0 or higher. ' .
+        'You are currently running Zen Cart v' . PROJECT_VERSION_MAJOR . '.' . PROJECT_VERSION_MINOR . '. ' .
+        'Please upgrade to Zen Cart v2.0+ or use NPF v3.x for older Zen Cart versions.',
+        'error'
+    );
+    // Don't continue loading NPF on incompatible versions
+    return;
+}
+
 $module_constant = 'NUMINIX_PRODUCT_FIELDS_VERSION';
 $module_installer_directory = DIR_FS_ADMIN . 'includes/installers/numinix_product_fields';
 $module_name = "Numinix Product Fields";
