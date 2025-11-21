@@ -6,8 +6,8 @@ if (!defined('IS_ADMIN_FLAG')) {
 
 // NPF v4.0+ requires Zen Cart v2.0 or higher
 // Check if running on compatible Zen Cart version
-if (!defined('PROJECT_VERSION_MAJOR') || (int)PROJECT_VERSION_MAJOR < 2) {
-    $zen_cart_version = defined('PROJECT_VERSION_MAJOR') && defined('PROJECT_VERSION_MINOR') 
+if (!defined('PROJECT_VERSION_MAJOR') || !defined('PROJECT_VERSION_MINOR') || (int)PROJECT_VERSION_MAJOR < 2) {
+    $zen_cart_version = (defined('PROJECT_VERSION_MAJOR') && defined('PROJECT_VERSION_MINOR'))
         ? 'v' . PROJECT_VERSION_MAJOR . '.' . PROJECT_VERSION_MINOR
         : 'unknown version';
     
