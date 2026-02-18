@@ -1,6 +1,7 @@
 <?php
+
 /**
- * product_info.php 
+ * product_info.php
  *
  * @package page
  * @copyright Copyright 2003-2007 Zen Cart Development Team

@@ -1,8 +1,15 @@
 <?php
-  $tmp_value = zen_db_prepare_input($_POST['products_weight_type']);
-  $products_weight_type = (!zen_not_null($tmp_value) || $tmp_value=='') ? SYSTEM_WEIGHT_UNITS : $tmp_value;
-  $tmp_value = zen_db_prepare_input($_POST['products_dim_type']);
-  $products_dim_type = (!zen_not_null($tmp_value) || $tmp_value=='') ? SYSTEM_DIMENSION_UNITS : $tmp_value;
-  $tmp_value = zen_db_prepare_input($_POST['products_actual_weight']);
-  $products_diameter = (!zen_not_null($tmp_value) || $tmp_value=='' || $tmp_value == 0) ? 0 : $tmp_value;
-  // eof
+
+$shipping_weight_units = defined('SHIPPING_WEIGHT_UNITS') ? SHIPPING_WEIGHT_UNITS : 'lbs';
+$products_weight_type = (isset($_POST['products_weight_type']) && zen_not_null(zen_db_prepare_input($_POST['products_weight_type'])))
+  ? zen_db_prepare_input($_POST['products_weight_type'])
+  : $shipping_weight_units;
+
+$shipping_dimension_units = defined('SHIPPING_DIMENSION_UNITS') ? SHIPPING_DIMENSION_UNITS : 'inches';
+$products_dim_type = (isset($_POST['products_dim_type']) && zen_not_null(zen_db_prepare_input($_POST['products_dim_type'])))
+  ? zen_db_prepare_input($_POST['products_dim_type'])
+  : $shipping_dimension_units;
+
+$products_diameter = isset($_POST['products_diameter']) && zen_not_null(zen_db_prepare_input($_POST['products_diameter']))
+  ? zen_db_prepare_input($_POST['products_diameter'])
+  : 0;

@@ -1,45 +1,24 @@
-<?php 
-
-$zc156 = (PROJECT_VERSION_MAJOR > 1 || (PROJECT_VERSION_MAJOR == 1 && substr(PROJECT_VERSION_MINOR, 0, 3) >= 5.6));
-if($zc156){ ?>
-          <div class="form-group">
-            <div class="col-sm-9 col-md-6">
-              <table>
-                <tr>
-                  <td class="main" valign="top"><?php echo TEXT_PRODUCTS_VIDEO_EMBED_2; ?></td>
-                  <td colspan="2">
-                    <table border="0" cellspacing="0" cellpadding="0">
-                      <tr>
-                        <td class="main" width="100%">
-                          <?php echo zen_draw_textarea_field('products_video_embed_2', 'soft', '100%', '30', $pInfo->products_video_embed_2); ?>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-                <tr bgcolor="#DDEACC">
-                  <td class="main"><?php echo TEXT_PRODUCTS_VIDEO_EMBED_2_THUMBNAIL; ?></td>
-                  <td class="main"><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;' . zen_draw_input_field('products_video_embed_2_thumbnail', $pInfo->products_video_embed_2_thumbnail, zen_set_field_length(TABLE_PRODUCTS_DESCRIPTION, 'products_video_embed_2_thumbnail')); ?></td>
-                </tr>
-              </table>
-            </div>
-          </div>
-<?php } else { ?>
-          <tr>
-            <td class="main" valign="top"><?php echo TEXT_PRODUCTS_VIDEO_EMBED_2; ?></td>
-            <td colspan="2">
-              <table border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td class="main" width="100%">
-                    <?php echo zen_draw_textarea_field('products_video_embed_2', 'soft', '100%', '30', $pInfo->products_video_embed_2); ?>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr bgcolor="#DDEACC">
-            <td class="main"><?php echo TEXT_PRODUCTS_VIDEO_EMBED_2_THUMBNAIL; ?></td>
-            <td class="main"><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;' . zen_draw_input_field('products_video_embed_2_thumbnail', $pInfo->products_video_embed_2_thumbnail, zen_set_field_length(TABLE_PRODUCTS_DESCRIPTION, 'products_video_embed_2_thumbnail')); ?></td>
-          </tr>
-
-<?php } ?>
+<div class="form-group">
+	<p class="col-sm-3 control-label"><?php echo TEXT_PRODUCTS_VIDEO_EMBED_2; ?></p>
+	<div class="col-sm-9 col-md-6">
+		<?php for ($i = 0, $n = sizeof($languages); $i < $n; $i++) { ?>
+		<div class="input-group">
+			<span class="input-group-addon">
+				<?php echo zen_image(DIR_WS_CATALOG_LANGUAGES . $languages[$i]['directory'] . '/images/' . $languages[$i]['image'], $languages[$i]['name']); ?>
+			</span>
+			<?php
+            $products_video_embed_2_ = isset($products_video_embed_2[$languages[$i]['id']]) ? stripslashes($products_video_embed_2[$languages[$i]['id']]) : zen_get_field_from_table_products_description($pInfo->products_id, $languages[$i]['id'], 'products_video_embed_2');
+		    $products_video_embed_2_ = ($products_video_embed_2_ === null) ? '' : $products_video_embed_2_;
+		    echo zen_draw_textarea_field('products_video_embed_2[' . $languages[$i]['id'] . ']', 'soft', '100', '30', htmlspecialchars($products_video_embed_2_, ENT_COMPAT, CHARSET, true), 'class="editorHook form-control"');
+		    ?>
+		</div>
+		<br>
+		<?php } ?>
+	</div>
+</div>
+<div class="form-group">
+    <?php echo zen_draw_label(TEXT_PRODUCTS_VIDEO_EMBED_2_THUMBNAIL, 'products_video_embed_2_thumbnail', 'class="col-sm-3 control-label"'); ?>
+    <div class="col-sm-9 col-md-6">
+        <?php echo zen_draw_input_field('products_video_embed_2_thumbnail', $pInfo->products_video_embed_2_thumbnail, 'class="form-control" id="products_video_embed_2_thumbnail"'); ?>
+    </div>
+</div>

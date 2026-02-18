@@ -1,1 +1,1 @@
-ALTER TABLE `products` ADD `air_only` tinyint(1) NOT NULL default 0;
+ALTER TABLE `products` ADD `air_only` tinyint(1) NOT NULL DEFAULT 0;

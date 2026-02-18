@@ -1,0 +1,1 @@
+ALTER TABLE products ADD products_condition varchar(255) DEFAULT NULL;

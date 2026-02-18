@@ -1,1 +1,1 @@
-ALTER TABLE `products` ADD `products_markup` FLOAT DEFAULT '0' AFTER `products_price`;
+ALTER TABLE `products` ADD `products_markup` FLOAT NOT NULL DEFAULT 0 AFTER `products_price`;

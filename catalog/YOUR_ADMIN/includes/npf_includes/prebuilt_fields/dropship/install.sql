@@ -1,1 +1,1 @@
-ALTER TABLE products ADD dropship int(1) NULL default 0;
+ALTER TABLE products ADD dropship tinyint(1) NOT NULL DEFAULT 0;

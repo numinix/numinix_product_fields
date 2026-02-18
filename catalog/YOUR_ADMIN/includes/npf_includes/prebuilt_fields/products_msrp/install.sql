@@ -1,1 +1,1 @@
-ALTER TABLE `products` ADD `products_msrp` VARCHAR( 150 ) DEFAULT '0' AFTER `products_price`;
+ALTER TABLE `products` ADD `products_msrp` VARCHAR(150) DEFAULT NULL AFTER `products_price`;
