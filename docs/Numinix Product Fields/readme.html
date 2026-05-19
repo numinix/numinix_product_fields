@@ -103,6 +103,25 @@
                 </div>
               </div>
             </li>
+            <li>
+              <div class="bodyTxt">
+                (Optional) To display NPF video product fields on the product info page <br>
+                Open <span
+                  class="break">includes/modules/YOUR_TEMPLATE/templates/YOUR_TEMPLATE/templates/tpl_product_info_display.php</span>
+                and add the following code where you want the video fields to appear (recommended: after the product description section):
+                
+                <div class="code">
+                  <div class="codeTitle"> <span class="select">Select code</span></div>
+                  <pre class="sh_php"><code>&lt;!-- bof NPF Video product fields --&gt;
+            &lt;?php if (!empty($GLOBALS['npf_product_extra_html'])): ?&gt;
+            &lt;div class="npf-product-video-fields"&gt;
+                &lt;?php echo $GLOBALS['npf_product_extra_html']; ?&gt;
+            &lt;/div&gt;
+            &lt;?php endif; ?&gt;
+            &lt;!-- eof NPF Video product fields --&gt;</code></pre>
+                </div>
+              </div>
+            </li>
             <li>See the <strong>TIPS</strong> page for more details about the usage of this plugin.</li>
 
           </ol>
@@ -526,7 +545,7 @@ if (isset($_GET['pID']) && empty($_POST)) {
             <div class="bodyRow"><span class="bodyStrong">Compatibility:</span><span class="content">Zen Cart v2.0+</span></div>
             <div class="bodyRow"><span class="bodyStrong">Author Notes:</span><span class="content">Zen Cart is the
                 copyright of the Zen Cart Development Team.</span></div>
-            <div class="bodyRow"><span class="bodyStrong">Version:</span><span class="content">4.1.0</span></div>
+            <div class="bodyRow"><span class="bodyStrong">Version:</span><span class="content">4.1.1</span></div>
           </div>
         </div>
       </div>

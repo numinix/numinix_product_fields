@@ -20,7 +20,9 @@ class NuminixProductFieldsObserver extends base
         // Attach to the notification for adding fields to product edit form
         $this->attach($this, [
             'NOTIFY_ADMIN_PRODUCT_PRICE_EDIT_ABOVE',
-            'NOTIFY_MODULES_UPDATE_PRODUCT_START'
+            'NOTIFY_ADMIN_PRODUCT_COLLECT_INFO_EXTRA_INPUTS',
+            'NOTIFY_MODULES_UPDATE_PRODUCT_START',
+            'NOTIFY_ADMIN_PRODUCT_IMAGE_UPLOADED',
         ]);
     }
 
@@ -32,6 +34,18 @@ class NuminixProductFieldsObserver extends base
         switch ($eventID) {
             case 'NOTIFY_ADMIN_PRODUCT_PRICE_EDIT_ABOVE':
                 $this->addProductFields($paramsArray);
+                break;
+            case 'NOTIFY_ADMIN_PRODUCT_COLLECT_INFO_EXTRA_INPUTS':
+                if ($this->currentCollectInfoHasLegacyNPFTemplateInclude()) {
+                    return;
+                }
+                $this->addProductFields($paramsArray);
+                break;
+            case 'NOTIFY_ADMIN_PRODUCT_IMAGE_UPLOADED':
+                if ($this->currentProductPageHasLegacyNPFPreviewInclude()) {
+                    return;
+                }
+                $this->processProductPreview($paramsArray);
                 break;
             case 'NOTIFY_MODULES_UPDATE_PRODUCT_START':
                 $this->processProductUpdateStart($paramsArray);
@@ -66,6 +80,17 @@ class NuminixProductFieldsObserver extends base
             return;
         }
 
+        /*
+         * NPF templates were originally included directly from collect_info.php,
+         * where variables such as $languages and posted field arrays were in
+         * scope. Mirror that scope here so legacy/custom NPF templates continue
+         * to work when loaded through the observer.
+         */
+        extract($GLOBALS, EXTR_SKIP);
+        if (empty($languages) || !is_array($languages)) {
+            $languages = zen_get_languages();
+        }
+
         // Load language definitions for NPF fields
         $this->loadNPFLanguageDefinitions();
 
@@ -74,14 +99,26 @@ class NuminixProductFieldsObserver extends base
             return;
         }
 
-        $dirList = dirList(NPF_INCLUDES_TEMPLATES_FOLDER);
-        
-        foreach ($dirList as $file) {
+        foreach ($this->phpFilesIn(NPF_INCLUDES_TEMPLATES_FOLDER) as $file) {
             // NPF templates output complete <div class="form-group"> blocks for ZC 1.5.6+.
             // Instead of adding to $additional_fields and requiring a core file modification,
             // we directly output the HTML here. This eliminates the need for users to modify
             // collect_info.php in the Zen Cart core.
             include(NPF_INCLUDES_TEMPLATES_FOLDER . $file);
+        }
+    }
+
+    /**
+     * Run NPF file/video upload handlers during the product-preview step.
+     * Fires on NOTIFY_ADMIN_PRODUCT_IMAGE_UPLOADED (new_product_preview.php).
+     * Sets $_POST['{field}'] so preview_info.php forwards the path as a hidden field.
+     */
+    protected function processProductPreview(&$paramsArray)
+    {
+        if (defined('NPF_INCLUDES_PREVIEW_FOLDER') && is_dir(NPF_INCLUDES_PREVIEW_FOLDER)) {
+            foreach ($this->phpFilesIn(NPF_INCLUDES_PREVIEW_FOLDER) as $file) {
+                include(NPF_INCLUDES_PREVIEW_FOLDER . $file);
+            }
         }
     }
 
@@ -94,8 +131,7 @@ class NuminixProductFieldsObserver extends base
         
         // Run NPF processing scripts
         if (defined('NPF_INCLUDES_PROCESSING_FOLDER') && is_dir(NPF_INCLUDES_PROCESSING_FOLDER)) {
-            $dirList = dirList(NPF_INCLUDES_PROCESSING_FOLDER);
-            foreach ($dirList as $file) {
+            foreach ($this->phpFilesIn(NPF_INCLUDES_PROCESSING_FOLDER) as $file) {
                 include(NPF_INCLUDES_PROCESSING_FOLDER . $file);
             }
         }
@@ -109,21 +145,15 @@ class NuminixProductFieldsObserver extends base
      */
     protected function loadNPFLanguageDefinitions()
     {
-        $path = 'languages/english/npf_definitions/';
-        $opt = DIR_WS_INCLUDES . $path;
+        $opt = defined('NPF_DEFINITIONS_FOLDER')
+            ? NPF_DEFINITIONS_FOLDER
+            : DIR_WS_LANGUAGES . ($_SESSION['language'] ?? 'english') . '/npf_definitions/';
         
         if (!is_dir($opt)) {
             return;
         }
         
-        $files = scandir($opt);
-        $files = array_diff($files, ['.', '..']);
-        
-        foreach ($files as $filename) {
-            if (pathinfo($filename, PATHINFO_EXTENSION) !== 'php') {
-                continue;
-            }
-            
+        foreach ($this->phpFilesIn($opt) as $filename) {
             $defines = include $opt . $filename;
             if (is_array($defines)) {
                 foreach ($defines as $key => $value) {
@@ -133,5 +163,74 @@ class NuminixProductFieldsObserver extends base
                 }
             }
         }
+    }
+
+    protected function phpFilesIn($directory)
+    {
+        if (!is_dir($directory)) {
+            return [];
+        }
+
+        $files = array_filter(scandir($directory), static function ($filename) use ($directory) {
+            return pathinfo($filename, PATHINFO_EXTENSION) === 'php'
+                && is_file($directory . $filename);
+        });
+        sort($files);
+
+        return $files;
+    }
+
+    protected function currentCollectInfoHasLegacyNPFTemplateInclude()
+    {
+        static $filesChecked = [];
+
+        foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10) as $frame) {
+            if (empty($frame['file']) || basename($frame['file']) !== 'collect_info.php') {
+                continue;
+            }
+
+            if (isset($filesChecked[$frame['file']])) {
+                return $filesChecked[$frame['file']];
+            }
+
+            $contents = file_get_contents($frame['file']);
+            if ($contents === false) {
+                continue;
+            }
+
+            $filesChecked[$frame['file']] = strpos($contents, 'NPF_INCLUDES_TEMPLATES_FOLDER') !== false
+                && strpos($contents, 'include(NPF_INCLUDES_TEMPLATES_FOLDER') !== false;
+
+            return $filesChecked[$frame['file']];
+        }
+
+        return false;
+    }
+
+    protected function currentProductPageHasLegacyNPFPreviewInclude()
+    {
+        static $filesChecked = [];
+
+        foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10) as $frame) {
+            if (empty($frame['file']) || basename($frame['file']) !== 'product.php') {
+                continue;
+            }
+
+            if (isset($filesChecked[$frame['file']])) {
+                return $filesChecked[$frame['file']];
+            }
+
+            $contents = file_get_contents($frame['file']);
+            if ($contents === false) {
+                continue;
+            }
+
+            $filesChecked[$frame['file']] = strpos($contents, 'NPF_INCLUDES_PREVIEW_FOLDER') !== false
+                && strpos($contents, 'include(NPF_INCLUDES_PREVIEW_FOLDER') !== false;
+
+            return $filesChecked[$frame['file']];
+        }
+
+        return false;
     }
 }

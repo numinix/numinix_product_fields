@@ -180,6 +180,7 @@ foreach ($dirList as $file) {
                 $pull_down_array[] = ['id' => 'text', 'text' => 'Text'];
                 $pull_down_array[] = ['id' => 'checkbox', 'text' => 'Checkbox'];
                 $pull_down_array[] = ['id' => 'file', 'text' => 'File'];
+                $pull_down_array[] = ['id' => 'video', 'text' => 'Video Upload'];
                 echo ' Type:' . zen_draw_pull_down_menu('add_custom_npf_field_type', $pull_down_array);
                 // echo zen_draw_input_field('add_custom_npf_field_length', '300');
                 echo '  ' . zen_draw_input_field('submit', 'Add Field', '', false, 'submit');

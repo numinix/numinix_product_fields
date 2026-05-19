@@ -21,6 +21,20 @@
 
 // Autoload all definitions in the npf_definitions folder
 define('TEXT_NUMINIX_PRODUCT_FIELDS', 'Numinix Product Fields');
+
+// Centralized video config used by upload validation, storefront renderer, and observer
+if (!defined('NPF_VIDEO_MIME_MAP')) {
+    define('NPF_VIDEO_MIME_MAP', serialize([
+        'mp4'  => 'video/mp4',
+        'webm' => 'video/webm',
+        'ogg'  => 'video/ogg',
+        'mov'  => 'video/quicktime',
+        'avi'  => 'video/x-msvideo',
+        'mkv'  => 'video/x-matroska',
+        'm4v'  => 'video/x-m4v',
+        'flv'  => 'video/x-flv',
+    ]));
+}
 define('NPF_DEFINITIONS_FOLDER', DIR_WS_LANGUAGES . $_SESSION['language'] . '/npf_definitions/');
 define('NPF_INCLUDES_FOLDER', DIR_WS_INCLUDES . 'npf_includes/');
 define('NPF_INCLUDES_SQL_FOLDER', NPF_INCLUDES_FOLDER . 'npf_sql/');
@@ -36,6 +50,19 @@ define('NPF_INCLUDES_PREBUILT_FOLDER', NPF_INCLUDES_FOLDER . 'prebuilt_fields/')
 
 $dirList = dirList(NPF_DEFINITIONS_FOLDER);
 foreach ($dirList as $file) {
-    include NPF_DEFINITIONS_FOLDER . $file;
+    if (pathinfo($file, PATHINFO_EXTENSION) !== 'php') {
+        continue;
+    }
+
+    $defines = include NPF_DEFINITIONS_FOLDER . $file;
+    if (!is_array($defines)) {
+        continue;
+    }
+
+    foreach ($defines as $key => $value) {
+        if (!defined($key)) {
+            define($key, $value);
+        }
+    }
 }
 // eof

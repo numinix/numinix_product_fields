@@ -255,6 +255,14 @@ if ($products_description != '') {
 ?>
 <!--eof Product description -->
 
+<!-- bof NPF Video product fields -->
+<?php if (!empty($GLOBALS['npf_product_extra_html'])): ?>
+<div class="npf-product-video-fields">
+    <?php echo $GLOBALS['npf_product_extra_html']; ?>
+</div>
+<?php endif; ?>
+<!-- eof NPF Video product fields -->
+
 <!--bof Prev/Next bottom position -->
 <?php
 if (PRODUCT_INFO_PREVIOUS_NEXT === '2' || PRODUCT_INFO_PREVIOUS_NEXT === '3') {
