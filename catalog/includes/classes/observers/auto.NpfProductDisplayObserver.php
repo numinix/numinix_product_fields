@@ -44,12 +44,42 @@ class zcObserverNpfProductDisplayObserver extends base
         $GLOBALS['npf_product_extra_html'] = '';
         $product_info = $GLOBALS['product_info'] ?? null;
 
-        if (empty($product_info) || !isset($product_info->fields) || $product_info->EOF || !is_dir($this->moduleDir)) {
+        if (empty($product_info) || !isset($product_info->fields) || $product_info->EOF) {
             return;
         }
 
-        foreach ($this->phpFilesIn($this->moduleDir) as $file) {
-            include $this->moduleDir . $file;
+        if (is_dir($this->moduleDir)) {
+            foreach ($this->phpFilesIn($this->moduleDir) as $file) {
+                include $this->moduleDir . $file;
+            }
+        }
+
+        if ($GLOBALS['npf_product_extra_html'] === '') {
+            $this->appendVideoFieldsFromProductInfo($product_info);
+        }
+    }
+
+    protected function appendVideoFieldsFromProductInfo($product_info)
+    {
+        if (!function_exists('zen_npf_video') || empty($product_info->fields) || !is_array($product_info->fields)) {
+            return;
+        }
+
+        foreach ($product_info->fields as $field => $value) {
+            if (!is_string($field) || !is_string($value) || $value === '') {
+                continue;
+            }
+
+            $videoHtml = zen_npf_video($value);
+            if ($videoHtml === '') {
+                continue;
+            }
+
+            $label = ucwords(str_replace('_', ' ', $field));
+            $GLOBALS['npf_product_extra_html'] .= '<div class="npf-video-field" style="margin:12px 0">'
+                . '<strong>' . htmlspecialchars($label, ENT_QUOTES, CHARSET) . '</strong><br>'
+                . $videoHtml
+                . '</div>';
         }
     }
 

@@ -86,7 +86,17 @@ class NuminixProductFieldsObserver extends base
          * scope. Mirror that scope here so legacy/custom NPF templates continue
          * to work when loaded through the observer.
          */
-        extract($GLOBALS, EXTR_SKIP);
+        $legacyTemplateVars = array_intersect_key(
+            $GLOBALS,
+            array_flip([
+                'languages',
+                'pInfo',
+                'currencies',
+            ])
+        );
+
+        extract($legacyTemplateVars, EXTR_SKIP);
+
         if (empty($languages) || !is_array($languages)) {
             $languages = zen_get_languages();
         }
@@ -182,6 +192,10 @@ class NuminixProductFieldsObserver extends base
 
     protected function currentCollectInfoHasLegacyNPFTemplateInclude()
     {
+        if (!empty($GLOBALS['npf_legacy_templates_included']) || (defined('NPF_LEGACY_TEMPLATES_INCLUDED') && NPF_LEGACY_TEMPLATES_INCLUDED)) {
+            return true;
+        }
+
         static $filesChecked = [];
 
         foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10) as $frame) {
@@ -199,7 +213,7 @@ class NuminixProductFieldsObserver extends base
             }
 
             $filesChecked[$frame['file']] = strpos($contents, 'NPF_INCLUDES_TEMPLATES_FOLDER') !== false
-                && strpos($contents, 'include(NPF_INCLUDES_TEMPLATES_FOLDER') !== false;
+                && preg_match('/\b(?:include|include_once|require|require_once)\s*\(?\s*NPF_INCLUDES_TEMPLATES_FOLDER\b/', $contents) === 1;
 
             return $filesChecked[$frame['file']];
         }
@@ -209,6 +223,10 @@ class NuminixProductFieldsObserver extends base
 
     protected function currentProductPageHasLegacyNPFPreviewInclude()
     {
+        if (!empty($GLOBALS['npf_legacy_preview_included']) || (defined('NPF_LEGACY_PREVIEW_INCLUDED') && NPF_LEGACY_PREVIEW_INCLUDED)) {
+            return true;
+        }
+
         static $filesChecked = [];
 
         foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10) as $frame) {
@@ -226,7 +244,7 @@ class NuminixProductFieldsObserver extends base
             }
 
             $filesChecked[$frame['file']] = strpos($contents, 'NPF_INCLUDES_PREVIEW_FOLDER') !== false
-                && strpos($contents, 'include(NPF_INCLUDES_PREVIEW_FOLDER') !== false;
+                && preg_match('/\b(?:include|include_once|require|require_once)\s*\(?\s*NPF_INCLUDES_PREVIEW_FOLDER\b/', $contents) === 1;
 
             return $filesChecked[$frame['file']];
         }

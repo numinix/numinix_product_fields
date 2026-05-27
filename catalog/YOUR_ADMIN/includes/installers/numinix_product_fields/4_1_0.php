@@ -1,6 +1,6 @@
 <?php
 /**
- * Numinix Product Fields Installer - Version 4.0.0
+ * Numinix Product Fields Installer - Version 4.1.0
  * 
  * Major refactoring for Zen Cart v2 only.
  * - Uses NOTIFY_ADMIN_PRODUCT_PRICE_EDIT_ABOVE notification system

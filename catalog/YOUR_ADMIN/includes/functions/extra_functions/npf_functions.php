@@ -117,20 +117,140 @@ function zen_npf_file($npf_file)
     return $npf_file;
 }
 
+if (!function_exists('npf_upload_folder')) {
+    function npf_upload_folder()
+    {
+        static $uploadFolder = null;
+
+        if ($uploadFolder !== null) {
+            return $uploadFolder;
+        }
+
+        if (defined('NPF_UPLOAD_FOLDER')) {
+            $uploadFolder = NPF_UPLOAD_FOLDER;
+            return $uploadFolder;
+        }
+
+        if (!defined('TABLE_CONFIGURATION')) {
+            $uploadFolder = '';
+            return $uploadFolder;
+        }
+
+        global $db;
+        if (!isset($db)) {
+            $uploadFolder = '';
+            return $uploadFolder;
+        }
+
+        $configuration = $db->Execute(
+            "SELECT configuration_value FROM " . TABLE_CONFIGURATION . " WHERE configuration_key = 'NPF_UPLOAD_FOLDER' LIMIT 1"
+        );
+        $uploadFolder = $configuration->fields['configuration_value'] ?? '';
+
+        return $uploadFolder;
+    }
+}
+
+if (!function_exists('npf_validate_video_path')) {
+    function npf_validate_video_path($relativePath)
+    {
+        if (empty($relativePath) || !is_string($relativePath) || strpos($relativePath, "\0") !== false) {
+            return '';
+        }
+
+        $uploadFolder = trim(str_replace('\\', '/', npf_upload_folder()), '/');
+        if ($uploadFolder === '') {
+            return '';
+        }
+
+        $relativePath = ltrim(str_replace('\\', '/', trim($relativePath)), '/');
+        if ($relativePath === ''
+            || preg_match('#^[a-z][a-z0-9+.-]*:#i', $relativePath)
+            || strpos($relativePath, '//') === 0
+            || ($relativePath !== $uploadFolder && strpos($relativePath, $uploadFolder . '/') !== 0)
+        ) {
+            return '';
+        }
+
+        $base = realpath(rtrim(DIR_FS_CATALOG, '/\\') . '/' . $uploadFolder);
+        $candidate = realpath(rtrim(DIR_FS_CATALOG, '/\\') . '/' . $relativePath);
+        if ($base === false || $candidate === false || !is_file($candidate) || !is_readable($candidate)) {
+            return '';
+        }
+
+        $base = rtrim(str_replace('\\', '/', $base), '/') . '/';
+        $candidate = str_replace('\\', '/', $candidate);
+        if (strpos($candidate, $base) !== 0) {
+            return '';
+        }
+
+        $mime_map = [
+            'mp4'  => 'video/mp4',
+            'webm' => 'video/webm',
+            'ogg'  => 'video/ogg',
+            'mov'  => 'video/quicktime',
+            'avi'  => 'video/x-msvideo',
+            'mkv'  => 'video/x-matroska',
+            'm4v'  => 'video/x-m4v',
+            'flv'  => 'video/x-flv',
+        ];
+        $ext = strtolower(pathinfo($candidate, PATHINFO_EXTENSION));
+        if (!isset($mime_map[$ext])) {
+            return '';
+        }
+
+        return $uploadFolder . '/' . substr($candidate, strlen($base));
+    }
+}
+
+if (!function_exists('npf_ini_size_to_bytes')) {
+    function npf_ini_size_to_bytes($value)
+    {
+        $value = trim((string)$value);
+        if ($value === '') {
+            return 0;
+        }
+
+        $unit = strtolower(substr($value, -1));
+        $bytes = (float)$value;
+        switch ($unit) {
+            case 'g':
+                $bytes *= 1024;
+                // no break
+            case 'm':
+                $bytes *= 1024;
+                // no break
+            case 'k':
+                $bytes *= 1024;
+                break;
+        }
+
+        return (int)$bytes;
+    }
+}
+
+if (!function_exists('npf_effective_upload_max_bytes')) {
+    function npf_effective_upload_max_bytes()
+    {
+        $limits = array_filter([
+            npf_ini_size_to_bytes(ini_get('upload_max_filesize')),
+            npf_ini_size_to_bytes(ini_get('post_max_size')),
+        ], static function ($bytes) {
+            return $bytes > 0;
+        });
+
+        return empty($limits) ? 0 : min($limits);
+    }
+}
+
 function zen_npf_video($npf_video)
 {
-    if (empty($npf_video) || !is_string($npf_video)) {
+    $npf_video = npf_validate_video_path($npf_video);
+    if ($npf_video === '') {
         return '';
     }
 
-    $npf_video = preg_replace('#\.\.[/\\\\]#', '', $npf_video);
-    $npf_video = ltrim($npf_video, '/\\');
-
-    if (!is_file(DIR_FS_CATALOG . $npf_video)) {
-        return '';
-    }
-
-    $mime_map = defined('NPF_VIDEO_MIME_MAP') ? unserialize(NPF_VIDEO_MIME_MAP) : [
+    $mime_map = [
         'mp4'  => 'video/mp4',
         'webm' => 'video/webm',
         'ogg'  => 'video/ogg',
@@ -142,7 +262,12 @@ function zen_npf_video($npf_video)
     ];
     $ext = strtolower(pathinfo($npf_video, PATHINFO_EXTENSION));
     $type_attr = isset($mime_map[$ext]) ? ' type="' . $mime_map[$ext] . '"' : '';
-    $video_url = HTTPS_CATALOG_SERVER . DIR_WS_HTTPS_CATALOG . $npf_video;
+
+    global $request_type;
+    $is_ssl = isset($request_type)
+        ? $request_type === 'SSL'
+        : (isset($_SERVER['HTTPS']) && (strtolower((string)$_SERVER['HTTPS']) === 'on' || $_SERVER['HTTPS'] === '1'));
+    $video_url = ($is_ssl ? HTTPS_CATALOG_SERVER . DIR_WS_HTTPS_CATALOG : HTTP_CATALOG_SERVER . DIR_WS_CATALOG) . $npf_video;
 
     return '<video controls style="max-width:100%;max-height:240px;" preload="metadata">'
          . '<source src="' . htmlspecialchars($video_url, ENT_QUOTES, 'UTF-8') . '"' . $type_attr . '>'
@@ -307,13 +432,8 @@ if (!empty(\$pInfo->" . $field . ")) { ?>
         case "video":
             $sql_type = "varchar(" . $length . ") DEFAULT NULL";
             $string_input_field = "<?php
-\$_npf_" . $field . "_max_raw = ini_get('upload_max_filesize');
-\$_npf_" . $field . "_max_bytes = (int)\$_npf_" . $field . "_max_raw;
-switch (strtolower(substr(\$_npf_" . $field . "_max_raw, -1))) {
-    case 'g': \$_npf_" . $field . "_max_bytes *= 1073741824; break;
-    case 'm': \$_npf_" . $field . "_max_bytes *= 1048576; break;
-    case 'k': \$_npf_" . $field . "_max_bytes *= 1024; break;
-}
+\$_npf_" . $field . "_max_bytes = npf_effective_upload_max_bytes();
+\$_npf_" . $field . "_max_label = \$_npf_" . $field . "_max_bytes > 0 ? number_format(\$_npf_" . $field . "_max_bytes / 1048576, 1) . ' MB' : 'server default';
 ?>
 <hr>
 <h2><?php echo TEXT_" . $lang_defines . "; ?></h2>
@@ -344,7 +464,7 @@ switch (strtolower(substr(\$_npf_" . $field . "_max_raw, -1))) {
             <span style=\"font-size:2.2em;\">&#127909;</span>
             <p style=\"color:#888;margin:8px 0 0;\">Drag &amp; drop a video or <strong>click to browse</strong></p>
             <p style=\"color:#bbb;font-size:12px;margin:6px 0 0;\">
-                MP4 &middot; WebM &middot; OGG &mdash; max <?php echo htmlspecialchars(\$_npf_" . $field . "_max_raw); ?>
+                MP4 &middot; WebM &middot; OGG &mdash; max <?php echo htmlspecialchars(\$_npf_" . $field . "_max_label); ?>
             </p>
             <p style=\"color:#e8a000;font-size:11px;margin:4px 0 0;\">
                 &#9888; <strong>Recommended: MP4</strong> &mdash; MOV/AVI/MKV may not play in Chrome or Firefox.
@@ -362,8 +482,8 @@ switch (strtolower(substr(\$_npf_" . $field . "_max_raw, -1))) {
 <div class=\"form-group\">
     <p class=\"col-sm-3 control-label\"><?php echo 'Overwrite Existing File on Server?'; ?></p>
     <div class=\"col-sm-9 col-md-9 col-lg-6\">
-        <label class=\"radio-inline\"><?php echo zen_draw_radio_field('" . $field . "_overwrite', '0', false) . TABLE_HEADING_NO; ?></label>
-        <label class=\"radio-inline\"><?php echo zen_draw_radio_field('" . $field . "_overwrite', '1', true) . TABLE_HEADING_YES; ?></label>
+        <label class=\"radio-inline\"><?php echo zen_draw_radio_field('" . $field . "_overwrite', '0', true) . TABLE_HEADING_NO; ?></label>
+        <label class=\"radio-inline\"><?php echo zen_draw_radio_field('" . $field . "_overwrite', '1', false) . TABLE_HEADING_YES; ?></label>
     </div>
 </div>
 <div class=\"form-group\">
@@ -555,10 +675,20 @@ if (\$zc158) {
 // eof";
     $generated_files[NPF_INCLUDES_SQL_FOLDER . $field . '.php'] = $admin_start_file . $string_npf_sql_file;
 
-    $string_npf_sql_array_file = "
+    if ($type === 'video') {
+        $string_npf_sql_array_file = "
+if (isset(\$_POST['" . $field . "'])) {
+    \$npf_" . $field . "_value = npf_validate_video_path(zen_db_prepare_input(\$_POST['" . $field . "']));
+    if (\$npf_" . $field . "_value !== '') {
+        \$sql_data_array['" . $field . "'] = \$npf_" . $field . "_value;
+    }
+}";
+    } else {
+        $string_npf_sql_array_file = "
 if (isset(\$_POST['" . $field . "'])) {
     \$sql_data_array['" . $field . "'] = zen_db_prepare_input(\$_POST['" . $field . "']);
 }";
+    }
     if ($is_upload) {
         $string_npf_sql_array_file .= "
 if (isset(\$_POST['" . $field . "_file_delete']) && \$_POST['" . $field . "_file_delete'] === '1') {
@@ -583,26 +713,65 @@ if (isset(\$_POST['" . $field . "_file_delete']) && \$_POST['" . $field . "_file
 \$_video_manual_basename = basename(\$_POST['" . $field . "_file_manual']);
 \$_video_manual_ext = strtolower(pathinfo(\$_video_manual_basename, PATHINFO_EXTENSION));
 if (in_array(\$_video_manual_ext, \$_video_manual_allowed)) {
-    \$products_" . $field . "_name = NPF_UPLOAD_FOLDER . '/' . \$_video_manual_basename;
+    \$_video_manual_relative = NPF_UPLOAD_FOLDER . '/' . \$_video_manual_basename;
+    \$_video_manual_absolute = DIR_FS_CATALOG . \$_video_manual_relative;
+    if (strpos(\$_video_manual_basename, \"\\0\") !== false) {
+        if (isset(\$messageStack)) {
+            \$messageStack->add('ERROR!! Video file path is not allowed: ' . \$_video_manual_basename, 'error');
+        }
+    } elseif (!is_file(\$_video_manual_absolute) || !is_readable(\$_video_manual_absolute)) {
+        if (isset(\$messageStack)) {
+            \$messageStack->add('ERROR!! Video file is missing or unreadable: ' . \$_video_manual_basename, 'error');
+        }
+    } else {
+        \$_video_manual_path = npf_validate_video_path(\$_video_manual_relative);
+        if (\$_video_manual_path !== '') {
+            \$products_" . $field . "_name = \$_video_manual_path;
+        } elseif (isset(\$messageStack)) {
+            \$messageStack->add('ERROR!! Video file path is not allowed: ' . \$_video_manual_basename, 'error');
+        }
+    }
+} elseif (isset(\$messageStack)) {
+    \$messageStack->add('ERROR!! Video file type is not allowed: ' . \$_video_manual_basename, 'error');
 }"
             : "\$products_" . $field . "_name = NPF_UPLOAD_FOLDER . '/' . basename(\$_POST['" . $field . "_file_manual']);";
 
+        $preview_validation_line = ($type === 'video')
+            ? "\$products_" . $field . "_name = npf_validate_video_path(\$products_" . $field . "_name);
+"
+            : "";
+
         $preview_string = "
 // upload file, if submitted
+global \$messageStack;
 \$products_" . $field . "_name = '';
 if (!isset(\$_GET['read']) || \$_GET['read'] !== 'only') {
-    \$products_" . $field . " = new upload('" . $field . "');" . $set_extensions_line . "
-    \$products_" . $field . "->set_destination(DIR_FS_CATALOG . NPF_UPLOAD_FOLDER . '/');
-    if (\$products_" . $field . "->parse() && \$products_" . $field . "->save(isset(\$_POST['" . $field . "_overwrite']) ? \$_POST['" . $field . "_overwrite'] : false)) {
-        \$products_" . $field . "_name = NPF_UPLOAD_FOLDER . '/' . \$products_" . $field . "->filename;
-    } else {
+    \$_npf_upload_max_bytes = " . ($type === 'video' ? "npf_effective_upload_max_bytes()" : "0") . ";
+    \$_npf_content_length = isset(\$_SERVER['CONTENT_LENGTH']) ? (int)\$_SERVER['CONTENT_LENGTH'] : 0;
+    if (\$_npf_upload_max_bytes > 0 && \$_npf_content_length > \$_npf_upload_max_bytes) {
+        if (isset(\$messageStack)) {
+            \$messageStack->add('ERROR!! Upload exceeds the server limit of ' . number_format(\$_npf_upload_max_bytes / 1048576, 1) . ' MB. Increase upload_max_filesize and post_max_size.', 'error');
+        }
+        return;
+    } elseif (\$_npf_upload_max_bytes > 0 && isset(\$_FILES['" . $field . "']['size']) && (int)\$_FILES['" . $field . "']['size'] > \$_npf_upload_max_bytes) {
+        if (isset(\$messageStack)) {
+            \$messageStack->add('ERROR!! Video file exceeds the server limit of ' . number_format(\$_npf_upload_max_bytes / 1048576, 1) . ' MB.', 'error');
+        }
         \$products_" . $field . "_name = (isset(\$_POST['" . $field . "_previous_file']) ? \$_POST['" . $field . "_previous_file'] : '');
+    } else {
+        \$products_" . $field . " = new upload('" . $field . "');" . $set_extensions_line . "
+        \$products_" . $field . "->set_destination(DIR_FS_CATALOG . NPF_UPLOAD_FOLDER . '/');
+        if (\$products_" . $field . "->parse() && \$products_" . $field . "->save(isset(\$_POST['" . $field . "_overwrite']) ? \$_POST['" . $field . "_overwrite'] : false)) {
+            \$products_" . $field . "_name = NPF_UPLOAD_FOLDER . '/' . \$products_" . $field . "->filename;
+        } else {
+            \$products_" . $field . "_name = (isset(\$_POST['" . $field . "_previous_file']) ? \$_POST['" . $field . "_previous_file'] : '');
+        }
     }
 }
 if (!empty(\$_POST['" . $field . "_file_manual'])) {
     " . $manual_file_validation . "
 }
-\$_POST['" . $field . "'] = \$products_" . $field . "_name;
+" . $preview_validation_line . "\$_POST['" . $field . "'] = \$products_" . $field . "_name;
 
 ";
         $generated_files[NPF_INCLUDES_PREVIEW_FOLDER . $field . '.php'] = $admin_start_file . $preview_string;
@@ -618,6 +787,11 @@ if (isset(\$_POST['" . $field . "_file_delete']) && \$_POST['" . $field . "_file
     \$npf_" . $field . "_value = '';
 } elseif (isset(\$_POST['" . $field . "'])) {
     \$npf_" . $field . "_value = zen_db_prepare_input(\$_POST['" . $field . "']);
+    " . ($type === 'video' ? "
+    \$npf_" . $field . "_value = npf_validate_video_path(\$npf_" . $field . "_value);
+    if (\$npf_" . $field . "_value === '') {
+        return;
+    }" : "") . "
 } else {
     return;
 }
