@@ -59,6 +59,11 @@ class NuminixProductFieldsObserver extends base
     protected function addProductFields(&$paramsArray)
     {
         global $db, $pInfo;
+        static $npfFieldsRendered = false;
+
+        if ($npfFieldsRendered) {
+            return;
+        }
 
         // Determine the product info object passed by the notifier.
         $incomingPInfo = null;
@@ -108,6 +113,8 @@ class NuminixProductFieldsObserver extends base
         if (!defined('NPF_INCLUDES_TEMPLATES_FOLDER')) {
             return;
         }
+
+        $npfFieldsRendered = true;
 
         foreach ($this->phpFilesIn(NPF_INCLUDES_TEMPLATES_FOLDER) as $file) {
             // NPF templates output complete <div class="form-group"> blocks for ZC 1.5.6+.
@@ -196,29 +203,11 @@ class NuminixProductFieldsObserver extends base
             return true;
         }
 
-        static $filesChecked = [];
-
-        foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10) as $frame) {
-            if (empty($frame['file']) || basename($frame['file']) !== 'collect_info.php') {
-                continue;
-            }
-
-            if (isset($filesChecked[$frame['file']])) {
-                return $filesChecked[$frame['file']];
-            }
-
-            $contents = file_get_contents($frame['file']);
-            if ($contents === false) {
-                continue;
-            }
-
-            $filesChecked[$frame['file']] = strpos($contents, 'NPF_INCLUDES_TEMPLATES_FOLDER') !== false
-                && preg_match('/\b(?:include|include_once|require|require_once)\s*\(?\s*NPF_INCLUDES_TEMPLATES_FOLDER\b/', $contents) === 1;
-
-            return $filesChecked[$frame['file']];
-        }
-
-        return false;
+        return $this->stackFileContains(
+            'collect_info.php',
+            'NPF_INCLUDES_TEMPLATES_FOLDER',
+            '/\b(?:include|include_once|require|require_once)\s*\(?\s*NPF_INCLUDES_TEMPLATES_FOLDER\b/'
+        );
     }
 
     protected function currentProductPageHasLegacyNPFPreviewInclude()
@@ -227,26 +216,31 @@ class NuminixProductFieldsObserver extends base
             return true;
         }
 
+        return $this->stackFileContains(
+            'product.php',
+            'NPF_INCLUDES_PREVIEW_FOLDER',
+            '/\b(?:include|include_once|require|require_once)\s*\(?\s*NPF_INCLUDES_PREVIEW_FOLDER\b/'
+        );
+    }
+
+    protected function stackFileContains($basename, $needle, $pattern = null)
+    {
         static $filesChecked = [];
 
         foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10) as $frame) {
-            if (empty($frame['file']) || basename($frame['file']) !== 'product.php') {
+            if (empty($frame['file']) || basename($frame['file']) !== $basename) {
                 continue;
             }
 
-            if (isset($filesChecked[$frame['file']])) {
-                return $filesChecked[$frame['file']];
+            $cacheKey = $frame['file'] . '|' . $needle . '|' . (string)$pattern;
+            if (!isset($filesChecked[$cacheKey])) {
+                $contents = file_get_contents($frame['file']);
+                $filesChecked[$cacheKey] = $contents !== false
+                    && strpos($contents, $needle) !== false
+                    && ($pattern === null || preg_match($pattern, $contents) === 1);
             }
 
-            $contents = file_get_contents($frame['file']);
-            if ($contents === false) {
-                continue;
-            }
-
-            $filesChecked[$frame['file']] = strpos($contents, 'NPF_INCLUDES_PREVIEW_FOLDER') !== false
-                && preg_match('/\b(?:include|include_once|require|require_once)\s*\(?\s*NPF_INCLUDES_PREVIEW_FOLDER\b/', $contents) === 1;
-
-            return $filesChecked[$frame['file']];
+            return $filesChecked[$cacheKey];
         }
 
         return false;

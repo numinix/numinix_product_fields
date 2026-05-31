@@ -3,7 +3,6 @@
  * Numinix Product Fields - Catalog Product Display Observer
  *
  * Hooks into the product-info page to render NPF video (and other custom) fields.
- * Generated display modules live in includes/modules/npf_catalog_display/.
  *
  * @copyright Copyright 2003-2024 Zen Cart Development Team
  * @license http://www.zen-cart.com/license/2_0.txt GNU Public License V2.0
@@ -24,11 +23,8 @@ if (version_compare($npfZenCartVersion, '1.5', '<') || !class_exists('base')) {
 
 class zcObserverNpfProductDisplayObserver extends base
 {
-    protected $moduleDir;
-
     public function __construct()
     {
-        $this->moduleDir = DIR_FS_CATALOG . 'includes/modules/npf_catalog_display/';
         $this->attach($this, ['NOTIFY_HEADER_END_PRODUCT_INFO']);
     }
 
@@ -48,15 +44,7 @@ class zcObserverNpfProductDisplayObserver extends base
             return;
         }
 
-        if (is_dir($this->moduleDir)) {
-            foreach ($this->phpFilesIn($this->moduleDir) as $file) {
-                include $this->moduleDir . $file;
-            }
-        }
-
-        if ($GLOBALS['npf_product_extra_html'] === '') {
-            $this->appendVideoFieldsFromProductInfo($product_info);
-        }
+        $this->appendVideoFieldsFromProductInfo($product_info);
     }
 
     protected function appendVideoFieldsFromProductInfo($product_info)
@@ -83,18 +71,4 @@ class zcObserverNpfProductDisplayObserver extends base
         }
     }
 
-    protected function phpFilesIn($directory)
-    {
-        if (!is_dir($directory)) {
-            return [];
-        }
-
-        $files = array_filter(scandir($directory), static function ($filename) use ($directory) {
-            return pathinfo($filename, PATHINFO_EXTENSION) === 'php'
-                && is_file($directory . $filename);
-        });
-        sort($files);
-
-        return $files;
-    }
 }

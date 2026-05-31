@@ -368,15 +368,6 @@ function add_custom_field($field_name, $type, $length = '300')
             NPF_INCLUDES_CUSTOM_EXECUTE_FOLDER,
         ]);
     }
-    if ($type === 'video') {
-        $catalog_display_dir = DIR_FS_CATALOG . 'includes/modules/npf_catalog_display/';
-        if (!is_dir($catalog_display_dir) && !mkdir($catalog_display_dir, 0755, true)) {
-            $messageStack->add('ERROR!! Unable to create catalog display directory: ' . $catalog_display_dir, 'error');
-            return;
-        }
-        $required_directories[] = $catalog_display_dir;
-    }
-
     $writable_error = npf_ensure_writable_directories($required_directories);
     if ($writable_error !== '') {
         $messageStack->add('ERROR!! ' . $writable_error, 'error');
@@ -804,24 +795,6 @@ if (isset(\$_POST['" . $field . "_file_delete']) && \$_POST['" . $field . "_file
 \$db->Execute(\$sql);
 ";
         $generated_files[NPF_INCLUDES_CUSTOM_EXECUTE_FOLDER . $field . '.php'] = $admin_start_file . $custom_execute_string;
-
-        // Generate catalog-side display module so the video shows on the product page
-        if ($type === 'video') {
-            $catalog_module = "<?php
-// NPF catalog display module - auto-generated for field: " . $field . "
-if (empty(\$product_info->fields['products_id'])) {
-    return;
-}
-\$_npf_html = zen_npf_video(npf_field_value((int)\$product_info->fields['products_id'], '" . $field . "'));
-if (\$_npf_html !== '') {
-    \$GLOBALS['npf_product_extra_html'] .= '<div class=\"npf-video-field\" style=\"margin:12px 0\">'
-        . '<strong>" . htmlspecialchars($nice_field_name, ENT_QUOTES) . "</strong><br>'
-        . \$_npf_html
-        . '</div>';
-}
-";
-            $generated_files[$catalog_display_dir . $field . '.php'] = $catalog_module;
-        }
     }
     $written_files = [];
     foreach ($generated_files as $filename => $contents) {
@@ -864,7 +837,6 @@ function delete_custom_field($field)
         NPF_INCLUDES_PREVIEW_FOLDER,
         NPF_INCLUDES_PREVIEW_INFO_FOLDER,
         NPF_INCLUDES_CUSTOM_EXECUTE_FOLDER,
-        DIR_FS_CATALOG . 'includes/modules/npf_catalog_display/',
     ];
     foreach ($generated_files as $directory) {
         $filename = $directory . $field . '.php';
