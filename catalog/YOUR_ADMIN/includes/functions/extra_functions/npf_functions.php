@@ -349,8 +349,22 @@ function add_custom_field($field_name, $type, $length = '300')
     }
 
     if ($sniffer->field_exists(TABLE_PRODUCTS, $field)) {
-        $messageStack->add('ERROR!! Product field ' . $field . ' already exists', 'caution');
-        return;
+        // Column may exist from a prior ALTER / partial create. Still ensure NPF UI files exist
+        // so Catalog → Products shows the edit box.
+        $hasDefinition = file_exists(NPF_DEFINITIONS_FOLDER . 'lang.' . $field . '.php')
+            || file_exists(NPF_DEFINITIONS_FOLDER . $field . '.php');
+        $missingUi = !$hasDefinition
+            || !file_exists(NPF_INCLUDES_SQL_FOLDER . $field . '.php')
+            || !file_exists(NPF_INCLUDES_SQL_ARRAY_FOLDER . $field . '.php')
+            || !file_exists(NPF_INCLUDES_TEMPLATES_FOLDER . $field . '.php');
+        if (!$missingUi) {
+            $messageStack->add('ERROR!! Product field ' . $field . ' already exists', 'caution');
+            return;
+        }
+        // Fall through to write missing UI files, then skip ALTER below.
+        $npf_skip_alter = true;
+    } else {
+        $npf_skip_alter = false;
     }
 
     $is_upload = in_array($type, ['file', 'video'], true);
@@ -810,9 +824,13 @@ if (isset(\$_POST['" . $field . "_file_delete']) && \$_POST['" . $field . "_file
         $written_files[] = $filename;
     }
 
-    // add the field to the DB
-    $db->Execute("ALTER TABLE `" . DB_PREFIX . "products` ADD `" . $field . "` " . $sql_type . ";");
-    $messageStack->add($nice_field_name . ' added', 'success');
+    // add the field to the DB (skip when healing UI files for an existing column)
+    if (empty($npf_skip_alter)) {
+        $db->Execute("ALTER TABLE `" . DB_PREFIX . "products` ADD `" . $field . "` " . $sql_type . ";");
+        $messageStack->add($nice_field_name . ' added', 'success');
+    } else {
+        $messageStack->add($nice_field_name . ' product-edit fields restored', 'success');
+    }
 }
 
 // bof NX-2511: Program delete feature in NPF
